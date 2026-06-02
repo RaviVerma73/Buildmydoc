@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Image Resize & Converter Pro</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+:root{
+  --bg:#0c0c14;--bg2:#12121e;--bg3:#1a1a2e;--card:#1e1e30;--card2:#24243c;
+  --border:rgba(120,119,255,.15);--border2:rgba(120,119,255,.3);
+  --indigo:#6366f1;--indigo2:#818cf8;--violet:#7c3aed;
+  --cyan:#22d3ee;--emerald:#34d399;--amber:#fbbf24;--rose:#fb7185;
+  --text:#e2e8f0;--muted:#64748b;--white:#fff;--r:12px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--indigo);border-radius:4px}
+
+/* TOPBAR */
+.topbar{background:rgba(12,12,20,.95);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);padding:0 20px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--indigo),var(--cyan));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.logo-text{font-size:16px;font-weight:800;color:var(--white);letter-spacing:-.3px}
+.logo-text span{color:var(--indigo2)}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.format-count{font-size:12px;color:var(--muted);background:var(--bg3);padding:4px 10px;border-radius:20px;border:1px solid var(--border)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s;font-family:inherit;white-space:nowrap}
+.btn-primary{background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff;box-shadow:0 4px 14px rgba(99,102,241,.35)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(99,102,241,.5)}
+.btn-cyan{background:linear-gradient(135deg,#0891b2,var(--cyan));color:#fff}
+.btn-cyan:hover{transform:translateY(-2px)}
+.btn-amber{background:linear-gradient(135deg,#d97706,var(--amber));color:#000;font-weight:700}
+.btn-amber:hover{transform:translateY(-2px)}
+.btn-emerald{background:linear-gradient(135deg,#059669,var(--emerald));color:#000;font-weight:700}
+.btn-emerald:hover{transform:translateY(-2px)}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
+.btn-outline:hover{border-color:var(--border2);color:var(--indigo2)}
+.btn-danger{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);color:#f87171}
+.btn-danger:hover{background:rgba(239,68,68,.2)}
+.btn-ghost{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text)}
+.btn-ghost:hover{background:rgba(255,255,255,.1)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-xs{padding:4px 9px;font-size:11px;border-radius:7px}
+.btn-icon{width:34px;height:34px;padding:0;justify-content:center;font-size:15px}
+.btn-full{width:100%;justify-content:center}
+
+/* LAYOUT */
+.main{display:grid;grid-template-columns:300px 1fr;min-height:calc(100vh - 58px);gap:0}
+@media(max-width:900px){.main{grid-template-columns:1fr;grid-template-rows:auto 1fr}}
+
+/* SETTINGS PANEL */
+.settings-panel{background:var(--bg2);border-right:1px solid var(--border);padding:20px;overflow-y:auto;max-height:calc(100vh - 58px);position:sticky;top:58px}
+@media(max-width:900px){.settings-panel{position:static;max-height:none;border-right:none;border-bottom:1px solid var(--border)}}
+
+.s-section{margin-bottom:22px}
+.s-title{font-size:10px;font-weight:700;color:var(--indigo2);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.s-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* FORMAT GRID */
+.fmt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.fmt-btn{padding:8px 4px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:11.5px;font-weight:700;cursor:pointer;text-align:center;transition:.2s;text-transform:uppercase;letter-spacing:.5px}
+.fmt-btn:hover{border-color:var(--indigo);color:var(--indigo2)}
+.fmt-btn.active{background:rgba(99,102,241,.15);border-color:var(--indigo);color:var(--indigo2)}
+.fmt-btn.disabled{opacity:.3;cursor:not-allowed}
+
+/* CONTROLS */
+.ctrl-group{margin-bottom:14px}
+.ctrl-label{font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+.ctrl-label span{color:var(--indigo2);font-weight:700}
+.ctrl-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 11px;color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:.2s}
+.ctrl-input:focus{border-color:var(--indigo);background:rgba(99,102,241,.06)}
+.ctrl-row{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center}
+.ctrl-row-equal{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.lock-btn{width:32px;height:32px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:.2s;flex-shrink:0}
+.lock-btn.locked{background:rgba(99,102,241,.2);border-color:var(--indigo);color:var(--indigo2)}
+.range-wrap{position:relative}
+.range-input{width:100%;-webkit-appearance:none;height:5px;border-radius:5px;background:var(--bg3);outline:none;cursor:pointer}
+.range-input::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--indigo2);cursor:pointer;border:2px solid var(--indigo)}
+.mode-tabs{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;background:var(--bg3);border-radius:8px;padding:3px}
+.mode-tab{padding:7px 4px;text-align:center;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;color:var(--muted);border:none;background:none;font-family:inherit;transition:.2s}
+.mode-tab.active{background:var(--indigo);color:#fff}
+
+/* TOGGLE */
+.toggle-wrap{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;cursor:pointer}
+.toggle-wrap span{font-size:12.5px;color:var(--text)}
+.toggle-sw{width:38px;height:21px;border-radius:21px;border:none;cursor:pointer;position:relative;transition:.25s;flex-shrink:0}
+.toggle-sw.on{background:var(--indigo)}.toggle-sw.off{background:rgba(255,255,255,.12)}
+.toggle-sw::after{content:'';position:absolute;top:3px;width:15px;height:15px;border-radius:50%;background:#fff;transition:.25s}
+.toggle-sw.on::after{left:20px}.toggle-sw.off::after{left:3px}
+
+/* CONTENT PANEL */
+.content-panel{padding:24px;overflow-y:auto}
+@media(max-width:600px){.content-panel{padding:14px}}
+
+/* DROP ZONE */
+.drop-zone{border:2px dashed rgba(99,102,241,.35);border-radius:16px;padding:40px 24px;text-align:center;cursor:pointer;transition:all .3s;position:relative;background:radial-gradient(ellipse at 50% 50%,rgba(99,102,241,.05) 0%,transparent 70%);margin-bottom:24px}
+.drop-zone:hover,.drop-zone.drag-over{border-color:var(--indigo);background:rgba(99,102,241,.08);transform:scale(1.01)}
+.drop-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.dz-icon{font-size:48px;margin-bottom:12px;display:block}
+.dz-title{font-size:18px;font-weight:700;color:var(--white);margin-bottom:6px}
+.dz-sub{font-size:13px;color:var(--muted);line-height:1.6}
+.dz-formats{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:14px}
+.dz-fmt-tag{background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);color:var(--indigo2);padding:3px 8px;border-radius:20px;font-size:10.5px;font-weight:700}
+
+/* TOOLBAR */
+.toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:18px;padding:12px 16px;background:var(--card);border-radius:12px;border:1px solid var(--border)}
+.toolbar-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.toolbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.file-count{font-size:13px;font-weight:600;color:var(--white)}
+.file-count span{color:var(--indigo2)}
+
+/* IMAGE GRID */
+.img-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+@media(max-width:560px){.img-grid{grid-template-columns:1fr}}
+
+/* IMAGE CARD */
+.img-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:.3s;position:relative}
+.img-card:hover{border-color:var(--border2);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.img-card.processing{opacity:.7}
+.card-preview{width:100%;height:160px;object-fit:contain;background:var(--bg3);display:block;cursor:zoom-in}
+.card-preview-wrap{position:relative;overflow:hidden}
+.card-badge{position:absolute;top:8px;left:8px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px}
+.badge-input{background:rgba(0,0,0,.7);color:var(--muted)}
+.badge-done{background:rgba(52,211,153,.2);color:var(--emerald);border:1px solid rgba(52,211,153,.3)}
+.badge-proc{background:rgba(99,102,241,.2);color:var(--indigo2);border:1px solid rgba(99,102,241,.3)}
+.badge-err{background:rgba(239,68,68,.2);color:#f87171;border:1px solid rgba(239,68,68,.3)}
+.card-remove{position:absolute;top:7px;right:7px;width:26px;height:26px;background:rgba(0,0,0,.7);border:none;border-radius:50%;color:#f87171;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:.2s}
+.card-remove:hover{background:rgba(239,68,68,.8);color:#fff}
+.card-body{padding:12px}
+.card-name{font-size:12.5px;font-weight:600;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px}
+.card-info{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:10px}
+.card-info .size-new{color:var(--emerald);font-weight:600}
+.card-info .size-bigger{color:var(--rose)}
+.card-actions{display:flex;gap:6px}
+.card-actions .btn{flex:1;justify-content:center}
+.progress-bar{height:3px;background:var(--bg3);border-radius:2px;overflow:hidden;margin-bottom:8px}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--indigo),var(--cyan));border-radius:2px;transition:width .3s}
+
+/* COMPARE VIEW */
+.compare-slider{position:relative;cursor:ew-resize;border-radius:10px;overflow:hidden;user-select:none;margin-bottom:10px}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;padding:12px 18px;border-radius:10px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;transform:translateY(80px);opacity:0;transition:.35s cubic-bezier(.34,1.56,.64,1);z-index:9999;max-width:90vw;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.toast.show{transform:translateY(0);opacity:1}
+.toast-ok{background:linear-gradient(135deg,#059669,#34d399);color:#000}
+.toast-err{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff}
+.toast-info{background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff}
+
+/* LIGHTBOX */
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;cursor:zoom-out}
+.lightbox.open{display:flex}
+.lightbox img{max-width:90vw;max-height:90vh;border-radius:10px;object-fit:contain}
+.lb-close{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.1);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center}
+.lb-close:hover{background:rgba(255,255,255,.2)}
+
+/* LOADING OVERLAY */
+.loading-ov{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:9998;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.loading-ov.show{display:flex}
+.loading-spin{width:44px;height:44px;border:3px solid rgba(99,102,241,.2);border-top-color:var(--indigo2);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-ov p{font-size:13px;font-weight:600;color:var(--indigo2)}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:50px 20px;display:none}
+.empty-state.visible{display:block}
+.empty-icon{font-size:48px;margin-bottom:12px;opacity:.3}
+.empty-title{font-size:16px;font-weight:600;color:var(--muted)}
+
+/* STATS BAR */
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+@media(max-width:600px){.stats-bar{grid-template-columns:repeat(2,1fr)}}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center}
+.stat-val{font-size:20px;font-weight:800;color:var(--white);font-variant-numeric:tabular-nums}
+.stat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-top:3px}
+
+/* RESPONSIVE */
+@media(max-width:480px){
+  .topbar{padding:0 12px}
+  .logo-text{font-size:14px}
+  .btn{padding:7px 12px;font-size:12px}
+  .dz-title{font-size:15px}
+  .drop-zone{padding:28px 16px}
+  .img-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:360px){.img-grid{grid-template-columns:1fr}}
+
+/* MOBILE SETTINGS TOGGLE */
+.settings-toggle{display:none;width:100%;padding:12px 16px;background:var(--bg2);border:none;color:var(--text);font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;border-bottom:1px solid var(--border);text-align:left;gap:8px;align-items:center}
+@media(max-width:900px){.settings-toggle{display:flex}}
+.settings-body{transition:max-height .35s ease;overflow:hidden}
+@media(max-width:900px){.settings-body.collapsed{max-height:0!important}}
+</style>
+</head>
+<body>
+
+<div class="loading-ov" id="loadingOv">
+  <div class="loading-spin"></div>
+  <p id="loadingMsg">Processing images...</p>
+</div>
+
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lb-close" onclick="closeLightbox()">&#x2715;</button>
+  <img id="lightboxImg" src="" alt="Preview">
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-icon">&#x1F5BC;</div>
+    <div class="logo-text">Image<span>Pro</span></div>
+  </div>
+  <div class="topbar-right">
+    <div class="format-count">12+ Formats Supported</div>
+    <button class="btn btn-outline btn-sm" onclick="clearAll()">&#x1F5D1; Clear All</button>
+  </div>
+</div>
+
+<!-- MOBILE SETTINGS TOGGLE -->
+<button class="settings-toggle" id="settingsToggle" onclick="toggleSettings()">
+  <span id="settingsToggleIcon">&#9660;</span> &#x2699;&#xFE0F; Settings &amp; Format — Tap to toggle
+</button>
+
+<div class="main">
+
+  <!-- SETTINGS PANEL -->
+  <aside class="settings-panel">
+    <div class="settings-body" id="settingsBody" style="max-height:9999px">
+
+      <!-- OUTPUT FORMAT -->
+      <div class="s-section">
+        <div class="s-title">&#x1F4BE; Output Format</div>
+        <div class="fmt-grid" id="fmtGrid">
+          <div class="fmt-btn active" data-fmt="jpg" onclick="setFmt('jpg',this)">JPG</div>
+          <div class="fmt-btn" data-fmt="png" onclick="setFmt('png',this)">PNG</div>
+          <div class="fmt-btn" data-fmt="webp" onclick="setFmt('webp',this)">WEBP</div>
+          <div class="fmt-btn" data-fmt="bmp" onclick="setFmt('bmp',this)">BMP</div>
+          <div class="fmt-btn" data-fmt="gif" onclick="setFmt('gif',this)">GIF</div>
+          <div class="fmt-btn" data-fmt="ico" onclick="setFmt('ico',this)">ICO</div>
+          <div class="fmt-btn" data-fmt="avif" onclick="setFmt('avif',this)">AVIF</div>
+          <div class="fmt-btn" data-fmt="tiff" onclick="setFmt('tiff',this)">TIFF</div>
+          <div class="fmt-btn" data-fmt="svg" onclick="setFmt('svg',this)">SVG</div>
+        </div>
+        <p style="font-size:11px;color:var(--muted);margin-top:8px;line-height:1.6" id="fmtNote">JPG: Best for photos. Supports lossy compression.</p>
+      </div>
+
+      <!-- QUALITY -->
+      <div class="s-section" id="qualitySection">
+        <div class="s-title">&#x2728; Quality</div>
+        <div class="ctrl-group">
+          <div class="ctrl-label">Compression Quality <span id="qualityVal">90%</span></div>
+          <input type="range" class="range-input" id="qualitySlider" min="1" max="100" value="90" oninput="updateQuality(this.value)">
+        </div>
+      </div>
+
+      <!-- RESIZE -->
+      <div class="s-section">
+        <div class="s-title">&#x1F4CF; Resize Options</div>
+        <div class="mode-tabs" style="margin-bottom:12px">
+          <button class="mode-tab active" onclick="setResizeMode('none',this)">Original</button>
+          <button class="mode-tab" onclick="setResizeMode('custom',this)">Custom px</button>
+          <button class="mode-tab" onclick="setResizeMode('percent',this)">Percent %</button>
+          <button class="mode-tab" onclick="setResizeMode('fit',this)">Max Fit</button>
+        </div>
+
+        <div id="resizeCustom" style="display:none">
+          <div class="ctrl-group">
+            <div class="ctrl-label">Width &times; Height (px)</div>
+            <div class="ctrl-row">
+              <input type="number" class="ctrl-input" id="resizeW" placeholder="Width" min="1" oninput="syncAspect('w')">
+              <button class="lock-btn locked" id="lockBtn" onclick="toggleLock()" title="Lock aspect ratio">&#x1F512;</button>
+              <input type="number" class="ctrl-input" id="resizeH" placeholder="Height" min="1" oninput="syncAspect('h')">
+            </div>
+          </div>
+        </div>
+
+        <div id="resizePercent" style="display:none">
+          <div class="ctrl-group">
+            <div class="ctrl-label">Scale Percentage <span id="pctVal">50%</span></div>
+            <input type="range" class="range-input" id="pctSlider" min="5" max="200" value="50" oninput="el('pctVal').textContent=this.value+'%'">
+          </div>
+        </div>
+
+        <div id="resizeFit" style="display:none">
+          <div class="ctrl-group">
+            <div class="ctrl-label">Max Width (px)</div>
+            <input type="number" class="ctrl-input" id="fitW" placeholder="e.g. 1920" value="1920">
+          </div>
+          <div class="ctrl-group">
+            <div class="ctrl-label">Max Height (px)</div>
+            <input type="number" class="ctrl-input" id="fitH" placeholder="e.g. 1080" value="1080">
+          </div>
+        </div>
+      </div>
+
+      <!-- TRANSFORM -->
+      <div class="s-section">
+        <div class="s-title">&#x1F504; Transform</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px">
+          <button class="btn btn-ghost btn-sm" onclick="applyTransform('rotate90')">&#x21BA; 90&#xB0;</button>
+          <button class="btn btn-ghost btn-sm" onclick="applyTransform('rotate180')">&#x21BA; 180&#xB0;</button>
+          <button class="btn btn-ghost btn-sm" onclick="applyTransform('flipH')">&#x2194; Flip H</button>
+          <button class="btn btn-ghost btn-sm" onclick="applyTransform('flipV')">&#x2195; Flip V</button>
+        </div>
+        <div class="toggle-wrap" onclick="toggleOption('grayscale')">
+          <span>Grayscale</span>
+          <button class="toggle-sw off" id="toggle-grayscale"></button>
+        </div>
+        <div class="toggle-wrap" onclick="toggleOption('sharpen')">
+          <span>Sharpen</span>
+          <button class="toggle-sw off" id="toggle-sharpen"></button>
+        </div>
+      </div>
+
+      <!-- BACKGROUND -->
+      <div class="s-section">
+        <div class="s-title">&#x1F3A8; Background (for PNG&#x2192;JPG)</div>
+        <div class="ctrl-group">
+          <div class="ctrl-label">Background Color</div>
+          <input type="color" class="ctrl-input" id="bgColor" value="#ffffff" style="height:38px;padding:3px 6px">
+        </div>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="s-section">
+        <div class="s-title">&#x26A1; Actions</div>
+        <button class="btn btn-primary btn-full" onclick="convertAll()" style="margin-bottom:8px">&#x1F504; Convert All</button>
+        <button class="btn btn-emerald btn-full" onclick="downloadAll()" style="margin-bottom:8px">&#x1F4E6; Download All (ZIP)</button>
+        <button class="btn btn-outline btn-full" onclick="clearAll()">&#x1F5D1; Clear All</button>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- CONTENT PANEL -->
+  <main class="content-panel">
+
+    <!-- STATS -->
+    <div class="stats-bar" id="statsBar" style="display:none">
+      <div class="stat-card">
+        <div class="stat-val" id="statTotal">0</div>
+        <div class="stat-lbl">Total Files</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="statDone" style="color:var(--emerald)">0</div>
+        <div class="stat-lbl">Converted</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="statSaved" style="color:var(--cyan)">0%</div>
+        <div class="stat-lbl">Avg Saved</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="statSize" style="color:var(--amber)">0 KB</div>
+        <div class="stat-lbl">Total Output</div>
+      </div>
+    </div>
+
+    <!-- DROP ZONE -->
+    <div class="drop-zone" id="dropZone">
+      <input type="file" id="fileInput" multiple accept="image/*,.svg,.bmp,.tiff,.tif,.ico,.avif" onchange="handleFiles(this.files)">
+      <span class="dz-icon">&#x1F4F8;</span>
+      <div class="dz-title">Drop Images Here</div>
+      <div class="dz-sub">or click to browse &nbsp;&#x2022;&nbsp; Multiple files supported<br>Drag &amp; drop from anywhere on your device</div>
+      <div class="dz-formats">
+        <span class="dz-fmt-tag">JPG</span><span class="dz-fmt-tag">PNG</span><span class="dz-fmt-tag">WEBP</span>
+        <span class="dz-fmt-tag">BMP</span><span class="dz-fmt-tag">GIF</span><span class="dz-fmt-tag">SVG</span>
+        <span class="dz-fmt-tag">ICO</span><span class="dz-fmt-tag">AVIF</span><span class="dz-fmt-tag">TIFF</span>
+      </div>
+    </div>
+
+    <!-- TOOLBAR -->
+    <div class="toolbar" id="toolbar" style="display:none">
+      <div class="toolbar-left">
+        <span class="file-count"><span id="imgCountLabel">0</span> images loaded</span>
+        <span style="font-size:12px;color:var(--muted)" id="outputFmtLabel">Output: JPG</span>
+      </div>
+      <div class="toolbar-right">
+        <button class="btn btn-primary btn-sm" onclick="convertAll()">&#x1F504; Convert All</button>
+        <button class="btn btn-emerald btn-sm" onclick="downloadAll()">&#x1F4E6; ZIP Download</button>
+        <label class="btn btn-outline btn-sm" style="cursor:pointer">
+          + Add More
+          <input type="file" multiple accept="image/*" style="display:none" onchange="handleFiles(this.files)">
+        </label>
+      </div>
+    </div>
+
+    <!-- IMAGE GRID -->
+    <div class="img-grid" id="imgGrid"></div>
+
+    <!-- EMPTY STATE -->
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">&#x1F4F7;</div>
+      <div class="empty-title">No images loaded</div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ══════════════════════════════════════
+// STATE
+// ══════════════════════════════════════
+const STATE = {
+  images: [],        // [{id, file, name, origUrl, convertedUrl, origSize, newSize, status, width, height, rotation, flipH, flipV}]
+  format: 'jpg',
+  quality: 90,
+  resizeMode: 'none',
+  resizeW: null,
+  resizeH: null,
+  resizePct: 50,
+  fitW: 1920,
+  fitH: 1080,
+  aspectLocked: true,
+  grayscale: false,
+  sharpen: false,
+  bgColor: '#ffffff',
+  transforms: {}     // {imageId: {rotation, flipH, flipV}}
+};
+
+const FMT_NOTES = {
+  jpg: 'JPG: Best for photos. Supports lossy compression.',
+  png: 'PNG: Lossless, supports transparency. Best for graphics.',
+  webp: 'WEBP: Modern format. Smaller files than JPG/PNG.',
+  bmp: 'BMP: Uncompressed bitmap. Larger file size.',
+  gif: 'GIF: Animated images. Limited to 256 colors.',
+  ico: 'ICO: Windows icons. Exported as PNG-based ICO.',
+  avif: 'AVIF: Next-gen format. Best compression (browser dependent).',
+  tiff: 'TIFF: High quality, lossless. Large file size.',
+  svg: 'SVG: Vector format. Raster images wrapped in SVG.',
+};
+
+const MIME = {
+  jpg:'image/jpeg', png:'image/png', webp:'image/webp',
+  bmp:'image/bmp', gif:'image/gif', ico:'image/png',
+  avif:'image/avif', tiff:'image/tiff', svg:'image/png'
+};
+
+// ══════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════
+const el = id => document.getElementById(id);
+const uid = () => Math.random().toString(36).slice(2,10);
+
+function toast(msg, type='info') {
+  const t = el('toast');
+  t.className = 'toast toast-'+type;
+  t.innerHTML = (type==='ok'?'&#x2714; ':type==='err'?'&#x26A0; ':'&#x2139; ')+msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3500);
+}
+
+function fmtBytes(b) {
+  if(b<1024) return b+' B';
+  if(b<1048576) return (b/1024).toFixed(1)+' KB';
+  return (b/1048576).toFixed(2)+' MB';
+}
+
+function showLoading(msg='Processing...') {
+  el('loadingMsg').textContent=msg;
+  el('loadingOv').classList.add('show');
+}
+function hideLoading() { el('loadingOv').classList.remove('show'); }
+
+// ══════════════════════════════════════
+// SETTINGS TOGGLE (MOBILE)
+// ══════════════════════════════════════
+let settingsOpen = true;
+function toggleSettings() {
+  settingsOpen = !settingsOpen;
+  const b = el('settingsBody');
+  if(settingsOpen) { b.style.maxHeight='9999px'; el('settingsToggleIcon').innerHTML='&#9660;'; }
+  else { b.style.maxHeight='0px'; el('settingsToggleIcon').innerHTML='&#9654;'; }
+}
+
+// ══════════════════════════════════════
+// FORMAT
+// ══════════════════════════════════════
+function setFmt(fmt, btn) {
+  STATE.format = fmt;
+  document.querySelectorAll('.fmt-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  el('fmtNote').textContent = FMT_NOTES[fmt]||'Convert to '+fmt.toUpperCase();
+  el('outputFmtLabel').textContent = 'Output: '+fmt.toUpperCase();
+  // Show/hide quality slider
+  const noQuality = ['png','bmp','gif','ico','svg','tiff'];
+  el('qualitySection').style.display = noQuality.includes(fmt)?'none':'block';
+}
+
+// ══════════════════════════════════════
+// QUALITY
+// ══════════════════════════════════════
+function updateQuality(v) {
+  STATE.quality = parseInt(v);
+  el('qualityVal').textContent = v+'%';
+}
+
+// ══════════════════════════════════════
+// RESIZE MODE
+// ══════════════════════════════════════
+function setResizeMode(mode, btn) {
+  STATE.resizeMode = mode;
+  document.querySelectorAll('.mode-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  el('resizeCustom').style.display = mode==='custom'?'block':'none';
+  el('resizePercent').style.display = mode==='percent'?'block':'none';
+  el('resizeFit').style.display = mode==='fit'?'block':'none';
+}
+
+let aspectRatio = null;
+function toggleLock() {
+  STATE.aspectLocked = !STATE.aspectLocked;
+  const btn = el('lockBtn');
+  btn.classList.toggle('locked', STATE.aspectLocked);
+  btn.innerHTML = STATE.aspectLocked ? '&#x1F512;' : '&#x1F513;';
+}
+
+function syncAspect(changed) {
+  if(!STATE.aspectLocked || !aspectRatio) return;
+  const w = parseFloat(el('resizeW').value);
+  const h = parseFloat(el('resizeH').value);
+  if(changed==='w' && w) el('resizeH').value = Math.round(w/aspectRatio);
+  if(changed==='h' && h) el('resizeW').value = Math.round(h*aspectRatio);
+}
+
+// ══════════════════════════════════════
+// TRANSFORM OPTIONS
+// ══════════════════════════════════════
+function toggleOption(key) {
+  STATE[key] = !STATE[key];
+  const sw = el('toggle-'+key);
+  sw.classList.toggle('on', STATE[key]);
+  sw.classList.toggle('off', !STATE[key]);
+}
+
+function applyTransform(type) {
+  if(!STATE.images.length) { toast('Upload images first!','err'); return; }
+  STATE.images.forEach(img => {
+    if(type==='rotate90') img.rotation = ((img.rotation||0)+90)%360;
+    if(type==='rotate180') img.rotation = ((img.rotation||0)+180)%360;
+    if(type==='flipH') img.flipH = !img.flipH;
+    if(type==='flipV') img.flipV = !img.flipV;
+  });
+  toast('Transform applied to all images','ok');
+}
+
+// ══════════════════════════════════════
+// DRAG & DROP
+// ══════════════════════════════════════
+const dz = el('dropZone');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+dz.addEventListener('drop', e => {
+  e.preventDefault();
+  dz.classList.remove('drag-over');
+  handleFiles(e.dataTransfer.files);
+});
+
+// Global drag support
+document.addEventListener('dragover', e => e.preventDefault());
+document.addEventListener('drop', e => {
+  e.preventDefault();
+  if(e.target !== dz && !dz.contains(e.target)) handleFiles(e.dataTransfer.files);
+});
+
+// ══════════════════════════════════════
+// FILE HANDLING
+// ══════════════════════════════════════
+function handleFiles(files) {
+  const arr = Array.from(files).filter(f => f.type.startsWith('image/')||f.name.match(/\.(svg|ico|bmp|tiff?|avif)$/i));
+  if(!arr.length) { toast('No valid image files found','err'); return; }
+  arr.forEach(file => {
+    const id = uid();
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        STATE.images.push({
+          id, file, name: file.name,
+          origUrl: e.target.result,
+          convertedUrl: null,
+          origSize: file.size,
+          newSize: null,
+          status: 'ready',
+          width: img.naturalWidth,
+          height: img.naturalHeight,
+          rotation: 0, flipH: false, flipV: false
+        });
+        if(STATE.images.length === 1) {
+          aspectRatio = img.naturalWidth / img.naturalHeight;
+          el('resizeW').value = img.naturalWidth;
+          el('resizeH').value = img.naturalHeight;
+        }
+        renderGrid();
+        updateStats();
+        updateUI();
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+  toast(arr.length+' image'+(arr.length>1?'s':'')+ ' loaded','ok');
+}
+
+// ══════════════════════════════════════
+// UI UPDATE
+// ══════════════════════════════════════
+function updateUI() {
+  const hasImages = STATE.images.length > 0;
+  el('toolbar').style.display = hasImages?'flex':'none';
+  el('statsBar').style.display = hasImages?'grid':'none';
+  el('imgCountLabel').textContent = STATE.images.length;
+  const empState = el('emptyState');
+  if(!hasImages) empState.classList.add('visible');
+  else empState.classList.remove('visible');
+}
+
+// ══════════════════════════════════════
+// RENDER GRID
+// ══════════════════════════════════════
+function renderGrid() {
+  const grid = el('imgGrid');
+  grid.innerHTML = STATE.images.map(img => {
+    const previewUrl = img.convertedUrl || img.origUrl;
+    const statusBadge = {
+      ready: '<span class="card-badge badge-input">Original</span>',
+      processing: '<span class="card-badge badge-proc">&#x23F3; Processing</span>',
+      done: '<span class="card-badge badge-done">&#x2714; Converted</span>',
+      error: '<span class="card-badge badge-err">&#x26A0; Error</span>'
+    }[img.status]||''
+    const sizeInfo = img.newSize
+      ? `<span>${fmtBytes(img.origSize)} &rarr;</span><span class="${img.newSize<=img.origSize?'size-new':'size-bigger'}">${fmtBytes(img.newSize)}</span>`
+      : `<span>${fmtBytes(img.origSize)}</span><span>${img.width}&times;${img.height}</span>`;
+    const outName = img.name.replace(/\.[^.]+$/,'') + '.' + STATE.format;
+    return `<div class="img-card" id="card-${img.id}">
+      <div class="card-preview-wrap">
+        <img class="card-preview" src="${previewUrl}" alt="${img.name}" loading="lazy" onclick="openLightbox('${previewUrl}')">
+        ${statusBadge}
+        <button class="card-remove" onclick="removeImage('${img.id}')" title="Remove">&#x2715;</button>
+        ${img.status='processing'?'<div class="progress-bar"><div class="progress-fill" style="width:100%;animation:spin 1s linear infinite"></div></div>':''}
+      </div>
+      <div class="card-body">
+        <div class="card-name" title="${img.name}">${img.name}</div>
+        <div class="card-info">${sizeInfo}</div>
+        <div class="card-actions">
+          <button class="btn btn-primary btn-sm" onclick="convertOne('${img.id}')" ${img.status==='processing'?'disabled':''}>
+            &#x1F504; Convert
+          </button>
+          ${img.convertedUrl?`<button class="btn btn-emerald btn-sm" onclick="downloadOne('${img.id}','${outName}')">&#x2B07; Save</button>`:''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════
+// CONVERT ONE IMAGE
+// ══════════════════════════════════════
+async function convertOne(id) {
+  const img = STATE.images.find(i=>i.id===id);
+  if(!img) return;
+  img.status = 'processing';
+  updateCardStatus(id);
+  try {
+    const result = await processImage(img);
+    img.convertedUrl = result.dataUrl;
+    img.newSize = result.size;
+    img.status = 'done';
+  } catch(e) {
+    img.status = 'error';
+    console.error(e);
+    toast('Error converting: '+img.name,'err');
+  }
+  renderGrid();
+  updateStats();
+}
+
+function updateCardStatus(id) {
+  const card = el('card-'+id);
+  if(card) {
+    const badge = card.querySelector('.card-badge');
+    if(badge) { badge.className='card-badge badge-proc'; badge.textContent='Processing...'; }
+  }
+}
+
+// ══════════════════════════════════════
+// PROCESS IMAGE (CANVAS)
+// ══════════════════════════════════════
+function processImage(imgObj) {
+  return new Promise((resolve, reject) => {
+    const imgEl = new Image();
+    imgEl.crossOrigin = 'anonymous';
+    imgEl.onload = () => {
+      try {
+        // Determine output dimensions
+        let sw = imgEl.naturalWidth;
+        let sh = imgEl.naturalHeight;
+        let dw, dh;
+
+        if(STATE.resizeMode==='none') { dw=sw; dh=sh; }
+        else if(STATE.resizeMode==='custom') {
+          dw = parseInt(el('resizeW').value)||sw;
+          dh = parseInt(el('resizeH').value)||sh;
+        }
+        else if(STATE.resizeMode==='percent') {
+          const pct = parseInt(el('pctSlider').value)/100;
+          dw = Math.round(sw*pct);
+          dh = Math.round(sh*pct);
+        }
+        else if(STATE.resizeMode==='fit') {
+          const mw = parseInt(el('fitW').value)||sw;
+          const mh = parseInt(el('fitH').value)||sh;
+          const ratio = Math.min(mw/sw, mh/sh, 1);
+          dw = Math.round(sw*ratio);
+          dh = Math.round(sh*ratio);
+        }
+
+        // Handle rotation for dimension swap
+        const rot = (imgObj.rotation||0) % 360;
+        const swap = rot===90 || rot===270;
+        const canW = swap ? dh : dw;
+        const canH = swap ? dw : dh;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = canW;
+        canvas.height = canH;
+        const ctx = canvas.getContext('2d');
+
+        // Background for JPG (no transparency)
+        const bg = el('bgColor').value||'#ffffff';
+        ctx.fillStyle = bg;
+        ctx.fillRect(0,0,canW,canH);
+
+        // Apply transforms
+        ctx.save();
+        ctx.translate(canW/2, canH/2);
+        if(rot) ctx.rotate(rot*Math.PI/180);
+        if(imgObj.flipH) ctx.scale(-1,1);
+        if(imgObj.flipV) ctx.scale(1,-1);
+        ctx.drawImage(imgEl, -dw/2, -dh/2, dw, dh);
+        ctx.restore();
+
+        // Grayscale
+        if(STATE.grayscale) {
+          const d = ctx.getImageData(0,0,canW,canH);
+          for(let i=0;i<d.data.length;i+=4){
+            const g=d.data[i]*.299+d.data[i+1]*.587+d.data[i+2]*.114;
+            d.data[i]=d.data[i+1]=d.data[i+2]=g;
+          }
+          ctx.putImageData(d,0,0);
+        }
+
+        // Sharpen (simple kernel)
+        if(STATE.sharpen) {
+          const d = ctx.getImageData(0,0,canW,canH);
+          const out = ctx.createImageData(canW,canH);
+          const k=[-1,-1,-1,-1,9,-1,-1,-1,-1];
+          for(let y=1;y<canH-1;y++){for(let x=1;x<canW-1;x++){
+            for(let c=0;c<3;c++){
+              let v=0,ki=0;
+              for(let ky=-1;ky<=1;ky++){for(let kx=-1;kx<=1;kx++,ki++){
+                const pi=((y+ky)*canW+(x+kx))*4+c;
+                v+=d.data[pi]*k[ki];
+              }}
+              const pi=(y*canW+x)*4+c;
+              out.data[pi]=Math.min(255,Math.max(0,v));
+            }
+            out.data[(y*canW+x)*4+3]=d.data[(y*canW+x)*4+3];
+          }}
+          ctx.putImageData(out,0,0);
+        }
+
+        // Get mime type
+        let mime = MIME[STATE.format]||'image/jpeg';
+        const quality = ['jpg','webp','avif'].includes(STATE.format) ? STATE.quality/100 : undefined;
+
+        // Special handling
+        if(STATE.format==='svg') {
+          const dataUrl = canvas.toDataURL('image/png');
+          const svgStr = `<svg xmlns="http://www.w3.org/2000/svg" width="${canW}" height="${canH}"><image href="${dataUrl}" width="${canW}" height="${canH}"/></svg>`;
+          const b64 = 'data:image/svg+xml;base64,'+btoa(svgStr);
+          const approxSize = b64.length * 0.75;
+          resolve({dataUrl:b64, size:approxSize});
+          return;
+        }
+
+        let dataUrl;
+        try { dataUrl = canvas.toDataURL(mime, quality); }
+        catch(e) { dataUrl = canvas.toDataURL('image/png'); mime='image/png'; }
+
+        const arr = atob(dataUrl.split(',')[1]);
+        resolve({dataUrl, size:arr.length});
+      } catch(e){ reject(e); }
+    };
+    imgEl.onerror = reject;
+    imgEl.src = imgObj.origUrl;
+  });
+}
+
+// ══════════════════════════════════════
+// CONVERT ALL
+// ══════════════════════════════════════
+async function convertAll() {
+  if(!STATE.images.length) { toast('Upload images first!','err'); return; }
+  showLoading('Converting '+STATE.images.length+' image'+(STATE.images.length>1?'s':'')+ '...');
+  let done=0;
+  for(const img of STATE.images) {
+    try {
+      const result = await processImage(img);
+      img.convertedUrl = result.dataUrl;
+      img.newSize = result.size;
+      img.status = 'done';
+    } catch(e) {
+      img.status = 'error';
+    }
+    done++;
+    el('loadingMsg').textContent = `Converting... ${done}/${STATE.images.length}`;
+  }
+  hideLoading();
+  renderGrid();
+  updateStats();
+  toast(done+' image'+(done>1?'s':'')+ ' converted!','ok');
+}
+
+// ══════════════════════════════════════
+// DOWNLOAD
+// ══════════════════════════════════════
+function downloadOne(id, name) {
+  const img = STATE.images.find(i=>i.id===id);
+  if(!img?.convertedUrl) { toast('Convert image first!','err'); return; }
+  const ext = STATE.format==='ico'?'ico':STATE.format==='svg'?'svg':STATE.format;
+  const fname = name || img.name.replace(/\.[^.]+$/,'') + '.' + ext;
+  const a = document.createElement('a');
+  a.href = img.convertedUrl;
+  a.download = fname;
+  a.click();
+}
+
+async function downloadAll() {
+  const done = STATE.images.filter(i=>i.convertedUrl);
+  if(!done.length) {
+    // Auto-convert first
+    await convertAll();
+    return downloadAll();
+  }
+  if(typeof JSZip === 'undefined') {
+    done.forEach(img=>{
+      const fname = img.name.replace(/\.[^.]+$/,'') + '.' + STATE.format;
+      downloadOne(img.id, fname);
+    });
+    return;
+  }
+  showLoading('Creating ZIP archive...');
+  const zip = new JSZip();
+  const folder = zip.folder('converted-images');
+  done.forEach(img => {
+    const fname = img.name.replace(/\.[^.]+$/,'') + '.' + STATE.format;
+    const b64 = img.convertedUrl.split(',')[1];
+    folder.file(fname, b64, {base64:true});
+  });
+  const blob = await zip.generateAsync({type:'blob'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'ImagePro-converted-' + Date.now() + '.zip';
+  a.click();
+  URL.revokeObjectURL(url);
+  hideLoading();
+  toast(done.length+' images downloaded as ZIP!','ok');
+}
+
+// ══════════════════════════════════════
+// REMOVE / CLEAR
+// ══════════════════════════════════════
+function removeImage(id) {
+  STATE.images = STATE.images.filter(i=>i.id!==id);
+  renderGrid();
+  updateStats();
+  updateUI();
+}
+
+function clearAll() {
+  STATE.images = [];
+  renderGrid();
+  updateStats();
+  updateUI();
+  toast('All images cleared','info');
+}
+
+// ══════════════════════════════════════
+// STATS
+// ══════════════════════════════════════
+function updateStats() {
+  const total = STATE.images.length;
+  const done = STATE.images.filter(i=>i.status==='done').length;
+  el('statTotal').textContent = total;
+  el('statDone').textContent = done;
+  const converted = STATE.images.filter(i=>i.newSize&&i.origSize);
+  if(converted.length) {
+    const avgSaved = converted.reduce((a,i)=>a+(1-i.newSize/i.origSize),0)/converted.length*100;
+    el('statSaved').textContent = (avgSaved>0?'&#x2B07; ':'&#x2191; ')+Math.abs(avgSaved).toFixed(0)+'%';
+    const totalOut = converted.reduce((a,i)=>a+(i.newSize||0),0);
+    el('statSize').textContent = fmtBytes(totalOut);
+  } else {
+    el('statSaved').textContent = '—';
+    el('statSize').textContent = '—';
+  }
+}
+
+// ══════════════════════════════════════
+// LIGHTBOX
+// ══════════════════════════════════════
+function openLightbox(url) {
+  el('lightboxImg').src=url;
+  el('lightbox').classList.add('open');
+}
+function closeLightbox() { el('lightbox').classList.remove('open'); }
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeLightbox(); });
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  updateUI();
+  // Paste support
+  document.addEventListener('paste', e => {
+    const items = e.clipboardData?.items;
+    if(!items) return;
+    const files = [];
+    for(const item of items) {
+      if(item.kind==='file' && item.type.startsWith('image/')) {
+        files.push(item.getAsFile());
+      }
+    }
+    if(files.length) handleFiles(files);
+  });
+});
+</script>
+</body>
+</html>

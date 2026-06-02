@@ -1,0 +1,2474 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marriage Biodata Creator</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400;1,600&family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    /* ══════════════════════════════════════
+   ROOT & RESET
+══════════════════════════════════════ */
+    :root {
+      --bg: #0d0a0f;
+      --bg2: #140f18;
+      --bg3: #1c1523;
+      --card: #1f1728;
+      --card2: #251c30;
+      --border: rgba(200, 160, 255, .12);
+      --border2: rgba(200, 160, 255, .25);
+      --primary: #c084fc;
+      --primary2: #a855f7;
+      --gold: #f4c430;
+      --gold2: #e8a820;
+      --rose: #fb7185;
+      --teal: #2dd4bf;
+      --text: #ede9f5;
+      --muted: #8b7aa0;
+      --white: #fff;
+      --radius: 16px;
+      --shadow: 0 12px 40px rgba(0, 0, 0, .5);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg2);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary2);
+      border-radius: 3px;
+    }
+
+    /* ══════════════════════════════════════
+   TOPBAR
+══════════════════════════════════════ */
+    .topbar {
+      background: rgba(13, 10, 15, .9);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 62px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .topbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, var(--primary2), var(--rose));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .brand-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .brand-name span {
+      color: var(--primary);
+    }
+
+    .topbar-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    /* ══════════════════════════════════════
+   BUTTONS
+══════════════════════════════════════ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 18px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all .22s;
+      font-family: 'Lato', sans-serif;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary2), #7c3aed);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(168, 85, 247, .35);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(168, 85, 247, .45);
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold), var(--gold2));
+      color: #1a0f00;
+      font-weight: 700;
+    }
+
+    .btn-gold:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(244, 196, 48, .4);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--border2);
+      background: rgba(200, 160, 255, .06);
+    }
+
+    .btn-rose {
+      background: linear-gradient(135deg, var(--rose), #f43f5e);
+      color: #fff;
+    }
+
+    .btn-rose:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-sm {
+      padding: 6px 13px;
+      font-size: 12px;
+    }
+
+    .btn-xs {
+      padding: 4px 9px;
+      font-size: 11px;
+      border-radius: 7px;
+    }
+
+    .btn-teal {
+      background: linear-gradient(135deg, var(--teal), #0d9488);
+      color: #fff;
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: #fff;
+    }
+
+    .btn-danger:hover {
+      transform: translateY(-1px);
+    }
+
+    /* ══════════════════════════════════════
+   MAIN LAYOUT
+══════════════════════════════════════ */
+    .app {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      min-height: calc(100vh - 62px);
+    }
+
+    .sidebar {
+      background: var(--bg2);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      position: sticky;
+      top: 62px;
+      height: calc(100vh - 62px);
+    }
+
+    .preview-pane {
+      background: var(--bg3);
+      overflow-y: auto;
+      padding: 32px;
+    }
+
+    /* ══════════════════════════════════════
+   SIDEBAR TABS
+══════════════════════════════════════ */
+    .sidebar-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stab {
+      flex: 1;
+      padding: 14px 6px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: .2s;
+    }
+
+    .stab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    .stab-pane {
+      display: none;
+      padding: 20px;
+    }
+
+    .stab-pane.active {
+      display: block;
+    }
+
+    /* ══════════════════════════════════════
+   FORM STYLES
+══════════════════════════════════════ */
+    .section-head {
+      font-family: 'Playfair Display', serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .form-group {
+      margin-bottom: 13px;
+    }
+
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 9px 12px;
+      color: var(--text);
+      font-size: 13px;
+      font-family: 'Lato', sans-serif;
+      outline: none;
+      transition: .2s;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--primary2);
+      background: rgba(168, 85, 247, .05);
+    }
+
+    select option {
+      background: var(--bg3);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 70px;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .field-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+      position: relative;
+    }
+
+    .field-section .remove-section {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(239, 68, 68, .15);
+      border: none;
+      color: #f87171;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: .2s;
+    }
+
+    .field-section .remove-section:hover {
+      background: rgba(239, 68, 68, .3);
+    }
+
+    /* Custom field builder */
+    .custom-field-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      padding: 8px 10px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .custom-field-item span {
+      flex: 1;
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .custom-field-item .drag-handle {
+      color: var(--muted);
+      cursor: grab;
+      font-size: 13px;
+    }
+
+    /* Photo upload */
+    .photo-upload-area {
+      border: 2px dashed var(--border2);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: .2s;
+      position: relative;
+    }
+
+    .photo-upload-area:hover {
+      border-color: var(--primary);
+      background: rgba(168, 85, 247, .05);
+    }
+
+    .photo-upload-area input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .photo-preview {
+      width: 100px;
+      height: 120px;
+      border-radius: 10px;
+      object-fit: cover;
+      margin: 0 auto 8px;
+      display: block;
+      border: 2px solid var(--primary2);
+    }
+
+    /* ══════════════════════════════════════
+   TEMPLATE SELECTOR
+══════════════════════════════════════ */
+    .template-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .template-card {
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: .25s;
+    }
+
+    .template-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-3px);
+    }
+
+    .template-card.active {
+      border-color: var(--gold);
+      box-shadow: 0 0 20px rgba(244, 196, 48, .2);
+    }
+
+    .template-thumb {
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .5px;
+      flex-direction: column;
+      gap: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .template-thumb .t-icon {
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+
+    .template-name {
+      padding: 8px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      background: var(--card);
+    }
+
+    .t-badge {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: var(--gold);
+      color: #1a0f00;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 10px;
+    }
+
+    /* ══════════════════════════════════════
+   PREVIEW PANE
+══════════════════════════════════════ */
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .preview-header h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      color: var(--white);
+    }
+
+    .preview-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .biodata-wrapper {
+      max-width: 720px;
+      margin: 0 auto;
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    /* ══════════════════════════════════════
+   TEMPLATE 1 — ROYAL MAROON
+══════════════════════════════════════ */
+    .t1 {
+      background: #fdf6ee;
+      color: #2d0a0a;
+      font-family: 'Crimson Pro', serif;
+    }
+
+    .t1-header {
+      background: linear-gradient(135deg, #7b0018, #c0392b);
+      padding: 32px 36px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .t1-header::before {
+      content: '';
+      position: absolute;
+      top: -30px;
+      left: -30px;
+      right: -30px;
+      bottom: -30px;
+      background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255, 255, 255, .03) 10px, rgba(255, 255, 255, .03) 20px);
+    }
+
+    .t1-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: #ffd700;
+      letter-spacing: 2px;
+      position: relative;
+    }
+
+    .t1-header p {
+      color: rgba(255, 220, 150, .8);
+      font-size: 13px;
+      margin-top: 4px;
+      font-style: italic;
+      position: relative;
+    }
+
+    .t1-photo-strip {
+      background: #7b0018;
+      display: flex;
+      justify-content: center;
+      padding: 0 0 24px;
+    }
+
+    .t1-photo-circle {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      border: 4px solid #ffd700;
+      object-fit: cover;
+      background: #f0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: #999;
+    }
+
+    .t1-body {
+      padding: 24px 36px;
+    }
+
+    .t1-section {
+      margin-bottom: 18px;
+    }
+
+    .t1-section-title {
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: #7b0018;
+      border-bottom: 2px solid #c0392b;
+      padding-bottom: 4px;
+      margin-bottom: 12px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .t1-row {
+      display: grid;
+      grid-template-columns: 140px 10px 1fr;
+      gap: 4px;
+      margin-bottom: 7px;
+      font-size: 14px;
+      align-items: baseline;
+    }
+
+    .t1-row .key {
+      font-weight: 600;
+      color: #5a0010;
+    }
+
+    .t1-row .sep {
+      color: #c0392b;
+      font-weight: 700;
+    }
+
+    .t1-row .val {
+      color: #2d0a0a;
+    }
+
+    .t1-footer {
+      background: linear-gradient(135deg, #7b0018, #c0392b);
+      color: rgba(255, 220, 150, .8);
+      text-align: center;
+      padding: 14px;
+      font-size: 12px;
+      font-style: italic;
+    }
+
+    .t1-ornament {
+      text-align: center;
+      color: #c0392b;
+      font-size: 22px;
+      letter-spacing: 6px;
+      margin: 8px 0;
+    }
+
+    /* ══════════════════════════════════════
+   TEMPLATE 2 — GOLDEN CLASSIC
+══════════════════════════════════════ */
+    .t2 {
+      background: #fff8f0;
+      color: #2a1500;
+      font-family: 'Cormorant Garamond', serif;
+    }
+
+    .t2-header {
+      background: linear-gradient(180deg, #1a0a00 0%, #3d1a00 100%);
+      padding: 0;
+      text-align: center;
+    }
+
+    .t2-header-top {
+      padding: 24px 36px 16px;
+      border-bottom: 1px solid rgba(244, 196, 48, .3);
+    }
+
+    .t2-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 30px;
+      font-weight: 800;
+      color: #f4c430;
+      letter-spacing: 3px;
+    }
+
+    .t2-header-sub {
+      font-size: 12px;
+      color: rgba(244, 196, 48, .6);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    .t2-photo-row {
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .t2-photo-sq {
+      width: 100px;
+      height: 120px;
+      border-radius: 6px;
+      border: 3px solid #f4c430;
+      object-fit: cover;
+      background: #e0c8a0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: #8a7050;
+    }
+
+    .t2-body {
+      padding: 24px 40px;
+    }
+
+    .t2-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+
+    .t2-section-title {
+      font-family: 'Cinzel', serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: #8a4f00;
+      border-left: 3px solid #f4c430;
+      padding-left: 10px;
+      margin-bottom: 12px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .t2-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 7px;
+      font-size: 14px;
+    }
+
+    .t2-row .key {
+      font-weight: 700;
+      color: #5a2d00;
+      min-width: 110px;
+      flex-shrink: 0;
+    }
+
+    .t2-row .val {
+      color: #2a1500;
+      flex: 1;
+    }
+
+    .t2-divider {
+      border: none;
+      border-top: 1px solid rgba(244, 196, 48, .4);
+      margin: 18px 0;
+    }
+
+    .t2-footer {
+      background: linear-gradient(180deg, #3d1a00, #1a0a00);
+      color: rgba(244, 196, 48, .65);
+      text-align: center;
+      padding: 12px;
+      font-size: 12px;
+    }
+
+    /* ══════════════════════════════════════
+   TEMPLATE 3 — MODERN BLUE
+══════════════════════════════════════ */
+    .t3 {
+      background: #f4f7ff;
+      color: #0d1b4b;
+      font-family: 'Lato', sans-serif;
+    }
+
+    .t3-header {
+      background: linear-gradient(135deg, #1a237e, #283593, #3949ab);
+      padding: 32px 36px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .t3-photo-circle {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, .5);
+      object-fit: cover;
+      background: rgba(255, 255, 255, .15);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: rgba(255, 255, 255, .6);
+    }
+
+    .t3-header-text h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .t3-header-text p {
+      color: rgba(255, 255, 255, .65);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .t3-header-text .t3-tag {
+      display: inline-block;
+      background: rgba(255, 255, 255, .15);
+      color: #fff;
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-top: 8px;
+    }
+
+    .t3-body {
+      padding: 28px 36px;
+    }
+
+    .t3-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .t3-section {
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px 18px;
+      border: 1px solid #e0e6ff;
+      margin-bottom: 16px;
+    }
+
+    .t3-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #1a237e;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .t3-section-title::before {
+      content: '';
+      width: 16px;
+      height: 3px;
+      background: linear-gradient(90deg, #3949ab, #5c6bc0);
+      border-radius: 2px;
+    }
+
+    .t3-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 13.5px;
+      border-bottom: 1px solid #f0f3ff;
+      padding-bottom: 7px;
+    }
+
+    .t3-row:last-child {
+      border: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .t3-row .key {
+      font-weight: 700;
+      color: #283593;
+      min-width: 120px;
+      flex-shrink: 0;
+      font-size: 12.5px;
+    }
+
+    .t3-row .val {
+      color: #0d1b4b;
+      flex: 1;
+    }
+
+    .t3-footer {
+      background: linear-gradient(135deg, #1a237e, #3949ab);
+      color: rgba(255, 255, 255, .7);
+      text-align: center;
+      padding: 12px;
+      font-size: 12px;
+    }
+
+    /* ══════════════════════════════════════
+   TEMPLATE 4 — FLORAL PINK
+══════════════════════════════════════ */
+    .t4 {
+      background: #fff5f7;
+      color: #2d0a1a;
+      font-family: 'Crimson Pro', serif;
+    }
+
+    .t4-header {
+      background: linear-gradient(135deg, #c2185b, #e91e63, #f06292);
+      padding: 30px 36px 20px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .t4-header::after {
+      content: '🌸🌺🌸';
+      font-size: 30px;
+      position: absolute;
+      bottom: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: .3;
+    }
+
+    .t4-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: 2px;
+    }
+
+    .t4-header p {
+      color: rgba(255, 255, 255, .8);
+      font-size: 13px;
+      font-style: italic;
+      margin-top: 4px;
+    }
+
+    .t4-photo-strip {
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+      background: linear-gradient(180deg, #f06292 0%, #fff5f7 100%);
+    }
+
+    .t4-photo-oval {
+      width: 85px;
+      height: 105px;
+      border-radius: 50px;
+      border: 4px solid #fff;
+      object-fit: cover;
+      background: #fce4ec;
+      box-shadow: 0 4px 16px rgba(194, 24, 91, .3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      color: #e91e63;
+    }
+
+    .t4-body {
+      padding: 20px 34px;
+    }
+
+    .t4-section {
+      margin-bottom: 16px;
+    }
+
+    .t4-section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: #c2185b;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .t4-section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, #f48fb1, transparent);
+    }
+
+    .t4-row {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 8px;
+      margin-bottom: 7px;
+      font-size: 14px;
+    }
+
+    .t4-row .key {
+      font-weight: 600;
+      color: #880e4f;
+      font-style: italic;
+    }
+
+    .t4-row .val {
+      color: #2d0a1a;
+    }
+
+    .t4-floral {
+      text-align: center;
+      font-size: 20px;
+      letter-spacing: 4px;
+      color: #f48fb1;
+      margin: 10px 0;
+    }
+
+    .t4-footer {
+      background: linear-gradient(135deg, #c2185b, #e91e63);
+      color: rgba(255, 255, 255, .8);
+      text-align: center;
+      padding: 12px;
+      font-size: 12px;
+      font-style: italic;
+    }
+
+    /* ══════════════════════════════════════
+   TEMPLATE 5 — ELEGANT GREEN
+══════════════════════════════════════ */
+    .t5 {
+      background: #f0f7f4;
+      color: #0a2d1a;
+      font-family: 'Cormorant Garamond', serif;
+    }
+
+    .t5-header {
+      background: linear-gradient(135deg, #1b5e20, #2e7d32, #388e3c);
+      padding: 28px 36px;
+      text-align: center;
+    }
+
+    .t5-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: #a5d6a7;
+      letter-spacing: 3px;
+    }
+
+    .t5-header p {
+      color: rgba(165, 214, 167, .7);
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 5px;
+    }
+
+    .t5-photo-strip {
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+      background: linear-gradient(180deg, #388e3c 0%, #f0f7f4 100%);
+    }
+
+    .t5-photo-hex {
+      width: 90px;
+      height: 104px;
+      background: #c8e6c9;
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      color: #388e3c;
+      overflow: hidden;
+      border: none;
+    }
+
+    .t5-photo-hex img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .t5-body {
+      padding: 20px 36px;
+    }
+
+    .t5-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .t5-section {
+      margin-bottom: 16px;
+    }
+
+    .t5-section-title {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: #1b5e20;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .t5-section-title::before,
+    .t5-section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #a5d6a7, transparent);
+    }
+
+    .t5-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 7px;
+      font-size: 14px;
+      border-bottom: 1px dashed #c8e6c9;
+      padding-bottom: 6px;
+    }
+
+    .t5-row:last-child {
+      border: none;
+    }
+
+    .t5-row .key {
+      font-weight: 600;
+      color: #2e7d32;
+      min-width: 120px;
+      flex-shrink: 0;
+    }
+
+    .t5-row .val {
+      color: #0a2d1a;
+      flex: 1;
+    }
+
+    .t5-footer {
+      background: linear-gradient(135deg, #1b5e20, #388e3c);
+      color: rgba(165, 214, 167, .75);
+      text-align: center;
+      padding: 12px;
+      font-size: 12px;
+      font-style: italic;
+    }
+
+    /* ══════════════════════════════════════
+   TOAST & MODAL
+══════════════════════════════════════ */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #22c55e;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-size: 13.5px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: .35s cubic-bezier(.34, 1.56, .64, 1);
+      z-index: 9999;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .3);
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast.error {
+      background: #ef4444;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .75);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(6px);
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--card2);
+      border: 1px solid var(--border2);
+      border-radius: 18px;
+      width: 100%;
+      max-width: 500px;
+      padding: 28px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .6);
+      animation: popIn .3s ease;
+      position: relative;
+    }
+
+    @keyframes popIn {
+      from {
+        transform: scale(.9);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 20px;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      background: rgba(255, 255, 255, .06);
+      border: none;
+      color: var(--text);
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-close:hover {
+      background: rgba(255, 255, 255, .12);
+    }
+
+    /* ══════════════════════════════════════
+   SAVED LIST
+══════════════════════════════════════ */
+    .saved-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: .2s;
+    }
+
+    .saved-item:hover {
+      border-color: var(--border2);
+    }
+
+    .saved-item-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .saved-item-info {
+      flex: 1;
+    }
+
+    .saved-item-name {
+      font-weight: 600;
+      color: var(--white);
+      font-size: 14px;
+    }
+
+    .saved-item-meta {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .saved-item-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    /* ══════════════════════════════════════
+   MOBILE VIEW TOGGLE
+══════════════════════════════════════ */
+    .mobile-view-toggle {
+      display: none;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 0;
+    }
+
+    .mobile-view-toggle button {
+      flex: 1;
+      padding: 12px 8px;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: .2s;
+      font-family: 'Lato', sans-serif;
+    }
+
+    .mobile-view-toggle button.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background: rgba(168, 85, 247, .06);
+    }
+
+    /* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+
+    /* Tablet */
+    @media(max-width: 960px) {
+      .app {
+        grid-template-columns: 320px 1fr;
+      }
+    }
+
+    /* Tablet portrait / small laptop */
+    @media(max-width: 768px) {
+      .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+      }
+
+      .sidebar {
+        position: static;
+        height: auto;
+        max-height: none;
+      }
+
+      .preview-pane {
+        padding: 16px;
+      }
+
+      .topbar {
+        padding: 0 14px;
+        height: 56px;
+        flex-wrap: nowrap;
+      }
+
+      .brand-name {
+        font-size: 15px;
+      }
+
+      .topbar-actions {
+        gap: 6px;
+      }
+
+      .btn-sm {
+        padding: 6px 10px;
+        font-size: 12px;
+      }
+
+      .topbar-actions .btn .btn-label {
+        display: none;
+      }
+
+      .mobile-view-toggle {
+        display: flex;
+      }
+
+      .sidebar.mobile-hidden {
+        display: none;
+      }
+
+      .preview-pane.mobile-hidden {
+        display: none;
+      }
+    }
+
+    /* Mobile */
+    @media(max-width: 480px) {
+      .topbar {
+        padding: 0 10px;
+        height: 52px;
+      }
+
+      .brand-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 15px;
+      }
+
+      .brand-name {
+        font-size: 14px;
+      }
+
+      .btn-sm {
+        padding: 5px 9px;
+        font-size: 11.5px;
+      }
+
+      .preview-pane {
+        padding: 10px;
+      }
+
+      .preview-header {
+        margin-bottom: 14px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .preview-header h3 {
+        font-size: 16px;
+      }
+
+      .preview-actions {
+        width: 100%;
+      }
+
+      .preview-actions .btn {
+        flex: 1;
+        justify-content: center;
+        font-size: 12px;
+        padding: 8px 6px;
+      }
+
+      .stab-pane {
+        padding: 14px 12px;
+      }
+
+      .template-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      /* Template body padding on mobile */
+      .t1-body,
+      .t2-body,
+      .t3-body,
+      .t4-body,
+      .t5-body {
+        padding: 14px 16px;
+      }
+
+      .t1-header,
+      .t2-header-top,
+      .t3-header,
+      .t4-header,
+      .t5-header {
+        padding: 22px 16px;
+      }
+
+      /* Collapse two-column layouts in templates */
+      .t2-cols,
+      .t5-cols {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+      .t3-grid {
+        grid-template-columns: 1fr;
+      }
+
+      /* Smaller template text */
+      .t1-row,
+      .t2-row,
+      .t3-row,
+      .t4-row,
+      .t5-row {
+        font-size: 12.5px;
+      }
+
+      .t1-row {
+        grid-template-columns: 120px 10px 1fr;
+      }
+
+      .t4-row {
+        grid-template-columns: 110px 1fr;
+      }
+
+      .t1-header h1,
+      .t2-header h1,
+      .t4-header h1,
+      .t5-header h1 {
+        font-size: 22px;
+      }
+
+      .t3-header-text h1 {
+        font-size: 20px;
+      }
+
+      .field-row {
+        grid-template-columns: 1fr;
+      }
+
+      .modal {
+        padding: 20px 16px;
+      }
+
+      .toast {
+        right: 12px;
+        bottom: 12px;
+        font-size: 12px;
+      }
+    }
+
+    /* PRINT */
+    @media print {
+
+      .topbar,
+      .sidebar,
+      .preview-header,
+      .topbar-actions,
+      .mobile-view-toggle {
+        display: none !important;
+      }
+
+      .preview-pane {
+        padding: 0;
+        background: #fff;
+      }
+
+      .app {
+        display: block;
+      }
+
+      .biodata-wrapper {
+        box-shadow: none;
+        border-radius: 0;
+        max-width: 100%;
+      }
+
+      body {
+        background: #fff;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="brand-icon">💍</div>
+      <div class="brand-name">Vivah <span>Biodata</span></div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-outline btn-sm" onclick="openSaved()"><i class="fa fa-folder-open"></i> <span
+          class="btn-label">Saved Biodatas</span></button>
+      <button class="btn btn-gold btn-sm" onclick="saveBiodata()"><i class="fa fa-save"></i> <span
+          class="btn-label">Save</span></button>
+      <button class="btn btn-primary btn-sm" onclick="downloadPDF()"><i class="fa fa-download"></i> <span
+          class="btn-label">PDF</span></button>
+    </div>
+  </div>
+
+  <!-- MOBILE VIEW TOGGLE -->
+  <div class="mobile-view-toggle" id="mobileToggle">
+    <button id="mobileFormBtn" class="active" onclick="switchMobileView('form')">📝 Edit Form</button>
+    <button id="mobilePreviewBtn" onclick="switchMobileView('preview')">👁️ Preview</button>
+  </div>
+
+  <!-- APP LAYOUT -->
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-tabs">
+        <div class="stab active" onclick="switchTab('form')">📝 Details</div>
+        <div class="stab" onclick="switchTab('fields')">⚙️ Fields</div>
+        <div class="stab" onclick="switchTab('templates')">🎨 Templates</div>
+      </div>
+
+      <!-- FORM TAB -->
+      <div class="stab-pane active" id="tab-form">
+
+        <!-- PHOTO -->
+        <div class="section-head">📸 Photo</div>
+        <div class="photo-upload-area" onclick="el('photoInput').click()">
+          <img id="photoPreview" class="photo-preview" src="" alt="" style="display:none">
+          <div id="photoPlaceholder">
+            <div style="font-size:32px;margin-bottom:6px">👤</div>
+            <div style="font-size:12px;color:var(--muted)">Click to upload photo</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:3px">JPG, PNG supported</div>
+          </div>
+          <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhoto(this)">
+        </div>
+        <button class="btn btn-danger btn-xs" style="margin-top:8px;width:100%;justify-content:center"
+          onclick="removePhoto()" id="removePhotoBtn" style="display:none"><i class="fa fa-trash"></i> Remove
+          Photo</button>
+
+        <!-- PERSONAL -->
+        <div class="section-head" style="margin-top:20px">🧑 Personal Details</div>
+        <div id="personal-fields"></div>
+
+        <!-- FAMILY -->
+        <div class="section-head">👨‍👩‍👧‍👦 Family Details</div>
+        <div id="family-fields"></div>
+
+        <!-- EDUCATION & CAREER -->
+        <div class="section-head">🎓 Education & Career</div>
+        <div id="edu-fields"></div>
+
+        <!-- CONTACT -->
+        <div class="section-head">📞 Contact Details</div>
+        <div id="contact-fields"></div>
+
+        <!-- HOROSCOPE -->
+        <div class="section-head" id="horo-head">⭐ Horoscope Details</div>
+        <div id="horo-fields"></div>
+
+        <!-- PREFERENCES -->
+        <div class="section-head" id="pref-head">💑 Partner Preferences</div>
+        <div id="pref-fields"></div>
+
+      </div>
+
+      <!-- FIELDS CONFIG TAB -->
+      <div class="stab-pane" id="tab-fields">
+        <div class="section-head">⚙️ Manage Sections & Fields</div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:16px">Toggle sections and add custom fields to your
+          biodata.</p>
+
+        <div style="margin-bottom:16px">
+          <div
+            style="font-size:12px;font-weight:700;color:var(--primary);margin-bottom:10px;text-transform:uppercase;letter-spacing:.6px">
+            Sections On/Off</div>
+          <div id="section-toggles"></div>
+        </div>
+
+        <div style="margin-bottom:16px">
+          <div
+            style="font-size:12px;font-weight:700;color:var(--primary);margin-bottom:10px;text-transform:uppercase;letter-spacing:.6px">
+            Add Custom Field</div>
+          <div class="form-group"><label>Section</label>
+            <select id="cf_section">
+              <option value="personal">Personal</option>
+              <option value="family">Family</option>
+              <option value="edu">Education & Career</option>
+              <option value="contact">Contact</option>
+              <option value="horo">Horoscope</option>
+              <option value="pref">Preferences</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Field Label</label><input type="text" id="cf_label"
+              placeholder="e.g. Favourite Hobby"></div>
+          <div class="form-group"><label>Field Type</label>
+            <select id="cf_type">
+              <option value="text">Text</option>
+              <option value="select">Dropdown</option>
+              <option value="textarea">Textarea</option>
+            </select>
+          </div>
+          <div class="form-group" id="cf_options_wrap" style="display:none"><label>Options (comma
+              separated)</label><input type="text" id="cf_options" placeholder="e.g. Yes, No, Maybe"></div>
+          <button class="btn btn-primary btn-sm" style="width:100%;justify-content:center" onclick="addCustomField()"><i
+              class="fa fa-plus"></i> Add Custom Field</button>
+        </div>
+
+        <div>
+          <div
+            style="font-size:12px;font-weight:700;color:var(--primary);margin-bottom:10px;text-transform:uppercase;letter-spacing:.6px">
+            Active Custom Fields</div>
+          <div id="custom-fields-list"></div>
+        </div>
+      </div>
+
+      <!-- TEMPLATES TAB -->
+      <div class="stab-pane" id="tab-templates">
+        <div class="section-head">🎨 Choose Template</div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:16px">Select a professional biodata template</p>
+        <div class="template-grid" id="templateGrid">
+
+          <div class="template-card active" onclick="setTemplate(1)">
+            <div class="template-thumb" style="background:linear-gradient(135deg,#7b0018,#c0392b)">
+              <span class="t-badge">Popular</span>
+              <div class="t-icon">👑</div>
+              <div style="color:rgba(255,215,0,.9);font-family:'Playfair Display',serif;font-size:13px">Royal Maroon
+              </div>
+            </div>
+            <div class="template-name">Royal Maroon</div>
+          </div>
+
+          <div class="template-card" onclick="setTemplate(2)">
+            <div class="template-thumb" style="background:linear-gradient(135deg,#1a0a00,#3d1a00)">
+              <div class="t-icon">🌟</div>
+              <div style="color:#f4c430;font-family:'Playfair Display',serif;font-size:13px">Golden Classic</div>
+            </div>
+            <div class="template-name">Golden Classic</div>
+          </div>
+
+          <div class="template-card" onclick="setTemplate(3)">
+            <div class="template-thumb" style="background:linear-gradient(135deg,#1a237e,#3949ab)">
+              <div class="t-icon">💎</div>
+              <div style="color:rgba(255,255,255,.9);font-family:'Lato',sans-serif;font-size:13px">Modern Blue</div>
+            </div>
+            <div class="template-name">Modern Blue</div>
+          </div>
+
+          <div class="template-card" onclick="setTemplate(4)">
+            <div class="template-thumb" style="background:linear-gradient(135deg,#c2185b,#f06292)">
+              <div class="t-icon">🌸</div>
+              <div style="color:#fff;font-family:'Playfair Display',serif;font-size:13px">Floral Pink</div>
+            </div>
+            <div class="template-name">Floral Pink</div>
+          </div>
+
+          <div class="template-card" onclick="setTemplate(5)" style="grid-column:span 2">
+            <div class="template-thumb" style="background:linear-gradient(135deg,#1b5e20,#388e3c)">
+              <div class="t-icon">🍃</div>
+              <div style="color:#a5d6a7;font-family:'Playfair Display',serif;font-size:13px">Elegant Green</div>
+            </div>
+            <div class="template-name">Elegant Green</div>
+          </div>
+
+        </div>
+      </div>
+    </aside>
+
+    <!-- PREVIEW PANE -->
+    <main class="preview-pane">
+      <div class="preview-header">
+        <div>
+          <h3>Live Preview</h3>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">Changes reflect instantly</div>
+        </div>
+        <div class="preview-actions">
+          <button class="btn btn-teal btn-sm" onclick="saveBiodata()"><i class="fa fa-save"></i> Save to Device</button>
+          <button class="btn btn-gold btn-sm" onclick="downloadPDF()"><i class="fa fa-download"></i> Download
+            PDF</button>
+        </div>
+      </div>
+      <div class="biodata-wrapper" id="biodataPreview"></div>
+    </main>
+
+  </div>
+
+  <!-- SAVED BIODATAS MODAL -->
+  <div class="modal-overlay" id="savedModal">
+    <div class="modal" style="max-width:560px">
+      <button class="modal-close" onclick="closeModal()"><i class="fa fa-times"></i></button>
+      <div class="modal-title">📂 Saved Biodatas</div>
+      <div id="savedList"></div>
+      <div style="margin-top:14px;font-size:12px;color:var(--muted)">💾 Data saved in your browser (localStorage)</div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"><i class="fa fa-check-circle"></i> <span id="toastMsg"></span></div>
+
+  <script>
+    // ══════════════════════════════════════
+    // STATE
+    // ══════════════════════════════════════
+    let currentTemplate = 1;
+    let photoData = null;
+
+    const state = {
+      sections: {
+        personal: true,
+        family: true,
+        edu: true,
+        contact: true,
+        horo: true,
+        pref: true
+      },
+      customFields: [],
+      data: {}
+    };
+
+    // ══════════════════════════════════════
+    // FIELD DEFINITIONS
+    // ══════════════════════════════════════
+    const FIELDS = {
+      personal: [
+        { id: 'fullname', label: 'Full Name', type: 'text', placeholder: 'e.g. Sneha Sharma', required: true },
+        { id: 'dob', label: 'Date of Birth', type: 'text', placeholder: 'e.g. 15 March 1996' },
+        { id: 'age', label: 'Age', type: 'text', placeholder: 'e.g. 27 Years' },
+        { id: 'height', label: 'Height', type: 'text', placeholder: 'e.g. 5\' 4"' },
+        { id: 'weight', label: 'Weight', type: 'text', placeholder: 'e.g. 55 Kg' },
+        { id: 'complexion', label: 'Complexion', type: 'select', options: ['', 'Fair', 'Wheatish', 'Wheatish-Brown', 'Dark', 'Very Fair'] },
+        { id: 'bodytype', label: 'Body Type', type: 'select', options: ['', 'Slim', 'Average', 'Athletic', 'Heavy'] },
+        { id: 'marital_status', label: 'Marital Status', type: 'select', options: ['', 'Never Married', 'Divorced', 'Widowed', 'Separated'] },
+        { id: 'religion', label: 'Religion', type: 'text', placeholder: 'e.g. Hindu' },
+        { id: 'caste', label: 'Caste', type: 'text', placeholder: 'e.g. Brahmin' },
+        { id: 'subcaste', label: 'Sub-Caste', type: 'text', placeholder: 'e.g. Saraswat' },
+        { id: 'gotra', label: 'Gotra', type: 'text', placeholder: 'e.g. Kashyap' },
+        { id: 'mother_tongue', label: 'Mother Tongue', type: 'text', placeholder: 'e.g. Hindi' },
+        { id: 'manglik', label: 'Manglik', type: 'select', options: ['', 'Yes', 'No', 'Anshik Manglik'] },
+        { id: 'disabilities', label: 'Disabilities', type: 'select', options: ['', 'None', 'Yes (specify in about)'] },
+        { id: 'about', label: 'About Me', type: 'textarea', placeholder: 'Brief description about yourself...' }
+      ],
+      family: [
+        { id: 'father_name', label: "Father's Name", type: 'text', placeholder: 'e.g. Rajesh Sharma' },
+        { id: 'father_occ', label: "Father's Occupation", type: 'text', placeholder: 'e.g. Retired Govt Officer' },
+        { id: 'mother_name', label: "Mother's Name", type: 'text', placeholder: 'e.g. Sunita Sharma' },
+        { id: 'mother_occ', label: "Mother's Occupation", type: 'text', placeholder: 'e.g. Homemaker' },
+        { id: 'siblings', label: 'Siblings', type: 'text', placeholder: 'e.g. 1 Brother (Married), 1 Sister' },
+        { id: 'family_type', label: 'Family Type', type: 'select', options: ['', 'Joint', 'Nuclear', 'Extended'] },
+        { id: 'family_status', label: 'Family Status', type: 'select', options: ['', 'Middle Class', 'Upper Middle Class', 'Rich', 'Affluent'] },
+        { id: 'family_values', label: 'Family Values', type: 'select', options: ['', 'Traditional', 'Moderate', 'Liberal'] },
+        { id: 'native_place', label: 'Native Place', type: 'text', placeholder: 'e.g. Jaipur, Rajasthan' }
+      ],
+      edu: [
+        { id: 'qualification', label: 'Highest Qualification', type: 'text', placeholder: 'e.g. B.Tech (Computer Science)' },
+        { id: 'college', label: 'College / University', type: 'text', placeholder: 'e.g. Delhi University' },
+        { id: 'occupation', label: 'Occupation', type: 'text', placeholder: 'e.g. Software Engineer' },
+        { id: 'company', label: 'Company / Organization', type: 'text', placeholder: 'e.g. Infosys Ltd' },
+        { id: 'income', label: 'Annual Income', type: 'text', placeholder: 'e.g. ₹6 LPA' },
+        { id: 'work_location', label: 'Work Location', type: 'text', placeholder: 'e.g. Bangalore, Karnataka' },
+        { id: 'willing_to_relocate', label: 'Willing to Relocate', type: 'select', options: ['', 'Yes', 'No', 'Within India', 'Anywhere'] }
+      ],
+      contact: [
+        { id: 'address', label: 'Residential Address', type: 'textarea', placeholder: 'Full address...' },
+        { id: 'city', label: 'City', type: 'text', placeholder: 'e.g. New Delhi' },
+        { id: 'state', label: 'State', type: 'text', placeholder: 'e.g. Delhi' },
+        { id: 'pincode', label: 'PIN Code', type: 'text', placeholder: 'e.g. 110001' },
+        { id: 'phone', label: 'Contact Number', type: 'text', placeholder: 'e.g. +91 98765 43210' },
+        { id: 'alt_phone', label: 'Alternate Number', type: 'text', placeholder: 'e.g. +91 91234 56789' },
+        { id: 'email', label: 'Email Address', type: 'text', placeholder: 'e.g. sneha@email.com' },
+        { id: 'contact_person', label: 'Contact Person', type: 'text', placeholder: 'e.g. Rajesh Sharma (Father)' }
+      ],
+      horo: [
+        { id: 'rashi', label: 'Rashi (Moon Sign)', type: 'text', placeholder: 'e.g. Mesh (Aries)' },
+        { id: 'nakshatra', label: 'Nakshatra', type: 'text', placeholder: 'e.g. Ashwini' },
+        { id: 'birth_time', label: 'Time of Birth', type: 'text', placeholder: 'e.g. 10:30 AM' },
+        { id: 'birth_place', label: 'Place of Birth', type: 'text', placeholder: 'e.g. Jaipur, Rajasthan' },
+        { id: 'charan', label: 'Charan / Pada', type: 'text', placeholder: 'e.g. 2nd Charan' },
+        { id: 'gan', label: 'Gana', type: 'select', options: ['', 'Dev Gana', 'Manushya Gana', 'Rakshasa Gana'] }
+      ],
+      pref: [
+        { id: 'pref_age', label: 'Preferred Age Range', type: 'text', placeholder: 'e.g. 28–33 Years' },
+        { id: 'pref_height', label: 'Preferred Height', type: 'text', placeholder: 'e.g. 5\'7" – 6\'0"' },
+        { id: 'pref_edu', label: 'Education Preference', type: 'text', placeholder: 'e.g. Graduate or above' },
+        { id: 'pref_occ', label: 'Occupation Preference', type: 'text', placeholder: 'e.g. Any salaried or business' },
+        { id: 'pref_caste', label: 'Caste Preference', type: 'text', placeholder: 'e.g. Brahmin preferred, open to all' },
+        { id: 'pref_location', label: 'Preferred Location', type: 'text', placeholder: 'e.g. Delhi NCR, Any metro city' },
+        { id: 'other_pref', label: 'Other Preferences', type: 'textarea', placeholder: 'Any other preferences...' }
+      ]
+    };
+
+    // ══════════════════════════════════════
+    // UTILS
+    // ══════════════════════════════════════
+    const el = id => document.getElementById(id);
+    const v = id => (el(id) ? el(id).value.trim() : '');
+    const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    function toast(msg, type = '') {
+      el('toast').className = 'toast' + (type ? ' ' + type : '');
+      el('toastMsg').textContent = msg;
+      el('toast').classList.add('show');
+      setTimeout(() => el('toast').classList.remove('show'), 3000);
+    }
+    function closeModal() { el('savedModal').classList.remove('open'); }
+
+    // ══════════════════════════════════════
+    // TAB SWITCH
+    // ══════════════════════════════════════
+    function switchTab(tab) {
+      document.querySelectorAll('.stab').forEach((t, i) => t.classList.remove('active'));
+      document.querySelectorAll('.stab-pane').forEach(p => p.classList.remove('active'));
+      const tabs = ['form', 'fields', 'templates'];
+      const idx = tabs.indexOf(tab);
+      document.querySelectorAll('.stab')[idx].classList.add('active');
+      el('tab-' + tab).classList.add('active');
+    }
+
+    // ══════════════════════════════════════
+    // RENDER FORM FIELDS
+    // ══════════════════════════════════════
+    function renderFormFields() {
+      Object.entries(FIELDS).forEach(([section, fields]) => {
+        const container = el(section + '-fields');
+        const sectionHead = el(section + '-head') || el(section + '-fields').previousElementSibling;
+        if (!container) return;
+        if (!state.sections[section]) {
+          container.innerHTML = '<p style="font-size:12px;color:var(--muted);padding:8px 0">Section is hidden. Enable in Fields tab.</p>';
+          return;
+        }
+        const allFields = [...fields, ...state.customFields.filter(cf => cf.section === section)];
+        container.innerHTML = allFields.map(f => buildField(f)).join('');
+        // Re-attach event listeners for auto-update
+        allFields.forEach(f => {
+          const input = el('f_' + f.id);
+          if (input) input.addEventListener('input', debounce(updatePreview, 200));
+        });
+      });
+    }
+
+    function buildField(f) {
+      const val = state.data['f_' + f.id] || '';
+      if (f.type === 'select') {
+        const opts = f.options.map(o => `<option value="${o}" ${val === o ? 'selected' : ''}>${o || '-- Select --'}</option>`).join('');
+        return `<div class="form-group"><label>${f.label}</label><select id="f_${f.id}" onchange="saveFieldData('f_${f.id}');updatePreview()">${opts}</select></div>`;
+      }
+      if (f.type === 'textarea') {
+        return `<div class="form-group"><label>${f.label}</label><textarea id="f_${f.id}" placeholder="${f.placeholder || ''}" oninput="saveFieldData('f_${f.id}');updatePreview()">${val}</textarea></div>`;
+      }
+      return `<div class="form-group"><label>${f.label}${f.required ? '<span style="color:var(--rose)"> *</span>' : ''}</label><input type="text" id="f_${f.id}" placeholder="${f.placeholder || ''}" value="${val}" oninput="saveFieldData('f_${f.id}');updatePreview()"></div>`;
+    }
+
+    function saveFieldData(id) {
+      const input = el(id);
+      if (input) state.data[id] = input.value;
+    }
+
+    function debounce(fn, delay) {
+      let t;
+      return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), delay); };
+    }
+
+    // ══════════════════════════════════════
+    // SECTION TOGGLES
+    // ══════════════════════════════════════
+    const SECTION_LABELS = { personal: '🧑 Personal Details', family: '👨‍👩‍👧 Family Details', edu: '🎓 Education & Career', contact: '📞 Contact Details', horo: '⭐ Horoscope', pref: '💑 Partner Preferences' };
+
+    function renderSectionToggles() {
+      el('section-toggles').innerHTML = Object.entries(state.sections).map(([key, on]) => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--card);border-radius:9px;margin-bottom:8px;border:1px solid var(--border)">
+      <span style="font-size:13px;color:var(--text)">${SECTION_LABELS[key]}</span>
+      <button class="btn btn-xs ${on ? 'btn-primary' : 'btn-outline'}" onclick="toggleSection('${key}')">${on ? 'ON' : 'OFF'}</button>
+    </div>
+  `).join('');
+    }
+
+    function toggleSection(key) {
+      state.sections[key] = !state.sections[key];
+      renderSectionToggles();
+      renderFormFields();
+      updatePreview();
+    }
+
+    // ══════════════════════════════════════
+    // CUSTOM FIELDS
+    // ══════════════════════════════════════
+    el('cf_type').addEventListener('change', function () {
+      el('cf_options_wrap').style.display = this.value === 'select' ? 'block' : 'none';
+    });
+
+    function addCustomField() {
+      const label = v('cf_label');
+      const section = v('cf_section');
+      const type = v('cf_type');
+      if (!label) { toast('Enter a field label!', 'error'); return; }
+      const id = 'custom_' + Date.now();
+      const cf = { id, label, section, type, custom: true };
+      if (type === 'select') {
+        cf.options = ['', ...(v('cf_options').split(',').map(s => s.trim()).filter(Boolean))];
+      }
+      state.customFields.push(cf);
+      el('cf_label').value = '';
+      el('cf_options').value = '';
+      renderFormFields();
+      renderCustomFieldsList();
+      updatePreview();
+      toast('✅ Custom field added!');
+    }
+
+    function removeCustomField(id) {
+      state.customFields = state.customFields.filter(cf => cf.id !== id);
+      delete state.data['f_' + id];
+      renderFormFields();
+      renderCustomFieldsList();
+      updatePreview();
+      toast('Field removed.', 'error');
+    }
+
+    function renderCustomFieldsList() {
+      const list = el('custom-fields-list');
+      if (!state.customFields.length) {
+        list.innerHTML = '<p style="font-size:12px;color:var(--muted)">No custom fields yet.</p>';
+        return;
+      }
+      list.innerHTML = state.customFields.map(cf => `
+    <div class="custom-field-item">
+      <i class="fa fa-grip-vertical drag-handle"></i>
+      <div style="flex:1">
+        <div style="font-size:13px;color:var(--white);font-weight:600">${cf.label}</div>
+        <div style="font-size:11px;color:var(--muted)">${SECTION_LABELS[cf.section]} · ${cf.type}</div>
+      </div>
+      <button class="btn btn-danger btn-xs" onclick="removeCustomField('${cf.id}')"><i class="fa fa-trash"></i></button>
+    </div>
+  `).join('');
+    }
+
+    // ══════════════════════════════════════
+    // PHOTO
+    // ══════════════════════════════════════
+    function handlePhoto(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        photoData = e.target.result;
+        el('photoPreview').src = photoData;
+        el('photoPreview').style.display = 'block';
+        el('photoPlaceholder').style.display = 'none';
+        el('removePhotoBtn').style.display = 'flex';
+        updatePreview();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removePhoto() {
+      photoData = null;
+      el('photoPreview').src = '';
+      el('photoPreview').style.display = 'none';
+      el('photoPlaceholder').style.display = 'block';
+      el('removePhotoBtn').style.display = 'none';
+      el('photoInput').value = '';
+      updatePreview();
+    }
+
+    // ══════════════════════════════════════
+    // TEMPLATE
+    // ══════════════════════════════════════
+    function setTemplate(n) {
+      currentTemplate = n;
+      document.querySelectorAll('.template-card').forEach((c, i) => {
+        c.classList.toggle('active', i + 1 === n);
+      });
+      updatePreview();
+    }
+
+    // ══════════════════════════════════════
+    // COLLECT DATA
+    // ══════════════════════════════════════
+    function gv(id) {
+      const input = el('f_' + id);
+      return input ? input.value.trim() : (state.data['f_' + id] || '');
+    }
+
+    function collectSectionRows(sectionKey) {
+      const fields = FIELDS[sectionKey] || [];
+      const customF = state.customFields.filter(cf => cf.section === sectionKey);
+      const allF = [...fields, ...customF];
+      return allF.filter(f => gv(f.id)).map(f => ({ key: f.label, val: gv(f.id) }));
+    }
+
+    // ══════════════════════════════════════
+    // RENDER TEMPLATES
+    // ══════════════════════════════════════
+    function rowsHTML_t1(rows) {
+      return rows.map(r => `<div class="t1-row"><span class="key">${r.key}</span><span class="sep">:</span><span class="val">${r.val}</span></div>`).join('');
+    }
+    function rowsHTML_t2(rows) {
+      return rows.map(r => `<div class="t2-row"><span class="key">${r.key}</span><span class="val">${r.val}</span></div>`).join('');
+    }
+    function rowsHTML_t3(rows) {
+      return rows.map(r => `<div class="t3-row"><span class="key">${r.key}</span><span class="val">${r.val}</span></div>`).join('');
+    }
+    function rowsHTML_t4(rows) {
+      return rows.map(r => `<div class="t4-row"><span class="key">${r.key}</span><span class="val">${r.val}</span></div>`).join('');
+    }
+    function rowsHTML_t5(rows) {
+      return rows.map(r => `<div class="t5-row"><span class="key">${r.key}</span><span class="val">${r.val}</span></div>`).join('');
+    }
+
+    function photoTag(cls, style = '') {
+      if (photoData) return `<img class="${cls}" src="${photoData}" alt="Photo" style="${style}">`;
+      return `<div class="${cls}" style="${style}">👤</div>`;
+    }
+
+    function buildSection(key, rowsFn, titleClass, titleMap) {
+      if (!state.sections[key]) return '';
+      const rows = collectSectionRows(key);
+      if (!rows.length) return '';
+      return `<div class="${titleClass.split('|')[0]}"><div class="${titleClass.split('|')[1]}">${titleMap[key] || key}</div>${rowsFn(rows)}</div>`;
+    }
+
+    function renderTemplate1() {
+      const name = gv('fullname') || 'Your Name';
+      const sections = {
+        personal: 'Personal Details', family: 'Family Details', edu: 'Education & Career',
+        contact: 'Contact Details', horo: 'Horoscope Details', pref: 'Partner Preferences'
+      };
+      let body = '';
+      Object.entries(sections).forEach(([key, label]) => {
+        if (!state.sections[key]) return;
+        const rows = collectSectionRows(key);
+        if (!rows.length) return;
+        body += `<div class="t1-section"><div class="t1-section-title">${label}</div>${rowsHTML_t1(rows)}</div>`;
+      });
+      return `<div class="t1">
+    <div class="t1-header">
+      <h1>༺श्री गणेशाय नमः༻</h1>
+      <p>Marriage Biodata</p>
+    </div>
+    
+    <div class="t1-body">
+      <div class="t1-ornament">❧ ❦ ❧</div>
+      ${body}
+      <div class="t1-ornament">❧ ❦ ❧</div>
+    </div>
+    <div class="t1-footer">With blessings of God &nbsp;|&nbsp; ${name} &nbsp;|&nbsp; ${new Date().getFullYear()}</div>
+  </div>`;
+    }
+
+    function renderTemplate2() {
+      const name = gv('fullname') || 'Your Name';
+      const sections = {
+        personal: 'Personal Details', family: 'Family Details', edu: 'Education & Career',
+        contact: 'Contact Details', horo: 'Horoscope Details', pref: 'Partner Preferences'
+      };
+      let leftSections = '', rightSections = '';
+      const keys = Object.keys(sections).filter(k => state.sections[k] && collectSectionRows(k).length);
+      keys.forEach((key, i) => {
+        const rows = collectSectionRows(key);
+        const block = `<div style="margin-bottom:16px"><div class="t2-section-title">${sections[key]}</div>${rowsHTML_t2(rows)}</div>`;
+        if (i % 2 === 0) leftSections += block;
+        else rightSections += block;
+      });
+      return `<div class="t2">
+    <div class="t2-header">
+      <div class="t2-header-top">
+        <h1>༺श्री गणेशाय नमः༻</h1>
+        <div class="t2-header-sub">Marriage Biodata</div>
+      </div>
+      <div class="t2-photo-row">${photoTag('t2-photo-sq')}</div>
+    </div>
+    <div class="t2-body">
+      ${leftSections || rightSections ? `<div class="t2-cols"><div>${leftSections}</div><div>${rightSections}</div></div>` : '<p style="color:#999;text-align:center;padding:20px">Fill in the form to see your biodata</p>'}
+    </div>
+    <div class="t2-footer">✦ ${name} ✦ &nbsp;|&nbsp; With Blessings &nbsp;|&nbsp; ${new Date().getFullYear()}</div>
+  </div>`;
+    }
+
+    function renderTemplate3() {
+      const name = gv('fullname') || 'Your Name';
+      const age = gv('age'); const occ = gv('occupation');
+      const sections = {
+        personal: 'Personal Details', family: 'Family Details', edu: 'Education & Career',
+        contact: 'Contact Details', horo: 'Horoscope Details', pref: 'Partner Preferences'
+      };
+      let body = '';
+      Object.entries(sections).forEach(([key, label]) => {
+        if (!state.sections[key]) return;
+        const rows = collectSectionRows(key);
+        if (!rows.length) return;
+        body += `<div class="t3-section"><div class="t3-section-title">${label}</div>${rowsHTML_t3(rows)}</div>`;
+      });
+      return `<div class="t3">
+    <div class="t3-header">
+      ${photoTag('t3-photo-circle')}
+      <div class="t3-header-text">
+        <h1>${name}</h1>
+        <p>Marriage Biodata</p>
+        ${age ? `<span class="t3-tag">Age: ${age}</span>` : ''}
+        ${occ ? `<span class="t3-tag" style="margin-left:4px">${occ}</span>` : ''}
+      </div>
+    </div>
+    <div class="t3-body">
+      ${body || '<p style="color:#999;text-align:center;padding:20px">Fill in the form to see your biodata</p>'}
+    </div>
+    <div class="t3-footer">Marriage Biodata &nbsp;|&nbsp; ${name} &nbsp;|&nbsp; ${new Date().getFullYear()}</div>
+  </div>`;
+    }
+
+    function renderTemplate4() {
+      const name = gv('fullname') || 'Your Name';
+      const sections = {
+        personal: 'Personal Details', family: 'Family Details', edu: 'Education & Career',
+        contact: 'Contact Details', horo: 'Horoscope Details', pref: 'Partner Preferences'
+      };
+      let body = '';
+      Object.entries(sections).forEach(([key, label]) => {
+        if (!state.sections[key]) return;
+        const rows = collectSectionRows(key);
+        if (!rows.length) return;
+        body += `<div class="t4-section"><div class="t4-section-title">${label}</div>${rowsHTML_t4(rows)}</div><div class="t4-floral">🌸 🌺 🌸</div>`;
+      });
+      return `<div class="t4">
+    <div class="t4-header">
+      <h1>✧༺✦ श्री गणेशाय नमः ✦༻✧</h1>
+      <p>Marriage Biodata — ${name}</p>
+    </div>
+    <div class="t4-photo-strip">${photoTag('t4-photo-oval')}</div>
+    <div class="t4-body">
+      ${body || '<p style="color:#c2185b;text-align:center;padding:20px">Fill in the form to see your biodata</p>'}
+    </div>
+    <div class="t4-footer">🌸 With Love & Blessings 🌸 &nbsp;|&nbsp; ${new Date().getFullYear()}</div>
+  </div>`;
+    }
+
+    function renderTemplate5() {
+      const name = gv('fullname') || 'Your Name';
+      const sections = {
+        personal: 'Personal Details', family: 'Family Details', edu: 'Education & Career',
+        contact: 'Contact Details', horo: 'Horoscope Details', pref: 'Partner Preferences'
+      };
+      let leftBody = '', rightBody = '';
+      const keys = Object.keys(sections).filter(k => state.sections[k] && collectSectionRows(k).length);
+      keys.forEach((key, i) => {
+        const rows = collectSectionRows(key);
+        const block = `<div class="t5-section"><div class="t5-section-title">${sections[key]}</div>${rowsHTML_t5(rows)}</div>`;
+        if (i % 2 === 0) leftBody += block;
+        else rightBody += block;
+      });
+      return `<div class="t5">
+    <div class="t5-header">
+      <h1>卐 श्री गणेशाय नमः 卐</h1>
+      <p>MARRIAGE BIODATA</p>
+    </div>
+    <div class="t5-photo-strip">
+      <div class="t5-photo-hex">
+        ${photoData ? `<img src="${photoData}" style="width:100%;height:100%;object-fit:cover">` : '👤'}
+      </div>
+    </div>
+    <div class="t5-body">
+      ${leftBody || rightBody ? `<div class="t5-cols"><div>${leftBody}</div><div>${rightBody}</div></div>` : '<p style="color:#388e3c;text-align:center;padding:20px">Fill in the form to see your biodata</p>'}
+    </div>
+    <div class="t5-footer">🍃 ${name} 🍃 &nbsp;|&nbsp; ${new Date().getFullYear()}</div>
+  </div>`;
+    }
+
+    // ══════════════════════════════════════
+    // UPDATE PREVIEW
+    // ══════════════════════════════════════
+    function updatePreview() {
+      const renderers = [null, renderTemplate1, renderTemplate2, renderTemplate3, renderTemplate4, renderTemplate5];
+      const html = renderers[currentTemplate]();
+      el('biodataPreview').innerHTML = html;
+    }
+
+    // ══════════════════════════════════════
+    // SAVE / LOAD — localStorage
+    // ══════════════════════════════════════
+    function saveBiodata() {
+      const name = gv('fullname');
+      if (!name) { toast('Please enter Full Name first!', 'error'); return; }
+
+      // Collect all current field values
+      Object.values(FIELDS).flat().forEach(f => {
+        const input = el('f_' + f.id);
+        if (input) state.data['f_' + f.id] = input.value;
+      });
+      state.customFields.forEach(cf => {
+        const input = el('f_' + cf.id);
+        if (input) state.data['f_' + cf.id] = input.value;
+      });
+
+      const saved = JSON.parse(localStorage.getItem('biodatas') || '[]');
+      const entry = {
+        id: Date.now(),
+        name,
+        template: currentTemplate,
+        photo: photoData,
+        state: JSON.parse(JSON.stringify(state)),
+        savedOn: new Date().toLocaleDateString('en-IN')
+      };
+      // Replace if same name exists
+      const existIdx = saved.findIndex(s => s.name === name);
+      if (existIdx >= 0) saved[existIdx] = entry;
+      else saved.unshift(entry);
+      localStorage.setItem('biodatas', JSON.stringify(saved.slice(0, 20)));
+      toast('✅ Biodata saved for ' + name + '!');
+    }
+
+    function openSaved() {
+      const saved = JSON.parse(localStorage.getItem('biodatas') || '[]');
+      const list = el('savedList');
+      if (!saved.length) {
+        list.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted)"><i class="fa fa-folder-open" style="font-size:32px;margin-bottom:12px;display:block;opacity:.4"></i>No saved biodatas yet.</div>';
+      } else {
+        const tIcons = { 1: '👑', 2: '🌟', 3: '💎', 4: '🌸', 5: '🍃' };
+        const tColors = { 1: 'linear-gradient(135deg,#7b0018,#c0392b)', 2: 'linear-gradient(135deg,#1a0a00,#3d1a00)', 3: 'linear-gradient(135deg,#1a237e,#3949ab)', 4: 'linear-gradient(135deg,#c2185b,#e91e63)', 5: 'linear-gradient(135deg,#1b5e20,#388e3c)' };
+        list.innerHTML = saved.map(s => `
+      <div class="saved-item">
+        <div class="saved-item-icon" style="background:${tColors[s.template]}">${tIcons[s.template]}</div>
+        <div class="saved-item-info">
+          <div class="saved-item-name">${s.name}</div>
+          <div class="saved-item-meta">Template ${s.template} · Saved ${s.savedOn}</div>
+        </div>
+        <div class="saved-item-actions">
+          <button class="btn btn-primary btn-xs" onclick="loadBiodata(${s.id})"><i class="fa fa-edit"></i> Load</button>
+          <button class="btn btn-danger btn-xs" onclick="deleteBiodata(${s.id})"><i class="fa fa-trash"></i></button>
+        </div>
+      </div>
+    `).join('');
+      }
+      el('savedModal').classList.add('open');
+    }
+
+    function loadBiodata(id) {
+      const saved = JSON.parse(localStorage.getItem('biodatas') || '[]');
+      const entry = saved.find(s => s.id === id);
+      if (!entry) return;
+
+      // Restore state
+      Object.assign(state.sections, entry.state.sections);
+      state.customFields = entry.state.customFields || [];
+      state.data = entry.state.data || {};
+      currentTemplate = entry.template;
+      photoData = entry.photo || null;
+
+      // Restore template selection UI
+      document.querySelectorAll('.template-card').forEach((c, i) => {
+        c.classList.toggle('active', i + 1 === currentTemplate);
+      });
+
+      // Restore photo
+      if (photoData) {
+        el('photoPreview').src = photoData;
+        el('photoPreview').style.display = 'block';
+        el('photoPlaceholder').style.display = 'none';
+        el('removePhotoBtn').style.display = 'flex';
+      } else {
+        removePhoto();
+      }
+
+      // Restore section toggles + fields
+      renderSectionToggles();
+      renderFormFields();
+      renderCustomFieldsList();
+
+      // Restore field values
+      setTimeout(() => {
+        Object.entries(state.data).forEach(([key, val]) => {
+          const input = el(key);
+          if (input) input.value = val;
+        });
+        updatePreview();
+      }, 50);
+
+      closeModal();
+      toast('✅ Biodata loaded: ' + entry.name);
+    }
+
+    function deleteBiodata(id) {
+      if (!confirm('Delete this biodata?')) return;
+      let saved = JSON.parse(localStorage.getItem('biodatas') || '[]');
+      saved = saved.filter(s => s.id !== id);
+      localStorage.setItem('biodatas', JSON.stringify(saved));
+      openSaved();
+      toast('Deleted.', 'error');
+    }
+
+    // ══════════════════════════════════════
+    // DOWNLOAD PDF (exact template capture)
+    // ══════════════════════════════════════
+    async function downloadPDF() {
+      const wrapper = el('biodataPreview');
+      if (!wrapper || !wrapper.innerHTML.trim()) {
+        toast('Please fill in some details first!', 'error');
+        return;
+      }
+      toast('⏳ Generating PDF...');
+
+      try {
+        // Temporarily expand wrapper for full capture
+        const origMaxWidth = wrapper.style.maxWidth;
+        const origBorderRadius = wrapper.style.borderRadius;
+        wrapper.style.maxWidth = '720px';
+        wrapper.style.borderRadius = '0';
+
+        const canvas = await html2canvas(wrapper, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          windowWidth: 720,
+          scrollX: 0,
+          scrollY: 0
+        });
+
+        wrapper.style.maxWidth = origMaxWidth;
+        wrapper.style.borderRadius = origBorderRadius;
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+        const pageW = pdf.internal.pageSize.getWidth();
+        const pageH = pdf.internal.pageSize.getHeight();
+        const imgW = pageW;
+        const imgH = (canvas.height * imgW) / canvas.width;
+        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+
+        let yPos = 0;
+        let heightLeft = imgH;
+
+        pdf.addImage(imgData, 'JPEG', 0, yPos, imgW, imgH);
+        heightLeft -= pageH;
+
+        // Multi-page support
+        while (heightLeft > 0) {
+          yPos -= pageH;
+          pdf.addPage();
+          pdf.addImage(imgData, 'JPEG', 0, yPos, imgW, imgH);
+          heightLeft -= pageH;
+        }
+
+        const name = gv('fullname') || 'Biodata';
+        pdf.save(`${name.replace(/\s+/g, '_')}_Vivah_Biodata.pdf`);
+        toast('✅ PDF Downloaded!');
+      } catch (err) {
+        console.error(err);
+        toast('PDF error! Try Print instead.', 'error');
+        window.print();
+      }
+    }
+
+    function printBiodata() {
+      window.print();
+    }
+
+    // ══════════════════════════════════════
+    // MOBILE VIEW SWITCHER
+    // ══════════════════════════════════════
+    function switchMobileView(view) {
+      const sidebar = document.querySelector('.sidebar');
+      const preview = document.querySelector('.preview-pane');
+      const formBtn = el('mobileFormBtn');
+      const previewBtn = el('mobilePreviewBtn');
+      if (view === 'form') {
+        sidebar.classList.remove('mobile-hidden');
+        preview.classList.add('mobile-hidden');
+        formBtn.classList.add('active');
+        previewBtn.classList.remove('active');
+      } else {
+        sidebar.classList.add('mobile-hidden');
+        preview.classList.remove('mobile-hidden');
+        previewBtn.classList.add('active');
+        formBtn.classList.remove('active');
+      }
+    }
+
+    // ══════════════════════════════════════
+    // NEW BIODATA
+    // ══════════════════════════════════════
+    function newBiodata() {
+      if (!confirm('Start a fresh biodata? Unsaved changes will be lost.')) return;
+      state.data = {};
+      state.customFields = [];
+      Object.keys(state.sections).forEach(k => state.sections[k] = true);
+      photoData = null;
+      currentTemplate = 1;
+      removePhoto();
+      document.querySelectorAll('.template-card').forEach((c, i) => c.classList.toggle('active', i === 0));
+      renderSectionToggles();
+      renderFormFields();
+      renderCustomFieldsList();
+      updatePreview();
+      toast('Fresh biodata started!');
+    }
+
+    // ══════════════════════════════════════
+    // INIT
+    // ══════════════════════════════════════
+    document.addEventListener('DOMContentLoaded', () => {
+      renderSectionToggles();
+      renderFormFields();
+      renderCustomFieldsList();
+      updatePreview();
+      // Close modal on outside click
+      el('savedModal').addEventListener('click', function (e) {
+        if (e.target === this) closeModal();
+      });
+      // Add "New" button to topbar
+      const tb = document.querySelector('.topbar-actions');
+      const newBtn = document.createElement('button');
+      newBtn.className = 'btn btn-outline btn-sm';
+      newBtn.innerHTML = '<i class="fa fa-plus"></i> New';
+      newBtn.onclick = newBiodata;
+      tb.insertBefore(newBtn, tb.firstChild);
+    });
+  </script>
+</body>
+
+</html>

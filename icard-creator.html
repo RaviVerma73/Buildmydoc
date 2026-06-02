@@ -1,0 +1,3438 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ID Card Creator</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Playfair+Display:wght@400;700;800&family=Space+Mono:wght@400;700&family=Raleway:wght@300;400;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #0b0c10;
+      --bg2: #111318;
+      --bg3: #181b22;
+      --card: #1e2130;
+      --card2: #252a3a;
+      --border: rgba(255, 255, 255, .07);
+      --border2: rgba(255, 255, 255, .15);
+      --accent: #6ee7f7;
+      --accent2: #3b82f6;
+      --gold: #f4c430;
+      --rose: #f472b6;
+      --green: #34d399;
+      --text: #e2e8f5;
+      --muted: #64748b;
+      --white: #fff;
+      --r: 14px;
+      --shadow: 0 20px 60px rgba(0, 0, 0, .6);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg2)
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--accent2);
+      border-radius: 2px
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      background: rgba(11, 12, 16, .92);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 200
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px
+    }
+
+    .brand-name {
+      /* font-family: 'Syne', sans-serif; */
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -.3px
+    }
+
+    .brand-name span {
+      color: var(--accent)
+    }
+
+    .topbar-right {
+      display: flex;
+      gap: 8px;
+      align-items: center
+    }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all .2s;
+      font-family: 'DM Sans', sans-serif;
+      white-space: nowrap
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent2), #2563eb);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(59, 130, 246, .3)
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, .4)
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold), #e8a820);
+      color: #1a0f00;
+      font-weight: 700
+    }
+
+    .btn-gold:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(244, 196, 48, .35)
+    }
+
+    .btn-rose {
+      background: linear-gradient(135deg, var(--rose), #ec4899);
+      color: #fff
+    }
+
+    .btn-rose:hover {
+      transform: translateY(-1px)
+    }
+
+    .btn-green {
+      background: linear-gradient(135deg, var(--green), #10b981);
+      color: #fff
+    }
+
+    .btn-green:hover {
+      transform: translateY(-1px)
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border2);
+      color: var(--text)
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(110, 231, 247, .05)
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: #fff
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px
+    }
+
+    .btn-xs {
+      padding: 4px 9px;
+      font-size: 11px;
+      border-radius: 7px
+    }
+
+    /* ── LAYOUT ── */
+    .app {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      min-height: calc(100vh - 60px)
+    }
+
+    .sidebar {
+      background: var(--bg2);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      position: sticky;
+      top: 60px;
+      height: calc(100vh - 60px)
+    }
+
+    .main {
+      background: var(--bg3);
+      overflow-y: auto;
+      padding: 28px
+    }
+
+    /* ── MOBILE TOGGLE ── */
+    .mobile-toggle {
+      display: none;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border)
+    }
+
+    .mobile-toggle button {
+      flex: 1;
+      padding: 11px;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: .2s;
+      font-family: 'DM Sans', sans-serif
+    }
+
+    .mobile-toggle button.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent)
+    }
+
+    /* ── SIDEBAR TABS ── */
+    .stabs {
+      display: flex;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .stab {
+      flex: 1;
+      padding: 13px 4px;
+      text-align: center;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: .2s;
+      letter-spacing: .3px
+    }
+
+    .stab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent)
+    }
+
+    .stab-pane {
+      display: none;
+      padding: 18px
+    }
+
+    .stab-pane.active {
+      display: block
+    }
+
+    /* ── FORM ── */
+    .sec-head {
+      font-family: 'Syne', sans-serif;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+      text-transform: uppercase;
+      letter-spacing: .8px
+    }
+
+    .form-group {
+      margin-bottom: 11px
+    }
+
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: .6px
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 11px;
+      color: var(--text);
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      transition: .2s
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--accent2);
+      background: rgba(59, 130, 246, .05)
+    }
+
+    select option {
+      background: var(--bg3)
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 60px
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px
+    }
+
+    /* ── FIELD MANAGER ── */
+    .field-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 11px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      margin-bottom: 7px;
+      transition: .2s
+    }
+
+    .field-item:hover {
+      border-color: var(--border2)
+    }
+
+    .field-item .fi-label {
+      flex: 1;
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 500
+    }
+
+    .field-item .fi-sub {
+      font-size: 11px;
+      color: var(--muted)
+    }
+
+    .drag-handle {
+      color: var(--muted);
+      cursor: grab;
+      font-size: 13px;
+      flex-shrink: 0
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 38px;
+      height: 21px;
+      flex-shrink: 0
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0
+    }
+
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: var(--card2);
+      border-radius: 21px;
+      cursor: pointer;
+      transition: .3s
+    }
+
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      left: 3px;
+      bottom: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: .3s
+    }
+
+    .toggle-switch input:checked+.toggle-slider {
+      background: var(--accent2)
+    }
+
+    .toggle-switch input:checked+.toggle-slider::before {
+      transform: translateX(17px)
+    }
+
+    /* ── PHOTO UPLOAD ── */
+    .photo-upload {
+      border: 2px dashed var(--border2);
+      border-radius: 12px;
+      padding: 18px;
+      text-align: center;
+      cursor: pointer;
+      transition: .2s;
+      position: relative
+    }
+
+    .photo-upload:hover {
+      border-color: var(--accent);
+      background: rgba(110, 231, 247, .04)
+    }
+
+    .photo-upload input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer
+    }
+
+    .photo-thumb {
+      width: 90px;
+      height: 90px;
+      border-radius: 10px;
+      object-fit: cover;
+      margin: 0 auto 8px;
+      display: block;
+      border: 2px solid var(--accent2)
+    }
+
+    .logo-thumb {
+      width: 70px;
+      height: 50px;
+      border-radius: 8px;
+      object-fit: contain;
+      margin: 0 auto 8px;
+      display: block;
+      border: 1px solid var(--border2);
+      background: rgba(255, 255, 255, .05)
+    }
+
+    /* ── TEMPLATE GRID ── */
+    .tpl-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px
+    }
+
+    .tpl-card {
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: .25s
+    }
+
+    .tpl-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px)
+    }
+
+    .tpl-card.active {
+      border-color: var(--gold);
+      box-shadow: 0 0 20px rgba(244, 196, 48, .2)
+    }
+
+    .tpl-thumb {
+      height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 4px;
+      position: relative;
+      overflow: hidden
+    }
+
+    .tpl-thumb .ti {
+      font-size: 22px;
+      margin-bottom: 3px
+    }
+
+    .tpl-thumb .tn {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .4px
+    }
+
+    .tpl-name {
+      padding: 7px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      background: var(--card)
+    }
+
+    .tpl-badge {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: var(--gold);
+      color: #1a0f00;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 9px
+    }
+
+    /* ── PREVIEW ── */
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+      gap: 12px
+    }
+
+    .preview-header h3 {
+      /* font-family: 'Syne', sans-serif; */
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--white)
+    }
+
+    .preview-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    /* CARD FLIP */
+    .card-container {
+      perspective: 1200px;
+      width: 340px;
+      height: 215px;
+      margin: 0 auto 20px;
+      cursor: pointer
+    }
+
+    .card-container.vertical {
+      width: 215px;
+      height: 340px
+    }
+
+    .card-container.flipped .card-inner {
+      transform: rotateY(180deg)
+    }
+
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform .65s cubic-bezier(.4, 0, .2, 1);
+      transform-style: preserve-3d
+    }
+
+    .card-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      border-radius: 14px;
+      overflow: hidden
+    }
+
+    .card-back-face {
+      transform: rotateY(180deg)
+    }
+
+    .flip-hint {
+      text-align: center;
+      font-size: 11.5px;
+      color: var(--muted);
+      margin-bottom: 20px
+    }
+
+    .flip-hint i {
+      margin-right: 5px;
+      color: var(--accent)
+    }
+
+    .preview-btns {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 24px;
+      flex-wrap: wrap
+    }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .8);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(8px)
+    }
+
+    .modal-overlay.open {
+      display: flex
+    }
+
+    .modal {
+      background: var(--card2);
+      border: 1px solid var(--border2);
+      border-radius: 18px;
+      width: 100%;
+      max-width: 480px;
+      padding: 26px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .7);
+      animation: popIn .3s ease;
+      position: relative;
+      max-height: 85vh;
+      overflow-y: auto
+    }
+
+    @keyframes popIn {
+      from {
+        transform: scale(.9);
+        opacity: 0
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1
+      }
+    }
+
+    .modal-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--white);
+      margin-bottom: 18px
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: rgba(255, 255, 255, .07);
+      border: none;
+      color: var(--text);
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: .2s
+    }
+
+    .modal-close:hover {
+      background: rgba(255, 255, 255, .15)
+    }
+
+    /* ── SAVED LIST ── */
+    .saved-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 12px 14px;
+      margin-bottom: 9px;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      transition: .2s
+    }
+
+    .saved-item:hover {
+      border-color: var(--border2)
+    }
+
+    .saved-item-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0
+    }
+
+    .saved-item-info {
+      flex: 1
+    }
+
+    .saved-item-name {
+      font-weight: 600;
+      color: var(--white);
+      font-size: 13px
+    }
+
+    .saved-item-meta {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px
+    }
+
+    .saved-item-actions {
+      display: flex;
+      gap: 5px
+    }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      background: #22c55e;
+      color: #fff;
+      padding: 11px 18px;
+      border-radius: 11px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: .35s cubic-bezier(.34, 1.56, .64, 1);
+      z-index: 9999;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .4)
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1
+    }
+
+    .toast.error {
+      background: #ef4444
+    }
+
+    .toast.info {
+      background: var(--accent2)
+    }
+
+    /* ════════════════════════════
+   TEMPLATE 1 — CORPORATE NAVY
+════════════════════════════ */
+    .t1-front {
+      background: linear-gradient(145deg, #0f172a 0%, #1e3a5f 60%, #0f172a 100%);
+      font-family: 'DM Sans', sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      position: relative;
+      overflow: hidden
+    }
+
+    .t1-front::before {
+      content: '';
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: rgba(59, 130, 246, .12);
+      pointer-events: none
+    }
+
+    .t1-front::after {
+      content: '';
+      position: absolute;
+      bottom: -50px;
+      left: -30px;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: rgba(110, 231, 247, .06);
+      pointer-events: none
+    }
+
+    .t1f-header {
+      background: rgba(255, 255, 255, .05);
+      border-bottom: 1px solid rgba(255, 255, 255, .08);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .t1f-org {
+      font-size: 11px;
+      font-weight: 700;
+      color: #93c5fd;
+      letter-spacing: 1.5px;
+      text-transform: uppercase
+    }
+
+    .t1f-logo {
+      height: 26px;
+      width: auto;
+      object-fit: contain
+    }
+
+    .t1f-logo-ph {
+      width: 42px;
+      height: 26px;
+      background: rgba(255, 255, 255, .1);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      color: rgba(255, 255, 255, .4)
+    }
+
+    .t1f-body {
+      display: flex;
+      gap: 12px;
+      padding: 12px 14px;
+      flex: 1
+    }
+
+    .t1f-photo {
+      width: 70px;
+      height: 80px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 2px solid rgba(59, 130, 246, .6);
+      flex-shrink: 0;
+      background: rgba(255, 255, 255, .05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: rgba(255, 255, 255, .25)
+    }
+
+    .t1f-info {
+      flex: 1
+    }
+
+    .t1f-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 3px
+    }
+
+    .t1f-role {
+      font-size: 11px;
+      color: #60a5fa;
+      font-weight: 600;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: .8px
+    }
+
+    .t1f-detail {
+      font-size: 10.5px;
+      color: rgba(255, 255, 255, .65);
+      margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+      gap: 5px
+    }
+
+    .t1f-detail i {
+      color: #60a5fa;
+      width: 11px;
+      font-size: 10px
+    }
+
+    .t1f-footer {
+      background: rgba(59, 130, 246, .15);
+      border-top: 1px solid rgba(59, 130, 246, .2);
+      padding: 7px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .t1f-id {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      color: #93c5fd;
+      letter-spacing: 1px
+    }
+
+    .t1f-validity {
+      font-size: 9.5px;
+      color: rgba(255, 255, 255, .45)
+    }
+
+    .t1-back {
+      background: linear-gradient(145deg, #0f172a, #1e3a5f);
+      font-family: 'DM Sans', sans-serif;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column
+    }
+
+    .t1b-strip {
+      background: rgba(0, 0, 0, .6);
+      height: 36px;
+      margin-top: 20px;
+      width: 100%
+    }
+
+    .t1b-body {
+      padding: 10px 14px;
+      flex: 1
+    }
+
+    .t1b-sig-label {
+      font-size: 9px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      margin-bottom: 6px
+    }
+
+    .t1b-sig-line {
+      width: 100px;
+      border-bottom: 1px solid rgba(255, 255, 255, .3);
+      margin-bottom: 12px
+    }
+
+    .t1b-info {
+      font-size: 9.5px;
+      color: rgba(255, 255, 255, .5);
+      line-height: 1.6
+    }
+
+    .t1b-barcode {
+      display: flex;
+      gap: 2px;
+      margin-top: 8px
+    }
+
+    .t1b-barcode span {
+      display: block;
+      height: 28px;
+      width: 2px;
+      background: rgba(255, 255, 255, .6)
+    }
+
+    .t1b-barcode span:nth-child(3n) {
+      width: 1px;
+      background: rgba(255, 255, 255, .3)
+    }
+
+    .t1b-barcode span:nth-child(5n) {
+      width: 3px
+    }
+
+    .t1b-footer {
+      background: rgba(59, 130, 246, .1);
+      border-top: 1px solid rgba(59, 130, 246, .15);
+      padding: 6px 14px;
+      font-size: 9px;
+      color: rgba(255, 255, 255, .3);
+      text-align: center
+    }
+
+    /* ════════════════════════════
+   TEMPLATE 2 — EMERALD LUXURY
+════════════════════════════ */
+    .t2-front {
+      background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #0f172a 100%);
+      font-family: 'Raleway', sans-serif;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden
+    }
+
+    .t2-front::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 120px;
+      height: 120px;
+      background: rgba(52, 211, 153, .1);
+      border-radius: 0 0 0 120px
+    }
+
+    .t2f-header {
+      padding: 10px 14px 8px;
+      border-bottom: 1px solid rgba(52, 211, 153, .2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .t2f-org {
+      font-size: 11px;
+      font-weight: 800;
+      color: #6ee7b7;
+      letter-spacing: 1px;
+      text-transform: uppercase
+    }
+
+    .t2f-body {
+      display: flex;
+      gap: 0;
+      flex: 1;
+      padding: 0
+    }
+
+    .t2f-sidebar {
+      width: 76px;
+      background: rgba(0, 0, 0, .25);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px 6px;
+      gap: 10px;
+      border-right: 1px solid rgba(52, 211, 153, .15)
+    }
+
+    .t2f-photo {
+      width: 56px;
+      height: 64px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 2px solid rgba(52, 211, 153, .5);
+      background: rgba(255, 255, 255, .05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: rgba(255, 255, 255, .2)
+    }
+
+    .t2f-qr {
+      width: 44px;
+      height: 44px;
+      background: rgba(255, 255, 255, .08);
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .t2f-content {
+      flex: 1;
+      padding: 12px 12px 10px
+    }
+
+    .t2f-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 2px;
+      line-height: 1.2
+    }
+
+    .t2f-role {
+      font-size: 10px;
+      color: #6ee7b7;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px
+    }
+
+    .t2f-row {
+      display: flex;
+      gap: 5px;
+      font-size: 10px;
+      color: rgba(255, 255, 255, .6);
+      margin-bottom: 3px;
+      align-items: flex-start
+    }
+
+    .t2f-row i {
+      color: #34d399;
+      width: 11px;
+      font-size: 9.5px;
+      margin-top: 1px
+    }
+
+    .t2f-footer {
+      background: linear-gradient(90deg, rgba(52, 211, 153, .2), transparent);
+      border-top: 1px solid rgba(52, 211, 153, .15);
+      padding: 7px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center
+    }
+
+    .t2f-id {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: #6ee7b7;
+      letter-spacing: 1px
+    }
+
+    .t2f-valid {
+      font-size: 9px;
+      color: rgba(255, 255, 255, .4)
+    }
+
+    .t2-back {
+      background: linear-gradient(135deg, #0f172a, #064e3b);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      font-family: 'Raleway', sans-serif
+    }
+
+    .t2b-header {
+      background: rgba(52, 211, 153, .1);
+      border-bottom: 1px solid rgba(52, 211, 153, .15);
+      padding: 8px 14px
+    }
+
+    .t2b-strip {
+      background: rgba(0, 0, 0, .7);
+      height: 34px;
+      margin: 10px 0
+    }
+
+    .t2b-body {
+      padding: 6px 14px;
+      flex: 1
+    }
+
+    .t2b-terms {
+      font-size: 9px;
+      color: rgba(255, 255, 255, .4);
+      line-height: 1.6
+    }
+
+    .t2b-footer {
+      padding: 8px 14px;
+      border-top: 1px solid rgba(52, 211, 153, .1);
+      font-size: 9px;
+      color: rgba(52, 211, 153, .5);
+      text-align: center
+    }
+
+    /* ════════════════════════════
+   TEMPLATE 3 — CRIMSON ELITE
+════════════════════════════ */
+    .t3-front {
+      background: #fdf6ee;
+      font-family: 'Playfair Display', serif;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden
+    }
+
+    .t3f-top {
+      background: linear-gradient(135deg, #7b0018, #c0392b);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .t3f-org {
+      font-family: 'Raleway', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      color: rgba(255, 215, 0, .9);
+      letter-spacing: 1.2px;
+      text-transform: uppercase
+    }
+
+    .t3f-body {
+      display: flex;
+      gap: 12px;
+      padding: 12px 14px;
+      flex: 1;
+      align-items: flex-start
+    }
+
+    .t3f-photo {
+      width: 68px;
+      height: 78px;
+      border-radius: 50%;
+      border: 3px solid #c0392b;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: #f0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: #ccc
+    }
+
+    .t3f-info {
+      flex: 1
+    }
+
+    .t3f-name {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #7b0018;
+      line-height: 1.2;
+      margin-bottom: 2px
+    }
+
+    .t3f-role {
+      font-family: 'Raleway', sans-serif;
+      font-size: 10px;
+      color: #c0392b;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      margin-bottom: 8px
+    }
+
+    .t3f-row {
+      display: grid;
+      grid-template-columns: 12px 1fr;
+      gap: 5px;
+      font-size: 10.5px;
+      color: #5a0010;
+      margin-bottom: 3px;
+      font-family: 'DM Sans', sans-serif;
+      align-items: center
+    }
+
+    .t3f-row i {
+      color: #c0392b;
+      font-size: 9.5px
+    }
+
+    .t3f-footer {
+      background: linear-gradient(135deg, #7b0018, #c0392b);
+      padding: 7px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center
+    }
+
+    .t3f-id {
+      font-family: 'Space Mono', monospace;
+      font-size: 9.5px;
+      color: rgba(255, 215, 0, .9);
+      letter-spacing: .8px
+    }
+
+    .t3f-valid {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 9px;
+      color: rgba(255, 255, 255, .6)
+    }
+
+    .t3-back {
+      background: #fdf6ee;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      font-family: 'DM Sans', sans-serif
+    }
+
+    .t3b-top {
+      background: linear-gradient(135deg, #7b0018, #c0392b);
+      height: 30px
+    }
+
+    .t3b-strip {
+      background: #1a1a1a;
+      height: 34px;
+      margin: 8px 0
+    }
+
+    .t3b-body {
+      padding: 6px 14px;
+      flex: 1
+    }
+
+    .t3b-sig-label {
+      font-size: 9px;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      margin-bottom: 5px
+    }
+
+    .t3b-sig-line {
+      width: 90px;
+      border-bottom: 1.5px solid #c0392b;
+      margin-bottom: 10px
+    }
+
+    .t3b-terms {
+      font-size: 9px;
+      color: #888;
+      line-height: 1.6
+    }
+
+    .t3b-footer {
+      background: linear-gradient(135deg, #7b0018, #c0392b);
+      padding: 6px 14px;
+      font-size: 9px;
+      color: rgba(255, 215, 0, .7);
+      text-align: center;
+      font-style: italic
+    }
+
+    /* ════════════════════════════
+   TEMPLATE 4 — VIOLET PREMIUM
+════════════════════════════ */
+    .t4-front {
+      background: linear-gradient(145deg, #1a0533, #2d1b69, #1a0533);
+      font-family: 'DM Sans', sans-serif;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden
+    }
+
+    .t4-front::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(192, 132, 252, .15), transparent 70%);
+      pointer-events: none
+    }
+
+    .t4f-header {
+      background: rgba(192, 132, 252, .1);
+      border-bottom: 1px solid rgba(192, 132, 252, .2);
+      padding: 9px 13px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .t4f-org {
+      font-family: 'Syne', sans-serif;
+      font-size: 10.5px;
+      font-weight: 800;
+      color: #c084fc;
+      letter-spacing: 1.2px;
+      text-transform: uppercase
+    }
+
+    .t4f-body {
+      display: flex;
+      gap: 11px;
+      padding: 11px 13px;
+      flex: 1
+    }
+
+    .t4f-photo-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 7px
+    }
+
+    .t4f-photo {
+      width: 66px;
+      height: 76px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 2px solid rgba(192, 132, 252, .5);
+      flex-shrink: 0;
+      background: rgba(255, 255, 255, .05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: rgba(255, 255, 255, .2)
+    }
+
+    .t4f-id-badge {
+      background: rgba(192, 132, 252, .15);
+      border: 1px solid rgba(192, 132, 252, .3);
+      border-radius: 5px;
+      padding: 2px 6px;
+      font-family: 'Space Mono', monospace;
+      font-size: 8px;
+      color: #c084fc;
+      letter-spacing: .5px
+    }
+
+    .t4f-info {
+      flex: 1
+    }
+
+    .t4f-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 2px
+    }
+
+    .t4f-role {
+      font-size: 10px;
+      color: #a78bfa;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      margin-bottom: 7px
+    }
+
+    .t4f-row {
+      font-size: 10.5px;
+      color: rgba(255, 255, 255, .6);
+      margin-bottom: 3px;
+      display: flex;
+      gap: 5px;
+      align-items: center
+    }
+
+    .t4f-row i {
+      color: #a78bfa;
+      width: 10px;
+      font-size: 9.5px
+    }
+
+    .t4f-footer {
+      background: linear-gradient(90deg, rgba(192, 132, 252, .2), rgba(167, 139, 250, .1));
+      border-top: 1px solid rgba(192, 132, 252, .15);
+      padding: 6px 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center
+    }
+
+    .t4f-valid {
+      font-size: 9px;
+      color: rgba(255, 255, 255, .4)
+    }
+
+    .t4f-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green)
+    }
+
+    .t4-back {
+      background: linear-gradient(145deg, #1a0533, #2d1b69);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      font-family: 'DM Sans', sans-serif
+    }
+
+    .t4b-strip {
+      background: rgba(0, 0, 0, .7);
+      height: 34px;
+      margin-top: 18px
+    }
+
+    .t4b-body {
+      padding: 10px 13px;
+      flex: 1
+    }
+
+    .t4b-terms {
+      font-size: 9px;
+      color: rgba(255, 255, 255, .35);
+      line-height: 1.7
+    }
+
+    .t4b-footer {
+      background: rgba(192, 132, 252, .1);
+      border-top: 1px solid rgba(192, 132, 252, .1);
+      padding: 6px 13px;
+      font-size: 9px;
+      color: rgba(192, 132, 252, .5);
+      text-align: center
+    }
+
+    /* ════════════════════════════
+   TEMPLATE 5 — GOLDEN PRESTIGE
+════════════════════════════ */
+    .t5-front {
+      background: linear-gradient(145deg, #1a1200, #2d2000, #1a1200);
+      font-family: 'Raleway', sans-serif;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden
+    }
+
+    .t5-front::before {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      border: 1px solid rgba(244, 196, 48, .15);
+      border-radius: 13px;
+      pointer-events: none
+    }
+
+    .t5f-header {
+      background: linear-gradient(90deg, rgba(244, 196, 48, .15), rgba(244, 196, 48, .05), rgba(244, 196, 48, .15));
+      border-bottom: 1px solid rgba(244, 196, 48, .2);
+      padding: 9px 13px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .t5f-org {
+      font-size: 10.5px;
+      font-weight: 800;
+      color: #f4c430;
+      letter-spacing: 1.5px;
+      text-transform: uppercase
+    }
+
+    .t5f-body {
+      display: flex;
+      gap: 11px;
+      padding: 11px 13px;
+      flex: 1
+    }
+
+    .t5f-photo {
+      width: 68px;
+      height: 78px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 2px solid rgba(244, 196, 48, .5);
+      flex-shrink: 0;
+      background: rgba(255, 255, 255, .04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: rgba(255, 255, 255, .2)
+    }
+
+    .t5f-info {
+      flex: 1
+    }
+
+    .t5f-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: #f4c430;
+      line-height: 1.2;
+      margin-bottom: 2px
+    }
+
+    .t5f-role {
+      font-size: 10px;
+      color: rgba(244, 196, 48, .65);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px
+    }
+
+    .t5f-row {
+      font-size: 10.5px;
+      color: rgba(255, 255, 255, .6);
+      margin-bottom: 3px;
+      display: flex;
+      gap: 5px;
+      align-items: center
+    }
+
+    .t5f-row i {
+      color: #f4c430;
+      width: 11px;
+      font-size: 9.5px
+    }
+
+    .t5f-ornament {
+      text-align: center;
+      color: rgba(244, 196, 48, .4);
+      font-size: 13px;
+      letter-spacing: 4px;
+      margin: 4px 0
+    }
+
+    .t5f-footer {
+      background: linear-gradient(90deg, rgba(244, 196, 48, .15), transparent, rgba(244, 196, 48, .15));
+      border-top: 1px solid rgba(244, 196, 48, .15);
+      padding: 6px 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center
+    }
+
+    .t5f-id {
+      font-family: 'Space Mono', monospace;
+      font-size: 9.5px;
+      color: rgba(244, 196, 48, .8);
+      letter-spacing: .8px
+    }
+
+    .t5f-valid {
+      font-size: 9px;
+      color: rgba(255, 255, 255, .35)
+    }
+
+    .t5-back {
+      background: linear-gradient(145deg, #1a1200, #2d2000);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      font-family: 'Raleway', sans-serif;
+      position: relative;
+      overflow: hidden
+    }
+
+    .t5-back::before {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      border: 1px solid rgba(244, 196, 48, .1);
+      border-radius: 13px;
+      pointer-events: none
+    }
+
+    .t5b-strip {
+      background: rgba(0, 0, 0, .8);
+      height: 34px;
+      margin-top: 20px
+    }
+
+    .t5b-body {
+      padding: 10px 13px;
+      flex: 1
+    }
+
+    .t5b-terms {
+      font-size: 9px;
+      color: rgba(255, 255, 255, .35);
+      line-height: 1.7
+    }
+
+    .t5b-ornament {
+      color: rgba(244, 196, 48, .2);
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-align: center;
+      margin: 8px 0
+    }
+
+    .t5b-footer {
+      background: linear-gradient(90deg, rgba(244, 196, 48, .1), transparent, rgba(244, 196, 48, .1));
+      border-top: 1px solid rgba(244, 196, 48, .1);
+      padding: 6px 13px;
+      font-size: 9px;
+      color: rgba(244, 196, 48, .5);
+      text-align: center
+    }
+
+
+    /* ════════════════════════════
+   TEMPLATE 6 — GOLDEN PRESTIGE
+════════════════════════════ */
+    .t6-front {
+      background: linear-gradient(135deg, #87CEEB 0%, #BFEFFF 45%, #FFFFFF 100%);
+      font-family: 'Raleway', sans-serif;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden
+    }
+
+    .t6-front::before {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      border: 1px solid rgba(244, 196, 48, .15);
+      border-radius: 13px;
+      pointer-events: none
+    }
+
+    .t6f-header {
+      background: linear-gradient(90deg, rgba(244, 196, 48, .15), rgba(244, 196, 48, .05), rgba(244, 196, 48, .15));
+      border-bottom: 1px solid rgba(244, 196, 48, .2);
+      padding: 9px 13px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .t6f-org {
+      font-size: 10.5px;
+      font-weight: 800;
+      color: #101010;
+      letter-spacing: 1.5px;
+      text-transform: uppercase
+    }
+
+    .t6f-body {
+      display: flex;
+      gap: 11px;
+      padding: 11px 13px;
+      flex: 1
+    }
+
+    .t6f-photo {
+      width: 68px;
+      height: 78px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 2px solid rgba(12, 12, 12, 0.5);
+      flex-shrink: 0;
+      background: rgba(255, 255, 255, .04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: rgba(255, 255, 255, .2)
+    }
+
+    .t6f-info {
+      flex: 1
+    }
+
+    .t6f-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: #101010;
+      line-height: 1.2;
+      margin-bottom: 2px
+    }
+
+    .t6f-role {
+      font-size: 10px;
+      color: rgba(14, 14, 14, 0.65);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px
+    }
+
+    .t6f-row {
+      font-size: 10.5px;
+      color: #101010;
+      margin-bottom: 3px;
+      display: flex;
+      gap: 5px;
+      align-items: center
+    }
+
+    .t6f-row i {
+      color: #101010;
+      width: 11px;
+      font-size: 9.5px
+    }
+
+    .t6f-ornament {
+      text-align: center;
+      color: rgba(244, 196, 48, .4);
+      font-size: 13px;
+      letter-spacing: 4px;
+      margin: 4px 0
+    }
+
+    .t6f-footer {
+      background: linear-gradient(90deg, rgba(244, 196, 48, .15), transparent, rgba(244, 196, 48, .15));
+      border-top: 1px solid rgba(244, 196, 48, .15);
+      padding: 6px 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center
+    }
+
+    .t6f-id {
+      font-family: 'Space Mono', monospace;
+      font-size: 9.5px;
+      color: rgba(16, 16, 16, 0.8);
+      letter-spacing: .8px
+    }
+
+    .t6f-valid {
+      font-size: 9px;
+      color: rgba(2, 2, 2, 0.645)
+    }
+
+    .t6-back {
+      background: linear-gradient(135deg, #87CEEB 0%, #BFEFFF 45%, #FFFFFF 100%);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      font-family: 'Raleway', sans-serif;
+      position: relative;
+      overflow: hidden
+    }
+
+    .t6-back::before {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      border: 1px solid rgba(244, 196, 48, .1);
+      border-radius: 13px;
+      pointer-events: none
+    }
+
+    .t6b-strip {
+      background: rgba(0, 0, 0, .8);
+      height: 34px;
+      margin-top: 20px
+    }
+
+    .t6b-body {
+      padding: 10px 13px;
+      flex: 1
+    }
+
+    .t6b-terms {
+      font-size: 9px;
+      color: rgba(255, 255, 255, .35);
+      line-height: 1.7
+    }
+
+    .t6b-ornament {
+      color: rgba(244, 196, 48, .2);
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-align: center;
+      margin: 8px 0
+    }
+
+    .t6b-footer {
+      background: linear-gradient(90deg, rgba(244, 196, 48, .1), transparent, rgba(244, 196, 48, .1));
+      border-top: 1px solid rgba(244, 196, 48, .1);
+      padding: 6px 13px;
+      font-size: 9px;
+      color: #101010;
+      text-align: center
+    }
+
+
+    /* ════════════════════════════
+   TEMPLATE 7 — STUDENT ID CARD (VERTICAL)
+════════════════════════════ */
+    .student-id-front {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #c8860a 0%, #e8a020 18%, #f5f0e8 18%);
+      display: flex;
+      flex-direction: column;
+      font-family: 'DM Sans', sans-serif;
+      overflow: hidden;
+      position: relative
+    }
+
+    .student-id-back {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #c8860a 0%, #e8a020 15%, #f5f0e8 15%);
+      display: flex;
+      flex-direction: column;
+      font-family: 'DM Sans', sans-serif;
+      overflow: hidden;
+      position: relative
+    }
+
+    .sid-top {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 9px 6px;
+      background: linear-gradient(135deg, #b87008, #e8a020)
+    }
+
+    .sid-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 4px;
+      overflow: hidden;
+      background: rgba(255,255,255,.15);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .sid-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain
+    }
+
+    .sid-college {
+      flex: 1
+    }
+
+    .sid-title {
+      font-size: 9.5px;
+      font-weight: 800;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      line-height: 1.2
+    }
+
+    .sid-address {
+      font-size: 7.5px;
+      color: rgba(255,255,255,.8);
+      margin-top: 1px;
+      line-height: 1.3
+    }
+
+    .sid-session {
+      background: #1a5c8a;
+      color: #fff;
+      text-align: center;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      padding: 3px 0
+    }
+
+    .sid-photo-wrap {
+      display: flex;
+      justify-content: center;
+      margin: 10px 0 6px
+    }
+
+    .sid-photo {
+      width: 70px;
+      height: 80px;
+      object-fit: cover;
+      border: 2px solid #c8860a;
+      border-radius: 3px;
+      background: #e0d8c8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: #bbb
+    }
+
+    .sid-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 2px
+    }
+
+    .sid-name {
+      text-align: center;
+      font-size: 11px;
+      font-weight: 800;
+      color: #1a1a1a;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 0 8px;
+      margin-bottom: 6px
+    }
+
+    .sid-details {
+      background: rgba(200,134,10,.08);
+      border: 1px solid rgba(200,134,10,.25);
+      border-radius: 4px;
+      margin: 0 8px 6px;
+      padding: 5px 8px
+    }
+
+    .sid-details .row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 8.5px;
+      color: #333;
+      padding: 2.5px 0;
+      border-bottom: 1px solid rgba(0,0,0,.06)
+    }
+
+    .sid-details .row:last-child {
+      border-bottom: none
+    }
+
+    .sid-details .row span:first-child {
+      font-weight: 700;
+      color: #555;
+      flex-shrink: 0;
+      margin-right: 6px
+    }
+
+    .sid-details .row span:last-child {
+      color: #111;
+      text-align: right
+    }
+
+    .sid-barcode {
+      display: flex;
+      justify-content: center;
+      margin: 3px 0
+    }
+
+    .sid-footer {
+      margin-top: auto;
+      background: linear-gradient(135deg, #b87008, #e8a020);
+      color: #fff;
+      text-align: center;
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      padding: 5px 0;
+      text-transform: uppercase
+    }
+
+    .sid-back-header {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 9px;
+      background: linear-gradient(135deg, #b87008, #e8a020)
+    }
+
+    .sid-logo-small {
+      width: 28px;
+      height: 28px;
+      border-radius: 3px;
+      overflow: hidden;
+      background: rgba(255,255,255,.15);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .sid-logo-small img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain
+    }
+
+    .sid-college-name {
+      font-size: 8.5px;
+      font-weight: 800;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: .5px
+    }
+
+    .sid-back-body {
+      flex: 1;
+      padding: 7px 10px;
+      font-size: 8.5px;
+      color: #222;
+      overflow: hidden
+    }
+
+    .info-line {
+      margin-bottom: 4px;
+      line-height: 1.4
+    }
+
+    .info-line strong {
+      color: #b87008;
+      font-weight: 700
+    }
+
+    .sid-back-body hr {
+      border: none;
+      border-top: 1px solid rgba(200,134,10,.3);
+      margin: 6px 0
+    }
+
+    .instruction-title {
+      font-size: 8.5px;
+      font-weight: 800;
+      color: #1a5c8a;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+      text-transform: uppercase
+    }
+
+    .instruction-list {
+      padding-left: 13px;
+      margin: 0
+    }
+
+    .instruction-list li {
+      font-size: 7.5px;
+      color: #444;
+      margin-bottom: 2.5px;
+      line-height: 1.4
+    }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:900px) {
+      .app {
+        grid-template-columns: 300px 1fr
+      }
+    }
+
+    @media(max-width:720px) {
+      .app {
+        grid-template-columns: 1fr
+      }
+
+      .sidebar {
+        position: static;
+        height: auto
+      }
+
+      .main {
+        padding: 16px
+      }
+
+      .mobile-toggle {
+        display: flex
+      }
+
+      .sidebar.mob-hide,
+      .main.mob-hide {
+        display: none
+      }
+
+      .preview-header {
+        flex-direction: column;
+        align-items: flex-start
+      }
+
+      .preview-actions {
+        width: 100%;
+        flex-wrap: wrap
+      }
+
+      .preview-actions .btn {
+        flex: 1;
+        justify-content: center;
+        min-width: 120px
+      }
+
+      .card-container {
+        width: min(340px, calc(100vw - 48px));
+        height: auto;
+        aspect-ratio: 85/54
+      }
+    }
+
+    @media(max-width:480px) {
+      .topbar {
+        padding: 0 12px;
+        height: 52px
+      }
+
+      .brand-name {
+        font-size: 14px
+      }
+
+      .btn-sm {
+        padding: 5px 9px;
+        font-size: 11.5px
+      }
+
+      .topbar-right .btn .btn-label {
+        display: none
+      }
+
+      .stab-pane {
+        padding: 14px 12px
+      }
+
+      .field-row {
+        grid-template-columns: 1fr
+      }
+
+      .tpl-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 9px
+      }
+
+      .toast {
+        right: 10px;
+        bottom: 10px;
+        font-size: 12px
+      }
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-icon">🪪</div>
+      <div class="brand-name">ID Card <span>Studio</span></div>
+    </div>
+    <div class="topbar-right">
+      <button class="btn btn-outline btn-sm" onclick="openSaved()"><i class="fa fa-folder-open"></i> <span
+          class="btn-label">Saved</span></button>
+      <button class="btn btn-gold btn-sm" onclick="saveCard()"><i class="fa fa-save"></i> <span
+          class="btn-label">Save</span></button>
+      <button class="btn btn-primary btn-sm" onclick="downloadPDF()"><i class="fa fa-download"></i> <span
+          class="btn-label">PDF</span></button>
+    </div>
+  </div>
+
+  <!-- MOBILE TOGGLE -->
+  <div class="mobile-toggle" id="mobToggle">
+    <button id="mobFormBtn" class="active" onclick="mobSwitch('form')">📝 Edit</button>
+    <button id="mobPreviewBtn" onclick="mobSwitch('preview')">🪪 Preview</button>
+  </div>
+
+  <!-- APP -->
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebarEl">
+      <div class="stabs">
+        <div class="stab active" onclick="switchTab('form')">📝 Details</div>
+        <div class="stab" onclick="switchTab('fields')">⚙️ Fields</div>
+        <div class="stab" onclick="switchTab('templates')">🎨 Templates</div>
+      </div>
+
+      <!-- FORM TAB -->
+      <div class="stab-pane active" id="tab-form">
+
+        <!-- PHOTO -->
+        <div class="sec-head"><i class="fa fa-camera"></i> Photo</div>
+        <div class="photo-upload" id="photoUploadArea" onclick="el('photoInput').click()">
+          <img id="photoPreview" class="photo-thumb" src="" style="display:none" alt="">
+          <div id="photoPlaceholder">
+            <div style="font-size:28px;margin-bottom:6px">👤</div>
+            <div style="font-size:12px;color:var(--muted)">Click to upload photo</div>
+          </div>
+          <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhoto(this,'photo')">
+        </div>
+        <button class="btn btn-danger btn-xs" id="removePhotoBtn"
+          style="margin-top:7px;width:100%;justify-content:center;display:none" onclick="removePhoto('photo')"><i
+            class="fa fa-trash"></i> Remove Photo</button>
+
+        <!-- LOGO -->
+        <div class="sec-head" style="margin-top:16px"><i class="fa fa-building"></i> Organization Logo</div>
+        <div class="photo-upload" onclick="el('logoInput').click()">
+          <img id="logoPreview" class="logo-thumb" src="" style="display:none" alt="">
+          <div id="logoPlaceholder">
+            <div style="font-size:22px;margin-bottom:5px">🏢</div>
+            <div style="font-size:12px;color:var(--muted)">Upload logo (optional)</div>
+          </div>
+          <input type="file" id="logoInput" accept="image/*" style="display:none" onchange="handlePhoto(this,'logo')">
+        </div>
+        <button class="btn btn-danger btn-xs" id="removeLogoBtn"
+          style="margin-top:7px;width:100%;justify-content:center;display:none" onclick="removePhoto('logo')"><i
+            class="fa fa-trash"></i> Remove Logo</button>
+
+        <!-- FIELDS RENDERED HERE -->
+        <div id="formFields" style="margin-top:16px"></div>
+
+      </div>
+
+      <!-- FIELDS CONFIG TAB -->
+      <div class="stab-pane" id="tab-fields">
+        <div class="sec-head"><i class="fa fa-sliders"></i> Manage Fields</div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Toggle fields on/off and add custom fields.</p>
+
+        <div id="fieldToggles"></div>
+
+        <div style="margin-top:16px">
+          <div class="sec-head"><i class="fa fa-plus-circle"></i> Add Custom Field</div>
+          <div class="form-group"><label>Label</label><input type="text" id="cf_label" placeholder="e.g. Blood Group">
+          </div>
+          <div class="form-group"><label>Icon (Font Awesome class)</label><input type="text" id="cf_icon"
+              placeholder="e.g. fa-tint"></div>
+          <div class="form-group"><label>Side</label>
+            <select id="cf_side">
+              <option value="front">Front</option>
+              <option value="back">Back</option>
+            </select>
+          </div>
+          <button class="btn btn-primary btn-sm" style="width:100%;justify-content:center" onclick="addCustomField()"><i
+              class="fa fa-plus"></i> Add Field</button>
+        </div>
+
+        <div style="margin-top:14px">
+          <div class="sec-head"><i class="fa fa-list"></i> Custom Fields</div>
+          <div id="customFieldList"></div>
+        </div>
+      </div>
+
+      <!-- TEMPLATES TAB -->
+      <div class="stab-pane" id="tab-templates">
+        <div class="sec-head"><i class="fa fa-palette"></i> Choose Template</div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:14px">5 professional ID card designs</p>
+        <div class="tpl-grid" id="tplGrid">
+
+          <div class="tpl-card active" onclick="setTemplate(1)">
+            <div class="tpl-thumb" style="background:linear-gradient(145deg,#0f172a,#1e3a5f)">
+              <span class="tpl-badge">Popular</span>
+              <div class="ti">🏢</div>
+              <div class="tn" style="color:#93c5fd">Corporate Navy</div>
+            </div>
+            <div class="tpl-name">Corporate Navy</div>
+          </div>
+
+          <div class="tpl-card" onclick="setTemplate(2)">
+            <div class="tpl-thumb" style="background:linear-gradient(135deg,#064e3b,#065f46)">
+              <div class="ti">💚</div>
+              <div class="tn" style="color:#6ee7b7">Emerald Luxury</div>
+            </div>
+            <div class="tpl-name">Emerald Luxury</div>
+          </div>
+
+          <div class="tpl-card" onclick="setTemplate(3)">
+            <div class="tpl-thumb" style="background:linear-gradient(135deg,#7b0018,#c0392b)">
+              <div class="ti">👑</div>
+              <div class="tn" style="color:rgba(255,215,0,.9)">Crimson Elite</div>
+            </div>
+            <div class="tpl-name">Crimson Elite</div>
+          </div>
+
+          <div class="tpl-card" onclick="setTemplate(4)">
+            <div class="tpl-thumb" style="background:linear-gradient(145deg,#1a0533,#2d1b69)">
+              <div class="ti">💜</div>
+              <div class="tn" style="color:#c084fc">Violet Premium</div>
+            </div>
+            <div class="tpl-name">Violet Premium</div>
+          </div>
+
+          <div class="tpl-card" onclick="setTemplate(5)">
+            <div class="tpl-thumb" style="background:linear-gradient(145deg,#1a1200,#2d2000)">
+              <div class="ti">✨</div>
+              <div class="tn" style="color:#f4c430">Golden Prestige</div>
+            </div>
+            <div class="tpl-name">Golden Prestige</div>
+          </div>
+          <div class="tpl-card" onclick="setTemplate(6)">
+            <div class="tpl-thumb" style="background:linear-gradient(145deg,#c1b0d6,#8dcfd2)">
+              <div class="ti">💜</div>
+              <div class="tn" style="color:#0b0b0b">Student Id Card</div>
+            </div>
+            <div class="tpl-name">Student Id Card</div>
+          </div>
+
+          <div class="tpl-card" onclick="setTemplate(7)" style="grid-column:span 2">
+            <div class="tpl-thumb" style="background:linear-gradient(180deg,#b87008 0%,#e8a020 30%,#f5f0e8 30%);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden">
+              <span class="tpl-badge">Vertical</span>
+              <div style="width:55px;height:88px;background:#f5f0e8;border:2px solid #c8860a;border-radius:4px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,.3)">
+                <div style="background:linear-gradient(135deg,#b87008,#e8a020);height:22px;display:flex;align-items:center;justify-content:center;gap:3px">
+                  <div style="width:12px;height:12px;border-radius:2px;background:rgba(255,255,255,.3)"></div>
+                  <div style="flex:1;padding-right:3px"><div style="height:3px;background:rgba(255,255,255,.8);border-radius:1px;margin-bottom:2px"></div><div style="height:2px;background:rgba(255,255,255,.5);border-radius:1px;width:70%"></div></div>
+                </div>
+                <div style="background:#1a5c8a;height:7px"></div>
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;padding:4px 3px 2px">
+                  <div style="width:22px;height:26px;background:#ddd;border:1.5px solid #c8860a;border-radius:2px;margin-bottom:3px"></div>
+                  <div style="height:2.5px;background:#333;width:80%;border-radius:1px;margin-bottom:2px"></div>
+                  <div style="height:1.5px;background:rgba(200,134,10,.4);width:90%;border-radius:1px;margin-bottom:1px"></div>
+                  <div style="height:1.5px;background:rgba(200,134,10,.4);width:90%;border-radius:1px;margin-bottom:1px"></div>
+                  <div style="height:1.5px;background:rgba(200,134,10,.4);width:90%;border-radius:1px"></div>
+                </div>
+                <div style="background:linear-gradient(135deg,#b87008,#e8a020);height:8px;display:flex;align-items:center;justify-content:center"><div style="font-size:4px;color:#fff;letter-spacing:.5px;font-weight:800">STUDENT ID</div></div>
+              </div>
+            </div>
+            <div class="tpl-name">🎓 Student ID Card</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN PREVIEW -->
+    <main class="main" id="mainEl">
+      <div class="preview-header">
+        <div>
+          <h3>Live Preview</h3>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">Click card to flip • Changes reflect instantly
+          </div>
+        </div>
+        <div class="preview-actions">
+          <button class="btn btn-outline btn-sm" onclick="toggleFlip()"><i class="fa fa-sync-alt"></i> Flip
+            Card</button>
+          <button class="btn btn-green btn-sm" onclick="saveCard()"><i class="fa fa-save"></i> Save</button>
+          <button class="btn btn-gold btn-sm" onclick="downloadPDF()"><i class="fa fa-download"></i> Download
+            PDF</button>
+        </div>
+      </div>
+
+      <!-- FRONT CARD -->
+      <div
+        style="text-align:center;margin-bottom:6px;font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px">
+        Front Side</div>
+      <div class="card-container" id="cardFront" onclick="this.classList.toggle('flipped')">
+        <div class="card-inner">
+          <div class="card-face" id="frontFace"></div>
+          <div class="card-face card-back-face" id="frontBackFace"></div>
+        </div>
+      </div>
+
+      <div class="flip-hint"><i class="fa fa-hand-pointer"></i> Click card to flip & see back side</div>
+
+      <!-- BACK CARD (static for PDF) -->
+      <div
+        style="text-align:center;margin-bottom:6px;font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px">
+        Back Side</div>
+      <div
+        style="width:340px;height:215px;margin:0 auto 20px;border-radius:14px;overflow:hidden;box-shadow:var(--shadow)">
+        <div id="backFace" style="width:100%;height:100%"></div>
+      </div>
+
+      <div class="preview-btns">
+        <button class="btn btn-primary" onclick="downloadPDF()"><i class="fa fa-file-pdf"></i> Download Full PDF (Front
+          + Back)</button>
+      </div>
+
+      <!-- SAVED SECTION -->
+      <div style="margin-top:30px;border-top:1px solid var(--border);padding-top:20px">
+        <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--white);margin-bottom:14px">
+          <i class="fa fa-clock" style="color:var(--accent);margin-right:7px"></i>Recent Cards
+        </div>
+        <div id="recentCards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px">
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- SAVED MODAL -->
+  <div class="modal-overlay" id="savedModal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal()"><i class="fa fa-times"></i></button>
+      <div class="modal-title">📂 Saved ID Cards</div>
+      <div id="savedList"></div>
+      <div style="margin-top:12px;font-size:11px;color:var(--muted)">💾 Saved in your browser storage</div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"><i class="fa fa-check-circle"></i><span id="toastMsg"></span></div>
+
+  <script>
+    // ── STATE ──
+    let currentTpl = 1;
+    let photoData = null;
+    let logoData = null;
+    let isFlipped = false;
+
+    const state = {
+      fields: {
+        name: { label: 'Full Name', icon: 'fa-user', val: '', enabled: true, side: 'front', core: true },
+        designation: { label: 'Designation', icon: 'fa-briefcase', val: '', enabled: true, side: 'front', core: true },
+        department: { label: 'Department', icon: 'fa-building', val: '', enabled: true, side: 'front', core: true },
+        employee_id: { label: 'Employee ID/ Roll No.', icon: 'fa-id-card', val: '', enabled: true, side: 'front', core: true },
+        phone: { label: 'Phone', icon: 'fa-phone', val: '', enabled: true, side: 'front', core: true },
+        email: { label: 'Email', icon: 'fa-envelope', val: '', enabled: true, side: 'front', core: true },
+        dob: { label: 'Date of Birth', icon: 'fa-calendar', val: '', enabled: false, side: 'front', core: true },
+        blood: { label: 'Blood Group', icon: 'fa-tint', val: '', enabled: true, side: 'front', core: true },
+        address: { label: 'Address', icon: 'fa-map-marker', val: '', enabled: true, side: 'back', core: true },
+        org_name: { label: 'Organization', icon: 'fa-landmark', val: '', enabled: true, side: 'front', core: true },
+        valid_from: { label: 'Valid From', icon: 'fa-calendar-alt', val: '', enabled: true, side: 'back', core: true },
+        valid_until: { label: 'Valid Until', icon: 'fa-calendar-check', val: '', enabled: true, side: 'back', core: true },
+        website: { label: 'Website', icon: 'fa-globe', val: '', enabled: false, side: 'back', core: true },
+        emergency: { label: 'Emergency No.', icon: 'fa-phone-alt', val: '', enabled: false, side: 'back', core: true },
+        // T7 Student ID fields
+        org_address: { label: 'College Address', icon: 'fa-map-marker', val: '', enabled: true, side: 'front', core: true },
+        session: { label: 'Session (Year)', icon: 'fa-calendar', val: '', enabled: true, side: 'front', core: true },
+        course: { label: 'Programme / Course', icon: 'fa-book', val: '', enabled: true, side: 'front', core: true },
+        roll_no: { label: 'Roll No.', icon: 'fa-hashtag', val: '', enabled: true, side: 'front', core: true },
+        registration_no: { label: 'Registration No.', icon: 'fa-id-badge', val: '', enabled: true, side: 'front', core: true },
+        blood_group: { label: 'Blood Group', icon: 'fa-tint', val: '', enabled: true, side: 'back', core: true },
+      },
+      customFields: [],
+      data: {}
+    };
+
+    const el = id => document.getElementById(id);
+    function toast(msg, type = '') {
+      el('toast').className = 'toast' + (type ? ' ' + type : '');
+      el('toastMsg').textContent = msg;
+      el('toast').classList.add('show');
+      setTimeout(() => el('toast').classList.remove('show'), 3200);
+    }
+    function closeModal() { el('savedModal').classList.remove('open'); }
+
+    // ── TABS ──
+    function switchTab(tab) {
+      document.querySelectorAll('.stab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.stab-pane').forEach(p => p.classList.remove('active'));
+      const tabs = ['form', 'fields', 'templates'];
+      document.querySelectorAll('.stab')[tabs.indexOf(tab)].classList.add('active');
+      el('tab-' + tab).classList.add('active');
+    }
+
+    // ── MOBILE ──
+    function mobSwitch(view) {
+      const s = el('sidebarEl'), m = el('mainEl');
+      const fb = el('mobFormBtn'), pb = el('mobPreviewBtn');
+      if (view === 'form') {
+        s.classList.remove('mob-hide'); m.classList.add('mob-hide');
+        fb.classList.add('active'); pb.classList.remove('active');
+      } else {
+        s.classList.add('mob-hide'); m.classList.remove('mob-hide');
+        pb.classList.add('active'); fb.classList.remove('active');
+      }
+    }
+
+    // ── PHOTO ──
+    function handlePhoto(input, type) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        if (type === 'photo') {
+          photoData = e.target.result;
+          el('photoPreview').src = photoData;
+          el('photoPreview').style.display = 'block';
+          el('photoPlaceholder').style.display = 'none';
+          el('removePhotoBtn').style.display = 'flex';
+        } else {
+          logoData = e.target.result;
+          el('logoPreview').src = logoData;
+          el('logoPreview').style.display = 'block';
+          el('logoPlaceholder').style.display = 'none';
+          el('removeLogoBtn').style.display = 'flex';
+        }
+        renderAll();
+      };
+      reader.readAsDataURL(file);
+    }
+    function removePhoto(type) {
+      if (type === 'photo') {
+        photoData = null;
+        el('photoPreview').style.display = 'none';
+        el('photoPlaceholder').style.display = 'block';
+        el('removePhotoBtn').style.display = 'none';
+        el('photoInput').value = '';
+      } else {
+        logoData = null;
+        el('logoPreview').style.display = 'none';
+        el('logoPlaceholder').style.display = 'block';
+        el('removeLogoBtn').style.display = 'none';
+        el('logoInput').value = '';
+      }
+      renderAll();
+    }
+
+    // ── FIELD FORM RENDER ──
+    function renderFormFields() {
+      const allFields = [
+        ...Object.entries(state.fields).map(([k, v]) => ({ key: k, ...v })),
+        ...state.customFields.map(cf => ({ key: cf.id, ...cf, enabled: true }))
+      ].filter(f => f.enabled);
+
+      el('formFields').innerHTML = allFields.map(f => {
+        const val = state.data[f.key] || '';
+        return `<div class="form-group">
+      <label><i class="fa ${f.icon}" style="margin-right:4px;color:var(--accent)"></i>${f.label}</label>
+      <input type="text" id="ff_${f.key}" value="${val}" placeholder="Enter ${f.label.toLowerCase()}..." oninput="saveField('${f.key}',this.value)">
+    </div>`;
+      }).join('');
+    }
+
+    function saveField(key, val) {
+      state.data[key] = val;
+      renderAll();
+    }
+
+    // ── FIELD TOGGLES ──
+    function renderFieldToggles() {
+      el('fieldToggles').innerHTML = Object.entries(state.fields).map(([key, f]) => `
+    <div class="field-item">
+      <i class="fa fa-grip-vertical drag-handle"></i>
+      <div style="flex:1">
+        <div class="fi-label"><i class="fa ${f.icon}" style="color:var(--accent);margin-right:5px;font-size:11px"></i>${f.label}</div>
+        <div class="fi-sub">${f.side === 'front' ? '📌 Front' : '🔄 Back'}</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" ${f.enabled ? 'checked' : ''} onchange="toggleField('${key}',this.checked)">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+  `).join('');
+
+      el('customFieldList').innerHTML = state.customFields.length
+        ? state.customFields.map(cf => `
+      <div class="field-item">
+        <i class="fa fa-grip-vertical drag-handle"></i>
+        <div style="flex:1">
+          <div class="fi-label"><i class="fa ${cf.icon}" style="color:var(--rose);margin-right:5px;font-size:11px"></i>${cf.label}</div>
+          <div class="fi-sub">Custom · ${cf.side === 'front' ? '📌 Front' : '🔄 Back'}</div>
+        </div>
+        <button class="btn btn-danger btn-xs" onclick="removeCustomField('${cf.id}')"><i class="fa fa-trash"></i></button>
+      </div>
+    `).join('')
+        : '<p style="font-size:12px;color:var(--muted)">No custom fields added yet.</p>';
+    }
+
+    function toggleField(key, on) {
+      state.fields[key].enabled = on;
+      renderFormFields();
+      renderAll();
+    }
+
+    // ── CUSTOM FIELDS ──
+    function addCustomField() {
+      const label = el('cf_label').value.trim();
+      const icon = 'fa-' + (el('cf_icon').value.replace(/^fa-/, '').trim() || 'tag');
+      const side = el('cf_side').value;
+      if (!label) { toast('Please enter a field label!', 'error'); return; }
+      const cf = { id: 'cf_' + Date.now(), label, icon, side, val: '' };
+      state.customFields.push(cf);
+      el('cf_label').value = '';
+      el('cf_icon').value = '';
+      renderFieldToggles();
+      renderFormFields();
+      renderAll();
+      toast('✅ Custom field added!');
+    }
+    function removeCustomField(id) {
+      state.customFields = state.customFields.filter(cf => cf.id !== id);
+      delete state.data[id];
+      renderFieldToggles();
+      renderFormFields();
+      renderAll();
+    }
+
+    // ── TEMPLATE ──
+    function setTemplate(n) {
+      currentTpl = n;
+      document.querySelectorAll('.tpl-card').forEach((c, i) => c.classList.toggle('active', i + 1 === n));
+      // Toggle vertical layout for template 7
+      const isVertical = n === 7;
+      el('cardFront').classList.toggle('vertical', isVertical);
+      const backWrap = el('backFace').parentElement;
+      if (isVertical) {
+        backWrap.style.width = '215px';
+        backWrap.style.height = '340px';
+      } else {
+        backWrap.style.width = '340px';
+        backWrap.style.height = '215px';
+      }
+      renderAll();
+    }
+    function toggleFlip() {
+      el('cardFront').classList.toggle('flipped');
+    }
+
+    // ── DATA HELPERS ──
+    function gv(key) { return state.data[key] || ''; }
+    function gvEnabled(key) { return (state.fields[key]?.enabled || state.customFields.find(c => c.id === key)) && gv(key); }
+
+    function getFieldsByFront() {
+      const front = [], back = [];
+      Object.entries(state.fields).forEach(([k, f]) => {
+        if (!f.enabled || !gv(k)) return;
+        if (!['name', 'designation', 'department', 'employee_id', 'org_name'].includes(k)) {
+          (f.side === 'front' ? front : back).push({ key: k, ...f, val: gv(k) });
+        }
+      });
+      state.customFields.forEach(cf => {
+        const val = gv(cf.id);
+        if (!val) return;
+        (cf.side === 'front' ? front : back).push({ ...cf, val });
+      });
+      return { front, back };
+    }
+
+    function photoTag(cls, style = '') {
+      return photoData
+        ? `<img class="${cls}" src="${photoData}" alt="Photo" style="${style}">`
+        : `<div class="${cls}" style="${style}">👤</div>`;
+    }
+    function logoTag(cls, style = '') {
+      return logoData
+        ? `<img class="${cls}" src="${logoData}" alt="Logo" style="${style}">`
+        : `<div class="${cls}" style="${style}">🏢</div>`;
+    }
+    function barcodeHTML(cls = 't1b-barcode', barCount = 40, maxH = 28, minH = 20) {
+      const bars = [];
+      for (let i = 0; i < barCount; i++) bars.push(`<span style="height:${Math.random() > .5 ? maxH : minH}px"></span>`);
+      return `<div class="${cls}" style="margin-top:10px">${bars.join('')}</div>`;
+    }
+    function qrHTML(color = 'rgba(255,255,255,.15)') {
+      let g = '';
+      for (let i = 0; i < 5; i++) for (let j = 0; j < 5; j++) {
+        if (Math.random() > .4) g += `<rect x="${j * 9 + 1}" y="${i * 9 + 1}" width="8" height="8" fill="${color}" rx="1"/>`;
+      }
+      return `<svg width="44" height="44" viewBox="0 0 46 46"><rect width="46" height="46" rx="4" fill="rgba(255,255,255,.06)"/>${g}<rect x="1" y="1" width="14" height="14" fill="none" stroke="${color}" stroke-width="2" rx="1"/><rect x="31" y="1" width="14" height="14" fill="none" stroke="${color}" stroke-width="2" rx="1"/><rect x="1" y="31" width="14" height="14" fill="none" stroke="${color}" stroke-width="2" rx="1"/></svg>`;
+    }
+
+    // ── TEMPLATE RENDERERS ──
+    function renderT1Front() {
+      const { front } = getFieldsByFront();
+      const name = gvEnabled('name') || 'Your Name';
+      const role = gvEnabled('designation') || '';
+      const dept = gvEnabled('department') || '';
+      const org = gvEnabled('org_name') || 'Organization Name';
+      const empid = gvEnabled('employee_id') || 'ID-000000';
+      return `<div class="t1-front">
+    <div class="t1f-header">
+      <div class="t1f-org">${org}</div>
+      ${logoData ? `<img class="t1f-logo" src="${logoData}" alt="Logo">` : `<div class="t1f-logo-ph">LOGO</div>`}
+    </div>
+    <div class="t1f-body">
+      ${photoTag('t1f-photo')}
+      <div class="t1f-info">
+        <div class="t1f-name">${name}</div>
+        ${role ? `<div class="t1f-role">${role}</div>` : ''}
+        ${dept ? `<div class="t1f-detail"><i class="fa fa-building"></i>${dept}</div>` : ''}
+        ${front.map(f => `<div class="t1f-detail"><i class="fa ${f.icon}"></i>${f.val}</div>`).join('')}
+      </div>
+    </div>
+    <div class="t1f-footer">
+      <span class="t1f-id">${empid}</span>
+      <span class="t1f-validity">Valid Card</span>
+    </div>
+  </div>`;
+    }
+    function renderT1Back() {
+      const { back } = getFieldsByFront();
+      const org = gvEnabled('org_name') || 'Organization Name';
+      const valid_from = gvEnabled('valid_from') || '';
+      const valid_until = gvEnabled('valid_until') || '';
+      return `<div class="t1-back">
+    <div class="t1b-strip"></div>
+    <div class="t1b-body">
+      <div class="t1b-sig-label">Authorized Signature</div>
+      <div class="t1b-sig-line"></div>
+      ${back.filter(f => !['valid_from', 'valid_until'].includes(f.key)).map(f => `<div class="t1b-info"><i class="fa ${f.icon}" style="margin-right:4px;color:#60a5fa;font-size:9px"></i>${f.val}</div>`).join('')}
+      ${valid_from || valid_until ? `<div class="t1b-info" style="margin-top:6px">Valid: ${valid_from} ${valid_from && valid_until ? '–' : ''} ${valid_until}</div>` : ''}
+      ${barcodeHTML("t1b-barcode", 35, 22, 15)}
+    </div>
+    <div class="t1b-footer">${org} · If found, please return to issuing authority</div>
+  </div>`;
+    }
+
+    function renderT2Front() {
+      const { front } = getFieldsByFront();
+      const name = gvEnabled('name') || 'Your Name';
+      const role = gvEnabled('designation') || '';
+      const dept = gvEnabled('department') || '';
+      const org = gvEnabled('org_name') || 'Organization';
+      const empid = gvEnabled('employee_id') || 'EMP-0000';
+      return `<div class="t2-front">
+    <div class="t2f-header">
+      <div class="t2f-org">${org}</div>
+      ${logoData ? `<img src="${logoData}" style="height:24px;object-fit:contain">` : ''}
+    </div>
+    <div class="t2f-body">
+      <div class="t2f-sidebar">
+        ${photoTag('t2f-photo')}
+        <div class="t2f-qr">${qrHTML('#34d399')}</div>
+      </div>
+      <div class="t2f-content">
+        <div class="t2f-name">${name}</div>
+        ${role ? `<div class="t2f-role">${role}</div>` : ''}
+        ${dept ? `<div class="t2f-row"><i class="fa fa-building"></i>${dept}</div>` : ''}
+        ${front.map(f => `<div class="t2f-row"><i class="fa ${f.icon}"></i>${f.val}</div>`).join('')}
+      </div>
+    </div>
+    <div class="t2f-footer">
+      <span class="t2f-id">${empid}</span>
+      <span class="t2f-valid">Active</span>
+    </div>
+  </div>`;
+    }
+    function renderT2Back() {
+      const { back } = getFieldsByFront();
+      const org = gvEnabled('org_name') || 'Organization';
+      const vf = gvEnabled('valid_from') || '', vu = gvEnabled('valid_until') || '';
+      return `<div class="t2-back">
+    <div class="t2b-header"><div style="font-size:11px;font-weight:800;color:#6ee7b7;letter-spacing:1px">${org}</div></div>
+    <div class="t2b-strip"></div>
+    <div class="t2b-body">
+      ${back.filter(f => !['valid_from', 'valid_until'].includes(f.key)).map(f => `<div style="font-size:9.5px;color:rgba(255,255,255,.5);margin-bottom:4px"><i class="fa ${f.icon}" style="color:#34d399;margin-right:4px;font-size:9px"></i>${f.val}</div>`).join('')}
+      ${vf || vu ? `<div style="font-size:9.5px;color:rgba(255,255,255,.45);margin-top:6px">Validity: ${vf} ${vf && vu ? 'to' : ''} ${vu}</div>` : ''}
+      <div class="t2b-terms" style="margin-top:8px">This card is the property of ${org}. If found please return.</div>
+      ${barcodeHTML("t1b-barcode", 35, 22, 15)}
+    </div>
+    <div class="t2b-footer">${org} · Authorized Personnel Only</div>
+  </div>`;
+    }
+
+    function renderT3Front() {
+      const { front } = getFieldsByFront();
+      const name = gvEnabled('name') || 'Your Name';
+      const role = gvEnabled('designation') || '';
+      const dept = gvEnabled('department') || '';
+      const org = gvEnabled('org_name') || 'Organization';
+      const empid = gvEnabled('employee_id') || 'ID-0000';
+      return `<div class="t3-front">
+    <div class="t3f-top">
+      <div class="t3f-org">${org}</div>
+      ${logoData ? `<img src="${logoData}" style="height:22px;object-fit:contain">` : ''}
+    </div>
+    <div class="t3f-body">
+      ${photoTag('t3f-photo')}
+      <div class="t3f-info">
+        <div class="t3f-name">${name}</div>
+        ${role ? `<div class="t3f-role">${role}</div>` : ''}
+        ${dept ? `<div class="t3f-row"><i class="fa fa-building"></i>${dept}</div>` : ''}
+        ${front.map(f => `<div class="t3f-row"><i class="fa ${f.icon}"></i>${f.val}</div>`).join('')}
+      </div>
+    </div>
+    <div class="t3f-footer">
+      <span class="t3f-id">${empid}</span>
+      <span class="t3f-valid">Valid ID</span>
+    </div>
+  </div>`;
+    }
+    function renderT3Back() {
+      const { back } = getFieldsByFront();
+      const org = gvEnabled('org_name') || 'Organization';
+      const vf = gvEnabled('valid_from') || '', vu = gvEnabled('valid_until') || '';
+      return `<div class="t3-back">
+    <div class="t3b-top"></div>
+    <div class="t3b-strip"></div>
+    <div class="t3b-body">
+      <div class="t3b-sig-label">Authorized Signature</div>
+      <div class="t3b-sig-line"></div>
+      ${back.filter(f => !['valid_from', 'valid_until'].includes(f.key)).map(f => `<div style="font-size:9.5px;color:#666;margin-bottom:4px"><i class="fa ${f.icon}" style="color:#c0392b;margin-right:4px;font-size:9px"></i>${f.val}</div>`).join('')}
+      ${vf || vu ? `<div style="font-size:9.5px;color:#888;margin-top:5px">Valid: ${vf} – ${vu}</div>` : ''}
+      <div class="t3b-terms" style="margin-top:8px">Property of ${org}. If found, please return.</div>
+    </div>
+    <div class="t3b-footer">If found, contact ${org} immediately</div>
+  </div>`;
+    }
+
+    function renderT4Front() {
+      const { front } = getFieldsByFront();
+      const name = gvEnabled('name') || 'Your Name';
+      const role = gvEnabled('designation') || '';
+      const dept = gvEnabled('department') || '';
+      const org = gvEnabled('org_name') || 'Organization';
+      const empid = gvEnabled('employee_id') || 'PRE-0000';
+      return `<div class="t4-front">
+    <div class="t4f-header">
+      <div class="t4f-org">${org}</div>
+      ${logoData ? `<img src="${logoData}" style="height:22px;object-fit:contain">` : ''}
+    </div>
+    <div class="t4f-body">
+      <div class="t4f-photo-wrap">
+        ${photoTag('t4f-photo')}
+        <div class="t4f-id-badge">${empid}</div>
+      </div>
+      <div class="t4f-info">
+        <div class="t4f-name">${name}</div>
+        ${role ? `<div class="t4f-role">${role}</div>` : ''}
+        ${dept ? `<div class="t4f-row"><i class="fa fa-building"></i>${dept}</div>` : ''}
+        ${front.map(f => `<div class="t4f-row"><i class="fa ${f.icon}"></i>${f.val}</div>`).join('')}
+      </div>
+    </div>
+    <div class="t4f-footer">
+      <span class="t4f-valid">Authorized Personnel</span>
+      <span class="t4f-dot" title="Active"></span>
+    </div>
+  </div>`;
+    }
+    function renderT4Back() {
+      const { back } = getFieldsByFront();
+      const org = gvEnabled('org_name') || 'Organization';
+      const vf = gvEnabled('valid_from') || '', vu = gvEnabled('valid_until') || '';
+      return `<div class="t4-back">
+    <div class="t4b-strip"></div>
+    <div class="t4b-body">
+      ${back.filter(f => !['valid_from', 'valid_until'].includes(f.key)).map(f => `<div style="font-size:9.5px;color:rgba(255,255,255,.45);margin-bottom:5px"><i class="fa ${f.icon}" style="color:#a78bfa;margin-right:4px;font-size:9px"></i>${f.val}</div>`).join('')}
+      ${vf || vu ? `<div style="font-size:9.5px;color:rgba(255,255,255,.4);margin-top:5px">Validity: ${vf} ${vu ? '→ ' + vu : ''}</div>` : ''}
+      <div class="t4b-terms" style="margin-top:10px">This card is property of ${org}. Please return if found.</div>
+      ${barcodeHTML("t1b-barcode", 35, 22, 15)}
+    </div>
+    <div class="t4b-footer">${org} · ID Management System</div>
+  </div>`;
+    }
+
+    function renderT5Front() {
+      const { front } = getFieldsByFront();
+      const name = gvEnabled('name') || 'Your Name';
+      const role = gvEnabled('designation') || '';
+      const dept = gvEnabled('department') || '';
+      const org = gvEnabled('org_name') || 'Organization';
+      const empid = gvEnabled('employee_id') || 'GLD-0000';
+      return `<div class="t5-front">
+    <div class="t5f-header">
+      <div class="t5f-org">✦ ${org} ✦</div>
+      ${logoData ? `<img src="${logoData}" style="height:22px;object-fit:contain">` : ''}
+    </div>
+    <div class="t5f-body">
+      ${photoTag('t5f-photo')}
+      <div class="t5f-info">
+        <div class="t5f-name">${name}</div>
+        ${role ? `<div class="t5f-role">${role}</div>` : ''}
+        
+        ${dept ? `<div class="t5f-row"><i class="fa fa-building"></i>${dept}</div>` : ''}
+        ${front.map(f => `<div class="t5f-row"><i class="fa ${f.icon}"></i>${f.val}</div>`).join('')}
+      </div>
+    </div>
+    <div class="t5f-footer">
+      <span class="t5f-id">${empid}</span>
+      <span class="t5f-valid">Premium Member</span>
+    </div>
+  </div>`;
+    }
+    function renderT5Back() {
+      const { back } = getFieldsByFront();
+      const org = gvEnabled('org_name') || 'Organization';
+      const vf = gvEnabled('valid_from') || '', vu = gvEnabled('valid_until') || '';
+      return `<div class="t5-back">
+    <div class="t5b-strip"></div>
+    <div class="t5b-body">
+      ${back.filter(f => !['valid_from', 'valid_until'].includes(f.key)).map(f => `<div style="font-size:9.5px;color:rgba(255,255,255,.45);margin-bottom:5px"><i class="fa ${f.icon}" style="color:#f4c430;margin-right:4px;font-size:9px"></i>${f.val}</div>`).join('')}
+      ${vf || vu ? `<div style="font-size:9.5px;color:rgba(244,196,48,.5);margin-top:5px">Valid: ${vf} – ${vu}</div>` : ''}
+      <div class="t5b-ornament">✦ ✦ ✦</div>
+      <div class="t5b-terms">Property of ${org}. This card is non-transferable.</div>
+      ${barcodeHTML("t1b-barcode", 35, 22, 15)}
+    </div>
+    <div class="t5b-footer">✦ ${org} ✦ Return if found</div>
+  </div>`;
+    }
+
+
+    function renderT6Front() {
+      const { front } = getFieldsByFront();
+      console.log(front);
+      const studentName = gvEnabled('name') || 'Student Name';
+      const rollNo = gvEnabled('employee_id') || 'STU-2026-001';
+
+      const org = gvEnabled('org_name') || 'School / College Name';
+
+      return `
+          <div class="t6-front">
+            <div class="t6f-header">
+              ${logoData ? `<img src="${logoData}" style="height:40px;object-fit:contain">` : ''}
+              <div class="t6f-org" style="margin-left:3px;">${org}</div>
+              <div class="t6f-role">STUDENT ID CARD</div>
+            </div>
+
+            <div class="t6f-body">
+              ${photoTag('t6f-photo')}
+
+              <div class="t6f-info">
+                <div class="t6f-name">${studentName}</div>
+                ${front.map(f => `<div class="t6f-row"><i class="fa ${f.icon}"></i> <strong>${f.label}:</strong> ${f.val}</div>`).join('')}
+              </div>
+            </div>
+
+            <div class="t6f-footer">
+              <span class="t6f-id">${rollNo}</span>
+              <span class="t6f-valid">Student</span>
+            </div>
+          </div>`;
+    }
+
+
+    function renderT6Back() {
+      const { back } = getFieldsByFront();
+      const org = gvEnabled('org_name') || 'School / College Name';
+      const address = gvEnabled('address') || 'School Address';
+      const phone = gvEnabled('phone') || '+91 XXXXX XXXXX';
+      const vf = gvEnabled('valid_from') || '';
+      const vu = gvEnabled('valid_until') || '';
+
+      return `
+  <div class="t6-back">
+    <div class="t6b-strip"></div>
+
+    <div class="t6b-body">
+
+      <div style="font-size:12px;font-weight:700;color:#101010;margin-bottom:8px;">
+        Student Information
+      </div>
+      ${back.filter(f => !['valid_from', 'valid_until'].includes(f.key)).map(f => `
+      <div style="font-size:10px;color:#101010;margin-bottom:6px;">
+        <i class="fa ${f.icon}" style="color:#101010;margin-right:4px;font-size:9px"></i>
+      ${f.val}</div>`).join('')}
+     
+      ${vf || vu
+          ? `<div style="font-size:10px;color:#101010;margin-top:8px;">
+              Valid: ${vf} - ${vu}
+            </div>`
+          : ''
+        }
+
+      <div style="margin-top:12px;font-size:9px;color:#101010;">
+        This card is the property of ${org}. If found,
+        kindly return it to the institution.
+      </div>
+
+      ${barcodeHTML("t1b-barcode", 35, 22, 15)}
+    </div>
+
+    <div class="t6b-footer">
+      ${org} • Student Identity Card
+    </div>
+  </div>`;
+    }
+
+
+    function renderT7Front() {
+      const studentName = gvEnabled('name') || 'Student Name';
+      const rollNo = gvEnabled('roll_no') || 'STU-2026-001';
+      const className = gvEnabled('class') || 'Class 10';
+      const section = gvEnabled('section') || 'A';
+      const org = gvEnabled('org_name') || 'School / College Name';
+
+      return `
+          <div class="student-id-front">
+
+          <div class="sid-top">
+            <div class="sid-logo">
+              ${logoData ? `<img src="${logoData}" style="width:100%;height:100%;object-fit:contain">` : '<span style="font-size:18px">🏫</span>'}
+            </div>
+
+            <div class="sid-college">
+              <div class="sid-title">${gvEnabled('org_name')}</div>
+              <div class="sid-address">${gvEnabled('org_address')}</div>
+            </div>
+          </div>
+
+          <div class="sid-session">
+            ${gvEnabled('session') || '2025-2026'}
+          </div>
+
+          <div class="sid-photo-wrap">
+            ${photoTag('sid-photo')}
+          </div>
+
+          <div class="sid-name">
+            ${gvEnabled('name') || 'STUDENT NAME'}
+          </div>
+
+          <div class="sid-details">
+
+            <div class="row">
+              <span>Programme</span>
+              <span>${gvEnabled('course')}</span>
+            </div>
+
+            <div class="row">
+              <span>Roll No</span>
+              <span>${gvEnabled('roll_no')}</span>
+            </div>
+
+            <div class="row">
+              <span>Registration No</span>
+              <span>${gvEnabled('registration_no')}</span>
+            </div>
+
+            <div class="row">
+              <span>Valid Till</span>
+              <span>${gvEnabled('valid_until')}</span>
+            </div>
+
+          </div>
+
+          ${barcodeHTML("t1b-barcode", 35, 22, 15)}
+
+          <div class="sid-footer">
+            STUDENT IDENTITY CARD
+          </div>
+
+        </div>`;
+    }
+
+
+    function renderT7Back() {
+      const org = gvEnabled('org_name') || 'School / College Name';
+      const address = gvEnabled('address') || 'School Address';
+      const phone = gvEnabled('phone') || '+91 XXXXX XXXXX';
+      const vf = gvEnabled('valid_from') || '';
+      const vu = gvEnabled('valid_until') || '';
+
+      return `
+      <div class="student-id-back">
+
+  <div class="sid-back-header">
+    <div class="sid-logo-small">
+      ${logoData ? `<img src="${logoData}" style="width:100%;height:100%;object-fit:contain">` : '<span style="font-size:14px">🏫</span>'}
+    </div>
+
+    <div class="sid-college-name">
+      ${gvEnabled('org_name')}
+    </div>
+  </div>
+
+  <div class="sid-back-body">
+
+    <div class="info-line">
+      <strong>Blood Group :</strong>
+      ${gvEnabled('blood_group')}
+    </div>
+
+    <div class="info-line">
+      <strong>Address :</strong>
+      ${gvEnabled('address')}
+    </div>
+
+    <div class="info-line">
+      <strong>Contact :</strong>
+      ${gvEnabled('phone')}
+    </div>
+
+    <div class="info-line">
+      <strong>Email :</strong>
+      ${gvEnabled('email')}
+    </div>
+
+    <hr>
+
+    <div class="instruction-title">
+      INSTRUCTIONS
+    </div>
+
+    <ol class="instruction-list">
+      <li>This card is property of the institute.</li>
+      <li>Student must carry this card daily.</li>
+      <li>Loss of card should be reported immediately.</li>
+      <li>Card is non-transferable.</li>
+      <li>Produce this card whenever required.</li>
+    </ol>
+
+  </div>
+
+  <div class="sid-footer">
+    RETURN IF FOUND
+  </div>
+
+</div>
+            `;
+    }
+
+    // ── RENDER ALL ──
+    function renderAll() {
+      const renderers = {
+        1: [renderT1Front, renderT1Back],
+        2: [renderT2Front, renderT2Back],
+        3: [renderT3Front, renderT3Back],
+        4: [renderT4Front, renderT4Back],
+        5: [renderT5Front, renderT5Back],
+        6: [renderT6Front, renderT6Back],
+        7: [renderT7Front, renderT7Back],
+      };
+      const [fFn, bFn] = renderers[currentTpl];
+      el('frontFace').innerHTML = fFn();
+      el('frontBackFace').innerHTML = bFn();
+      el('backFace').innerHTML = bFn();
+      // Apply vertical layout for template 7
+      const isVertical = currentTpl === 7;
+      el('cardFront').classList.toggle('vertical', isVertical);
+      const backWrap = el('backFace').parentElement;
+      if (isVertical) {
+        backWrap.style.width = '215px';
+        backWrap.style.height = '340px';
+      } else {
+        backWrap.style.width = '340px';
+        backWrap.style.height = '215px';
+      }
+      renderRecent();
+    }
+
+    // ── PDF DOWNLOAD ──
+    async function downloadPDF() {
+      toast('⏳ Generating PDF...', 'info');
+      try {
+        const { jsPDF } = window.jspdf;
+        const isVertical = currentTpl === 7;
+
+        // Card pixel dimensions for capture
+        const capW = isVertical ? 215 : 340;
+        const capH = isVertical ? 340 : 215;
+
+        const frontEl = el('frontFace');
+        const backEl = el('backFace');
+
+        // Capture front & back
+        const frontCanvas = await html2canvas(frontEl, {
+          scale: 3, useCORS: true, allowTaint: true,
+          backgroundColor: null, logging: false,
+          width: capW, height: capH
+        });
+        const backCanvas = await html2canvas(backEl, {
+          scale: 3, useCORS: true, allowTaint: true,
+          backgroundColor: null, logging: false,
+          width: capW, height: capH
+        });
+
+        const frontImg = frontCanvas.toDataURL('image/jpeg', 1.0);
+        const backImg  = backCanvas.toDataURL('image/jpeg', 1.0);
+
+        // ── Single landscape A4 page, both cards side by side ──
+        // For T7 vertical cards: portrait A4, cards stacked top/bottom
+        // For all others: landscape A4, cards side by side left/right
+
+        if (isVertical) {
+          // Portrait A4 — front top, back bottom, centered
+          const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+          const pageW = pdf.internal.pageSize.getWidth();  // 210
+          const pageH = pdf.internal.pageSize.getHeight(); // 297
+
+          // Card size 54×85.6 mm, two cards + labels + gap fit in 297mm height
+          const cardW = 54, cardH = 85.6;
+          const gap = 12;
+          const labelH = 6;
+          const totalH = labelH + cardH + gap + labelH + cardH;
+          const startY = (pageH - totalH) / 2;
+          const cardX = (pageW - cardW) / 2;
+
+          pdf.setFillColor(22, 25, 37);
+          pdf.rect(0, 0, pageW, pageH, 'F');
+          pdf.setFontSize(8);
+          pdf.setTextColor(100, 116, 139);
+
+          // Front
+          pdf.text('FRONT SIDE', cardX, startY + 4);
+          pdf.addImage(frontImg, 'JPEG', cardX, startY + labelH, cardW, cardH);
+
+          // Back
+          const backY = startY + labelH + cardH + gap;
+          pdf.text('BACK SIDE', cardX, backY + 4);
+          pdf.addImage(backImg, 'JPEG', cardX, backY + labelH, cardW, cardH);
+
+          const name = gv('name') || 'IDCard';
+          pdf.save(`${name.replace(/\s+/g, '_')}_ID_Card.pdf`);
+
+        } else {
+          // Landscape A4 — front left, back right, centered vertically
+          const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+          const pageW = pdf.internal.pageSize.getWidth();  // 297
+          const pageH = pdf.internal.pageSize.getHeight(); // 210
+
+          // Standard ID card: 85.6×54 mm
+          const cardW = 85.6, cardH = 54;
+          const gap = 14;
+          const labelH = 6;
+          const totalW = cardW + gap + cardW;
+          const startX = (pageW - totalW) / 2;
+          const cardY = (pageH - labelH - cardH) / 2 + 2;
+
+          pdf.setFillColor(22, 25, 37);
+          pdf.rect(0, 0, pageW, pageH, 'F');
+          pdf.setFontSize(8);
+          pdf.setTextColor(100, 116, 139);
+
+          // Front — left
+          pdf.text('FRONT SIDE', startX, cardY - 2);
+          pdf.addImage(frontImg, 'JPEG', startX, cardY, cardW, cardH);
+
+          // Back — right
+          const backX = startX + cardW + gap;
+          pdf.text('BACK SIDE', backX, cardY - 2);
+          pdf.addImage(backImg, 'JPEG', backX, cardY, cardW, cardH);
+
+          const name = gv('name') || 'IDCard';
+          pdf.save(`${name.replace(/\s+/g, '_')}_ID_Card.pdf`);
+        }
+
+        toast('✅ PDF Downloaded!');
+      } catch (err) {
+        console.error(err);
+        toast('Error! Try again.', 'error');
+      }
+    }
+
+    // ── SAVE / LOAD ──
+    function saveCard() {
+      const name = gv('name');
+      if (!name) { toast('Please enter Name first!', 'error'); return; }
+      const saved = JSON.parse(localStorage.getItem('idcards') || '[]');
+      const entry = {
+        id: Date.now(),
+        name,
+        template: currentTpl,
+        photo: photoData,
+        logo: logoData,
+        state: JSON.parse(JSON.stringify(state)),
+        savedOn: new Date().toLocaleDateString('en-IN')
+      };
+      const idx = saved.findIndex(s => s.name === name);
+      if (idx >= 0) saved[idx] = entry; else saved.unshift(entry);
+      localStorage.setItem('idcards', JSON.stringify(saved.slice(0, 20)));
+      toast('✅ ID Card saved for ' + name + '!');
+      renderRecent();
+    }
+
+    function openSaved() {
+      const saved = JSON.parse(localStorage.getItem('idcards') || '[]');
+      const tIcons = { 1: '🏢', 2: '💚', 3: '👑', 4: '💜', 5: '✨' };
+      const tColors = {
+        1: 'linear-gradient(135deg,#0f172a,#1e3a5f)',
+        2: 'linear-gradient(135deg,#064e3b,#065f46)',
+        3: 'linear-gradient(135deg,#7b0018,#c0392b)',
+        4: 'linear-gradient(135deg,#1a0533,#2d1b69)',
+        5: 'linear-gradient(135deg,#1a1200,#2d2000)'
+      };
+      el('savedList').innerHTML = saved.length
+        ? saved.map(s => `
+      <div class="saved-item">
+        <div class="saved-item-icon" style="background:${tColors[s.template]}">${tIcons[s.template]}</div>
+        <div class="saved-item-info">
+          <div class="saved-item-name">${s.name}</div>
+          <div class="saved-item-meta">Template ${s.template} · ${s.savedOn}</div>
+        </div>
+        <div class="saved-item-actions">
+          <button class="btn btn-primary btn-xs" onclick="loadCard(${s.id});closeModal()"><i class="fa fa-edit"></i> Load</button>
+          <button class="btn btn-danger btn-xs" onclick="deleteCard(${s.id})"><i class="fa fa-trash"></i></button>
+        </div>
+      </div>
+    `).join('')
+        : '<div style="text-align:center;padding:30px;color:var(--muted)"><i class="fa fa-folder-open" style="font-size:32px;display:block;margin-bottom:10px;opacity:.3"></i>No saved cards yet.</div>';
+      el('savedModal').classList.add('open');
+    }
+
+    function loadCard(id) {
+      const saved = JSON.parse(localStorage.getItem('idcards') || '[]');
+      const entry = saved.find(s => s.id === id);
+      if (!entry) return;
+      Object.assign(state.fields, entry.state.fields);
+      state.customFields = entry.state.customFields || [];
+      state.data = entry.state.data || {};
+      currentTpl = entry.template;
+      photoData = entry.photo || null;
+      logoData = entry.logo || null;
+
+      // Restore photos
+      if (photoData) {
+        el('photoPreview').src = photoData;
+        el('photoPreview').style.display = 'block';
+        el('photoPlaceholder').style.display = 'none';
+        el('removePhotoBtn').style.display = 'flex';
+      } else {
+        removePhoto('photo');
+      }
+      if (logoData) {
+        el('logoPreview').src = logoData;
+        el('logoPreview').style.display = 'block';
+        el('logoPlaceholder').style.display = 'none';
+        el('removeLogoBtn').style.display = 'flex';
+      } else {
+        removePhoto('logo');
+      }
+
+      document.querySelectorAll('.tpl-card').forEach((c, i) => c.classList.toggle('active', i + 1 === currentTpl));
+      renderFieldToggles();
+      renderFormFields();
+      renderAll();
+      toast('✅ Loaded: ' + entry.name);
+    }
+
+    function deleteCard(id) {
+      if (!confirm('Delete this ID card?')) return;
+      let saved = JSON.parse(localStorage.getItem('idcards') || '[]');
+      saved = saved.filter(s => s.id !== id);
+      localStorage.setItem('idcards', JSON.stringify(saved));
+      openSaved();
+      toast('Deleted.', 'error');
+    }
+
+    function renderRecent() {
+      const saved = JSON.parse(localStorage.getItem('idcards') || '[]').slice(0, 4);
+      const tColors = { 1: 'linear-gradient(135deg,#0f172a,#1e3a5f)', 2: 'linear-gradient(135deg,#064e3b,#065f46)', 3: 'linear-gradient(135deg,#7b0018,#c0392b)', 4: 'linear-gradient(135deg,#1a0533,#2d1b69)', 5: 'linear-gradient(135deg,#1a1200,#2d2000)' };
+      const tIcons = { 1: '🏢', 2: '💚', 3: '👑', 4: '💜', 5: '✨' };
+      el('recentCards').innerHTML = saved.length
+        ? saved.map(s => `
+      <div onclick="loadCard(${s.id})" style="background:${tColors[s.template]};border-radius:10px;padding:12px;cursor:pointer;border:1px solid rgba(255,255,255,.07);transition:.2s" onmouseover="this.style.borderColor='rgba(255,255,255,.2)'" onmouseout="this.style.borderColor='rgba(255,255,255,.07)'">
+        <div style="font-size:20px;margin-bottom:5px">${tIcons[s.template]}</div>
+        <div style="font-size:12px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.name}</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:2px">${s.savedOn}</div>
+      </div>
+    `).join('')
+        : '<p style="font-size:12px;color:var(--muted);grid-column:span 4">No saved cards yet. Fill in details and save!</p>';
+    }
+
+    // ── INIT ──
+    document.addEventListener('DOMContentLoaded', () => {
+      renderFieldToggles();
+      renderFormFields();
+      renderAll();
+
+      // New card button
+      const tb = document.querySelector('.topbar-right');
+      const nb = document.createElement('button');
+      nb.className = 'btn btn-outline btn-sm';
+      nb.innerHTML = '<i class="fa fa-plus"></i> <span class="btn-label">New</span>';
+      nb.onclick = () => {
+        if (!confirm('Start a new ID card? Unsaved data will be lost.')) return;
+        state.data = {};
+        state.customFields = [];
+        Object.values(state.fields).forEach(f => f.enabled = ['name', 'designation', 'department', 'employee_id', 'phone', 'email', 'blood', 'org_name', 'valid_from', 'valid_until'].includes(Object.keys(state.fields).find(k => state.fields[k] === f)));
+        photoData = null; logoData = null;
+        removePhoto('photo'); removePhoto('logo');
+        currentTpl = 1;
+        document.querySelectorAll('.tpl-card').forEach((c, i) => c.classList.toggle('active', i === 0));
+        renderFieldToggles();
+        renderFormFields();
+        renderAll();
+        toast('Fresh ID card started!');
+      };
+      tb.insertBefore(nb, tb.firstChild);
+
+      el('savedModal').addEventListener('click', e => { if (e.target === el('savedModal')) closeModal(); });
+    });
+  </script>
+</body>
+
+</html>

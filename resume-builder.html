@@ -1,0 +1,2753 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume Builder Pro</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Syne:wght@400;600;700;800&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Outfit:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    /* ══════════════════════════════════════
+   ROOT & RESET
+══════════════════════════════════════ */
+    :root {
+      --bg: #0d0e14;
+      --bg2: #12141c;
+      --bg3: #181b26;
+      --card: #1e2235;
+      --card2: #242840;
+      --border: rgba(255, 255, 255, .06);
+      --border2: rgba(255, 255, 255, .12);
+      --text: #d8dff0;
+      --muted: #525c7a;
+      --muted2: #7a86a8;
+      --white: #fff;
+      --accent: #6c8bef;
+      --accent2: #4f6de0;
+      --gold: #e8b84b;
+      --rose: #e06b6b;
+      --teal: #4ecdc4;
+      --green: #52d48a;
+      --r: 12px;
+      --shadow: 0 24px 80px rgba(0, 0, 0, .7);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg2);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--card2);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--muted);
+    }
+
+    /* ══════════════════════════════════════
+   TOPBAR
+══════════════════════════════════════ */
+    .topbar {
+      background: rgba(13, 14, 20, .96);
+      backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 500;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--accent2), var(--teal));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+    }
+
+    .brand-name {
+      /* font-family: 'Syne', sans-serif; */
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -.3px;
+    }
+
+    .brand-name span {
+      color: var(--accent);
+    }
+
+    .topbar-right {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    /* ══════════════════════════════════════
+   BUTTONS
+══════════════════════════════════════ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 15px;
+      border-radius: 9px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all .2s;
+      font-family: 'DM Sans', sans-serif;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent2), #3a55d0);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(79, 109, 224, .35);
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold), #c9921e);
+      color: #1a0e00;
+      font-weight: 700;
+      box-shadow: 0 4px 14px rgba(232, 184, 75, .25);
+    }
+
+    .btn-teal {
+      background: linear-gradient(135deg, var(--teal), #2db5ac);
+      color: #fff;
+    }
+
+    .btn-rose {
+      background: linear-gradient(135deg, var(--rose), #c44545);
+      color: #fff;
+    }
+
+    .btn-green {
+      background: linear-gradient(135deg, var(--green), #2db866);
+      color: #fff;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border2);
+      color: var(--text);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(108, 139, 239, .06);
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, .04);
+      color: var(--muted2);
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, .08);
+      color: var(--text);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: #fff;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    .btn-xs {
+      padding: 4px 9px;
+      font-size: 11px;
+      border-radius: 7px;
+    }
+
+    /* ══════════════════════════════════════
+   MOBILE TOGGLE
+══════════════════════════════════════ */
+    .mob-toggle {
+      display: none;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mob-toggle button {
+      flex: 1;
+      padding: 11px 8px;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: .2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .mob-toggle button.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    /* ══════════════════════════════════════
+   LAYOUT
+══════════════════════════════════════ */
+    .app {
+      display: grid;
+      grid-template-columns: 370px 1fr;
+      min-height: calc(100vh - 60px);
+    }
+
+    .sidebar {
+      background: var(--bg2);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      position: sticky;
+      top: 60px;
+      height: calc(100vh - 60px);
+    }
+
+    .preview-area {
+      background: var(--bg3);
+      overflow-y: auto;
+      padding: 28px 24px;
+    }
+
+    /* ══════════════════════════════════════
+   SIDEBAR TABS
+══════════════════════════════════════ */
+    .stabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stab {
+      flex: 1;
+      padding: 13px 4px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: .2s;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .stab:hover {
+      color: var(--muted2);
+    }
+
+    .stab.on {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .sp {
+      display: none;
+      padding: 18px 16px;
+    }
+
+    .sp.on {
+      display: block;
+    }
+
+    /* ══════════════════════════════════════
+   FORM ELEMENTS
+══════════════════════════════════════ */
+    .sec-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted2);
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .sec-title i {
+      color: var(--accent);
+      font-size: 11px;
+    }
+
+    .fg {
+      margin-bottom: 11px;
+    }
+
+    .fg label {
+      display: block;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    input[type=text],
+    input[type=email],
+    input[type=url],
+    input[type=tel],
+    input[type=date],
+    select,
+    textarea {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 11px;
+      color: var(--text);
+      font-size: 12.5px;
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      transition: .2s;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--accent2);
+      background: rgba(79, 109, 224, .04);
+      box-shadow: 0 0 0 3px rgba(79, 109, 224, .1);
+    }
+
+    select option {
+      background: var(--bg3);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 70px;
+      line-height: 1.5;
+    }
+
+    .fr2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+    }
+
+    .fr3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    /* ══════════════════════════════════════
+   PHOTO UPLOAD
+══════════════════════════════════════ */
+    .photo-zone {
+      border: 2px dashed var(--border2);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: .2s;
+      position: relative;
+      margin-bottom: 8px;
+    }
+
+    .photo-zone:hover {
+      border-color: var(--accent);
+      background: rgba(108, 139, 239, .04);
+    }
+
+    .photo-zone input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    .photo-preview {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 auto 6px;
+      display: block;
+      border: 2px solid var(--accent2);
+    }
+
+    /* ══════════════════════════════════════
+   SECTION CARDS (for entries)
+══════════════════════════════════════ */
+    .entry-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+      position: relative;
+      transition: .2s;
+    }
+
+    .entry-card:hover {
+      border-color: var(--border2);
+    }
+
+    .entry-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+
+    .entry-card-title {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .entry-card-actions {
+      display: flex;
+      gap: 5px;
+    }
+
+    .entry-body {}
+
+    .entry-body.collapsed {
+      display: none;
+    }
+
+    .chevron {
+      transition: transform .25s;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .chevron.open {
+      transform: rotate(180deg);
+    }
+
+    /* ══════════════════════════════════════
+   SKILL TAGS
+══════════════════════════════════════ */
+    .skill-input-row {
+      display: flex;
+      gap: 7px;
+      margin-bottom: 9px;
+    }
+
+    .skill-input-row input {
+      flex: 1;
+    }
+
+    .skill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .skill-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(108, 139, 239, .15);
+      border: 1px solid rgba(108, 139, 239, .25);
+      color: var(--accent);
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+
+    .skill-tag .rm-skill {
+      cursor: pointer;
+      opacity: .6;
+      font-size: 10px;
+    }
+
+    .skill-tag .rm-skill:hover {
+      opacity: 1;
+      color: var(--rose);
+    }
+
+    /* ══════════════════════════════════════
+   SECTION TOGGLE
+══════════════════════════════════════ */
+    .sec-toggle-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 11px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      margin-bottom: 7px;
+      transition: .2s;
+    }
+
+    .sec-toggle-item:hover {
+      border-color: var(--border2);
+    }
+
+    .sec-toggle-label {
+      flex: 1;
+      font-size: 12.5px;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .sec-toggle-icon {
+      font-size: 13px;
+    }
+
+    .ts {
+      position: relative;
+      width: 38px;
+      height: 21px;
+      flex-shrink: 0;
+    }
+
+    .ts input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .tsl {
+      position: absolute;
+      inset: 0;
+      background: var(--card2);
+      border-radius: 21px;
+      cursor: pointer;
+      transition: .3s;
+    }
+
+    .tsl::before {
+      content: '';
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      left: 3px;
+      bottom: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: .3s;
+    }
+
+    .ts input:checked+.tsl {
+      background: var(--accent2);
+    }
+
+    .ts input:checked+.tsl::before {
+      transform: translateX(17px);
+    }
+
+    /* ══════════════════════════════════════
+   TEMPLATE PICKER
+══════════════════════════════════════ */
+    .tpl-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .tpl-card {
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: .25s;
+    }
+
+    .tpl-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .tpl-card.active {
+      border-color: var(--gold);
+      box-shadow: 0 0 20px rgba(232, 184, 75, .2);
+    }
+
+    .tpl-thumb {
+      height: 160px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tpl-name {
+      padding: 9px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      background: var(--card);
+    }
+
+    .tpl-badge {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: var(--gold);
+      color: #1a0e00;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 8px;
+    }
+
+    /* ══════════════════════════════════════
+   PREVIEW HEADER
+══════════════════════════════════════ */
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .preview-header h3 {
+      /* font-family: 'Syne', sans-serif; */
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--white);
+    }
+
+    .preview-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* ══════════════════════════════════════
+   RESUME WRAPPER
+══════════════════════════════════════ */
+    .resume-wrapper {
+      background: #fff;
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+      min-height: 1000px;
+      box-shadow: var(--shadow);
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ══════════════════════════════════════
+   TEMPLATE 1 — EXECUTIVE SLATE
+   Dark sidebar + clean right panel
+══════════════════════════════════════ */
+    .t1 {
+      display: flex;
+      min-height: 1000px;
+      font-family: 'Crimson Pro', serif;
+    }
+
+    /* Sidebar */
+    .t1-sidebar {
+      width: 240px;
+      flex-shrink: 0;
+      background: linear-gradient(180deg, #1a2332 0%, #0f1825 100%);
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .t1-sidebar-top {
+      padding: 30px 22px 22px;
+      border-bottom: 1px solid rgba(255, 255, 255, .06);
+    }
+
+    .t1-photo-wrap {
+      margin-bottom: 16px;
+    }
+
+    .t1-photo {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid rgba(255, 255, 255, .15);
+      display: block;
+      background: rgba(255, 255, 255, .06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: rgba(255, 255, 255, .15);
+    }
+
+    .t1-photo-img {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid rgba(255, 255, 255, .2);
+      display: block;
+    }
+
+    .t1-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 4px;
+    }
+
+    .t1-title {
+      font-size: 11.5px;
+      color: rgba(255, 255, 255, .55);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+    }
+
+    .t1-side-sec {
+      padding: 18px 22px;
+      border-bottom: 1px solid rgba(255, 255, 255, .04);
+    }
+
+    .t1-side-sec:last-child {
+      border-bottom: none;
+    }
+
+    .t1-side-head {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 9px;
+      font-weight: 800;
+      color: rgba(255, 255, 255, .3);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .t1-side-head::before {
+      content: '';
+      display: block;
+      width: 16px;
+      height: 1px;
+      background: rgba(255, 255, 255, .2);
+    }
+
+    .t1-contact-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 7px;
+    }
+
+    .t1-contact-item i {
+      color: rgba(255, 255, 255, .3);
+      font-size: 10px;
+      margin-top: 2px;
+      flex-shrink: 0;
+      width: 12px;
+    }
+
+    .t1-contact-text {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      color: rgba(255, 255, 255, .6);
+      word-break: break-all;
+      line-height: 1.4;
+    }
+
+    .t1-skill-item {
+      margin-bottom: 9px;
+    }
+
+    .t1-skill-name {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      color: rgba(255, 255, 255, .7);
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .t1-skill-bar {
+      height: 3px;
+      background: rgba(255, 255, 255, .1);
+      border-radius: 2px;
+    }
+
+    .t1-skill-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: linear-gradient(90deg, #6c8bef, #4ecdc4);
+    }
+
+    .t1-lang-item {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      color: rgba(255, 255, 255, .65);
+      margin-bottom: 5px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .t1-lang-lvl {
+      font-size: 9.5px;
+      color: rgba(255, 255, 255, .3);
+    }
+
+    .t1-side-tag {
+      display: inline-block;
+      background: rgba(255, 255, 255, .07);
+      color: rgba(255, 255, 255, .55);
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10px;
+      margin: 2px 2px 2px 0;
+    }
+
+    /* Main content */
+    .t1-main {
+      flex: 1;
+      padding: 32px 28px;
+      background: #fff;
+    }
+
+    .t1-main-sec {
+      margin-bottom: 26px;
+    }
+
+    .t1-main-head {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10px;
+      font-weight: 800;
+      color: #1a2332;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #1a2332;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .t1-summary {
+      font-size: 13.5px;
+      color: #4a5568;
+      line-height: 1.75;
+    }
+
+    .t1-entry {
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .t1-entry:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .t1-entry-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 2px;
+    }
+
+    .t1-entry-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1a2332;
+    }
+
+    .t1-entry-company {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      color: #6c8bef;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .t1-entry-date {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      color: #9ca3af;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-left: 8px;
+    }
+
+    .t1-entry-loc {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      color: #9ca3af;
+      margin-bottom: 5px;
+    }
+
+    .t1-entry-desc {
+      font-size: 12.5px;
+      color: #4a5568;
+      line-height: 1.65;
+    }
+
+    .t1-entry-desc ul {
+      padding-left: 14px;
+    }
+
+    .t1-entry-desc li {
+      margin-bottom: 2px;
+    }
+
+    .t1-skill-tag {
+      display: inline-block;
+      background: #f0f4ff;
+      color: #4f6de0;
+      border: 1px solid #d0d8f0;
+      border-radius: 4px;
+      padding: 3px 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      margin: 2px 3px 2px 0;
+    }
+
+    .t1-cert-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 7px;
+      font-size: 13px;
+      color: #374151;
+      border-bottom: 1px dotted #e5e7eb;
+      padding-bottom: 7px;
+    }
+
+    .t1-cert-item:last-child {
+      border-bottom: none;
+    }
+
+    .t1-cert-org {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    .t1-proj-item {
+      margin-bottom: 12px;
+    }
+
+    .t1-proj-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #1a2332;
+    }
+
+    .t1-proj-tech {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10.5px;
+      color: #6c8bef;
+      margin-bottom: 4px;
+    }
+
+    .t1-proj-desc {
+      font-size: 12.5px;
+      color: #4a5568;
+      line-height: 1.6;
+    }
+
+    .t1-ach-item {
+      font-size: 13px;
+      color: #374151;
+      line-height: 1.6;
+      padding-left: 14px;
+      position: relative;
+      margin-bottom: 5px;
+    }
+
+    .t1-ach-item::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: #6c8bef;
+      font-size: 11px;
+      top: 1px;
+    }
+
+    /* ══════════════════════════════════════
+   TEMPLATE 2 — MODERN MINIMAL
+   Full white, bold typography, teal accent
+══════════════════════════════════════ */
+    .t2 {
+      font-family: 'Outfit', sans-serif;
+      min-height: 1000px;
+      background: #fff;
+    }
+
+    .t2-header {
+      padding: 36px 40px 28px;
+      background: #fff;
+      border-bottom: 3px solid #111;
+      display: flex;
+      gap: 22px;
+      align-items: flex-start;
+    }
+
+    .t2-photo-wrap {
+      flex-shrink: 0;
+    }
+
+    .t2-photo-img {
+      width: 88px;
+      height: 88px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 2px solid #111;
+      display: block;
+    }
+
+    .t2-photo-ph {
+      width: 88px;
+      height: 88px;
+      border-radius: 8px;
+      background: #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: #d1d5db;
+      border: 2px solid #e5e7eb;
+    }
+
+    .t2-header-info {
+      flex: 1;
+    }
+
+    .t2-name {
+      font-size: 34px;
+      font-weight: 800;
+      color: #111;
+      line-height: 1.1;
+      letter-spacing: -1px;
+      margin-bottom: 4px;
+    }
+
+    .t2-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: #6b7280;
+      letter-spacing: .5px;
+      margin-bottom: 12px;
+    }
+
+    .t2-contact-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+    }
+
+    .t2-contact-chip {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: #4b5563;
+      font-weight: 500;
+      margin-right: 16px;
+      margin-bottom: 4px;
+    }
+
+    .t2-contact-chip i {
+      color: #111;
+      font-size: 10px;
+    }
+
+    .t2-body {
+      display: grid;
+      grid-template-columns: 1fr 220px;
+      min-height: 800px;
+    }
+
+    .t2-main {
+      padding: 28px 32px 32px 40px;
+      border-right: 1px solid #e5e7eb;
+    }
+
+    .t2-side {
+      padding: 28px 22px;
+    }
+
+    .t2-sec {
+      margin-bottom: 26px;
+    }
+
+    .t2-sec-head {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #111;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .t2-sec-head::after {
+      content: '';
+      flex: 1;
+      height: 2px;
+      background: #111;
+    }
+
+    .t2-entry {
+      margin-bottom: 16px;
+    }
+
+    .t2-entry-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .t2-entry-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #111;
+    }
+
+    .t2-entry-date {
+      font-size: 11px;
+      color: #9ca3af;
+      white-space: nowrap;
+    }
+
+    .t2-entry-sub {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #2563eb;
+      margin-bottom: 4px;
+    }
+
+    .t2-entry-loc {
+      font-size: 11.5px;
+      color: #6b7280;
+      margin-bottom: 5px;
+    }
+
+    .t2-entry-desc {
+      font-size: 12.5px;
+      color: #374151;
+      line-height: 1.65;
+    }
+
+    .t2-entry-desc ul {
+      padding-left: 14px;
+    }
+
+    .t2-entry-desc li {
+      margin-bottom: 2px;
+    }
+
+    .t2-summary {
+      font-size: 13.5px;
+      color: #374151;
+      line-height: 1.75;
+    }
+
+    /* Side sections */
+    .t2-side-head {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.8px;
+      color: #111;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #111;
+    }
+
+    .t2-side-sec {
+      margin-bottom: 22px;
+    }
+
+    .t2-skill-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .t2-skill-row {}
+
+    .t2-skill-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: #111;
+      margin-bottom: 3px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .t2-skill-bar {
+      height: 4px;
+      background: #e5e7eb;
+      border-radius: 2px;
+    }
+
+    .t2-skill-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: #111;
+    }
+
+    .t2-skill-tag {
+      display: inline-block;
+      background: #f3f4f6;
+      color: #374151;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      padding: 3px 9px;
+      font-size: 11px;
+      font-weight: 600;
+      margin: 2px 2px 2px 0;
+    }
+
+    .t2-lang-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+
+    .t2-lang-lvl {
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
+    .t2-cert-item {
+      font-size: 12px;
+      color: #374151;
+      margin-bottom: 7px;
+      line-height: 1.4;
+    }
+
+    .t2-cert-org {
+      font-size: 10.5px;
+      color: #9ca3af;
+    }
+
+    .t2-proj-item {
+      margin-bottom: 14px;
+    }
+
+    .t2-proj-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #111;
+    }
+
+    .t2-proj-tech {
+      font-size: 10.5px;
+      color: #2563eb;
+      margin-bottom: 3px;
+      font-weight: 600;
+    }
+
+    .t2-proj-desc {
+      font-size: 12px;
+      color: #374151;
+      line-height: 1.55;
+    }
+
+    .t2-ach-item {
+      font-size: 12.5px;
+      color: #374151;
+      line-height: 1.6;
+      padding-left: 13px;
+      position: relative;
+      margin-bottom: 5px;
+    }
+
+    .t2-ach-item::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: #2563eb;
+      font-weight: 900;
+    }
+
+    .t2-side-contact {
+      font-size: 11.5px;
+      color: #374151;
+      margin-bottom: 6px;
+      display: flex;
+      gap: 6px;
+      align-items: flex-start;
+      word-break: break-all;
+    }
+
+    .t2-side-contact i {
+      font-size: 10px;
+      margin-top: 2px;
+      color: #111;
+      flex-shrink: 0;
+      width: 12px;
+    }
+
+    /* ══════════════════════════════════════
+   MODAL
+══════════════════════════════════════ */
+    .modal-ov {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .82);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      backdrop-filter: blur(8px);
+    }
+
+    .modal-ov.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--card2);
+      border: 1px solid var(--border2);
+      border-radius: 18px;
+      width: 100%;
+      max-width: 480px;
+      padding: 26px;
+      animation: popIn .3s ease;
+      position: relative;
+      max-height: 88vh;
+      overflow-y: auto;
+    }
+
+    @keyframes popIn {
+      from {
+        transform: scale(.9);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: rgba(255, 255, 255, .07);
+      border: none;
+      color: var(--text);
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: .2s;
+    }
+
+    .modal-close:hover {
+      background: rgba(255, 255, 255, .14);
+    }
+
+    .modal-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--white);
+      margin-bottom: 18px;
+    }
+
+    .saved-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: .2s;
+    }
+
+    .saved-item:hover {
+      border-color: var(--border2);
+    }
+
+    .saved-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .saved-info {
+      flex: 1;
+    }
+
+    .saved-name {
+      font-weight: 700;
+      color: var(--white);
+      font-size: 13px;
+    }
+
+    .saved-meta {
+      font-size: 11px;
+      color: var(--muted2);
+      margin-top: 2px;
+    }
+
+    .saved-acts {
+      display: flex;
+      gap: 5px;
+    }
+
+    /* ══════════════════════════════════════
+   TOAST
+══════════════════════════════════════ */
+    .toast {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      padding: 11px 18px;
+      border-radius: 11px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: .35s cubic-bezier(.34, 1.56, .64, 1);
+      z-index: 9999;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .4);
+      color: #fff;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast.ok {
+      background: var(--green);
+    }
+
+    .toast.er {
+      background: var(--rose);
+    }
+
+    .toast.in {
+      background: var(--accent2);
+    }
+
+    /* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+    @media (max-width: 960px) {
+      .app {
+        grid-template-columns: 320px 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+        height: auto;
+      }
+
+      .preview-area {
+        padding: 16px;
+      }
+
+      .mob-toggle {
+        display: flex;
+      }
+
+      .sidebar.mob-hide,
+      .preview-area.mob-hide {
+        display: none;
+      }
+
+      .preview-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .preview-actions {
+        width: 100%;
+      }
+
+      .preview-actions .btn {
+        flex: 1;
+        justify-content: center;
+      }
+
+      .resume-wrapper {
+        border-radius: 0;
+      }
+
+      .t1-sidebar {
+        width: 180px;
+      }
+
+      .t2-body {
+        grid-template-columns: 1fr;
+      }
+
+      .t2-side {
+        border-top: 1px solid #e5e7eb;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .topbar {
+        padding: 0 12px;
+        height: 54px;
+      }
+
+      .brand-name {
+        font-size: 14px;
+      }
+
+      .topbar-right .btn .btn-label {
+        display: none;
+      }
+
+      .btn-sm {
+        padding: 6px 10px;
+        font-size: 11.5px;
+      }
+
+      .sp {
+        padding: 14px 12px;
+      }
+
+      .fr2,
+      .fr3 {
+        grid-template-columns: 1fr;
+      }
+
+      .tpl-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 9px;
+      }
+
+      .t1 {
+        flex-direction: column;
+      }
+
+      .t1-sidebar {
+        width: 100%;
+      }
+
+      .t2-name {
+        font-size: 24px;
+      }
+
+      .t2-header {
+        padding: 20px;
+        flex-direction: column;
+      }
+
+      .t2-main {
+        padding: 20px;
+      }
+
+      .t2-side {
+        padding: 20px;
+      }
+
+      .toast {
+        right: 10px;
+        bottom: 10px;
+        font-size: 12px;
+      }
+    }
+
+    @media print {
+
+      .topbar,
+      .sidebar,
+      .mob-toggle,
+      .preview-header,
+      .preview-actions {
+        display: none !important;
+      }
+
+      .preview-area {
+        padding: 0;
+        background: #fff;
+      }
+
+      .app {
+        display: block;
+      }
+
+      .resume-wrapper {
+        box-shadow: none;
+        border-radius: 0;
+        max-width: 100%;
+      }
+
+      body {
+        background: #fff;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">📄</div>
+      <div class="brand-name">Resume <span>Builder</span></div>
+    </div>
+    <div class="topbar-right" id="topbarRight">
+      <button class="btn btn-outline btn-sm" onclick="openSaved()"><i class="fa fa-folder-open"></i> <span
+          class="btn-label">Saved</span></button>
+      <button class="btn btn-teal btn-sm" onclick="saveResume()"><i class="fa fa-save"></i> <span
+          class="btn-label">Save</span></button>
+      <button class="btn btn-gold btn-sm" onclick="downloadPDF()"><i class="fa fa-download"></i> <span
+          class="btn-label">PDF</span></button>
+    </div>
+  </div>
+
+  <!-- MOBILE TOGGLE -->
+  <div class="mob-toggle" id="mobToggle">
+    <button id="mobFormBtn" class="active" onclick="mobSwitch('form')">✏️ Edit</button>
+    <button id="mobPrevBtn" onclick="mobSwitch('preview')">👁️ Preview</button>
+  </div>
+
+  <!-- APP -->
+  <div class="app">
+
+    <!-- ═══ SIDEBAR ═══ -->
+    <aside class="sidebar" id="sidebarEl">
+      <div class="stabs">
+        <div class="stab on" onclick="switchTab('info')">Info</div>
+        <div class="stab" onclick="switchTab('sections')">Sections</div>
+        <div class="stab" onclick="switchTab('template')">Template</div>
+      </div>
+
+      <!-- INFO TAB -->
+      <div class="sp on" id="sp-info">
+
+        <!-- PHOTO -->
+        <div class="sec-title"><i class="fa fa-camera"></i>Profile Photo</div>
+        <div class="photo-zone" onclick="document.getElementById('photoIn').click()">
+          <img id="photoPreview" class="photo-preview" src="" style="display:none" alt="">
+          <div id="photoPlaceholder">
+            <div style="font-size:30px;margin-bottom:6px">👤</div>
+            <div style="font-size:12px;color:var(--muted)">Click to upload photo</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">JPG, PNG — optional</div>
+          </div>
+          <input type="file" id="photoIn" accept="image/*" style="display:none" onchange="handlePhoto(this)">
+        </div>
+        <button id="removePhotoBtn" class="btn btn-danger btn-xs"
+          style="width:100%;justify-content:center;display:none;margin-bottom:12px" onclick="removePhoto()"><i
+            class="fa fa-trash"></i> Remove Photo</button>
+
+        <!-- PERSONAL INFO -->
+        <div class="sec-title" style="margin-top:4px"><i class="fa fa-user"></i>Personal Info</div>
+        <div class="fg"><label>Full Name *</label><input type="text" id="f_name" placeholder="John Doe" oninput="rd()">
+        </div>
+        <div class="fg"><label>Job Title / Headline *</label><input type="text" id="f_title"
+            placeholder="Senior Software Engineer" oninput="rd()"></div>
+        <div class="fr2">
+          <div class="fg"><label>Email</label><input type="email" id="f_email" placeholder="john@email.com"
+              oninput="rd()"></div>
+          <div class="fg"><label>Phone</label><input type="tel" id="f_phone" placeholder="+91 99999 00000"
+              oninput="rd()"></div>
+        </div>
+        <div class="fr2">
+          <div class="fg"><label>Location</label><input type="text" id="f_location" placeholder="City, Country"
+              oninput="rd()"></div>
+          <div class="fg"><label>LinkedIn</label><input type="url" id="f_linkedin" placeholder="linkedin.com/in/..."
+              oninput="rd()"></div>
+        </div>
+        <div class="fr2">
+          <div class="fg"><label>Website / Portfolio</label><input type="url" id="f_website" placeholder="yoursite.com"
+              oninput="rd()"></div>
+          <div class="fg"><label>GitHub</label><input type="url" id="f_github" placeholder="github.com/..."
+              oninput="rd()"></div>
+        </div>
+
+        <!-- SUMMARY -->
+        <div class="sec-title" style="margin-top:4px"><i class="fa fa-align-left"></i>Professional Summary</div>
+        <div class="fg">
+          <textarea id="f_summary" rows="4"
+            placeholder="A brief 2-3 sentence summary of your professional background, key skills, and career goals..."
+            oninput="rd()"></textarea>
+        </div>
+
+      </div>
+
+      <!-- SECTIONS TAB -->
+      <div class="sp" id="sp-sections">
+        <div class="sec-title"><i class="fa fa-layer-group"></i>Toggle Sections</div>
+        <p style="font-size:11.5px;color:var(--muted);margin-bottom:14px">Enable or disable sections for your resume.
+        </p>
+        <div id="sectionToggles"></div>
+
+        <div style="margin-top:20px" id="sectionForms"></div>
+      </div>
+
+      <!-- TEMPLATE TAB -->
+      <div class="sp" id="sp-template">
+        <div class="sec-title"><i class="fa fa-palette"></i>Choose Template</div>
+        <p style="font-size:11.5px;color:var(--muted);margin-bottom:14px">2 carefully crafted professional designs</p>
+        <div class="tpl-grid">
+          <div class="tpl-card active" id="tc1" onclick="setTemplate(1)">
+            <div class="tpl-thumb">
+              <span class="tpl-badge">Popular</span>
+              <!-- Mini preview T1 -->
+              <div style="display:flex;width:100%;height:100%">
+                <div style="width:42%;background:linear-gradient(180deg,#1a2332,#0f1825);padding:8px 6px">
+                  <div
+                    style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.1);margin:0 auto 5px">
+                  </div>
+                  <div style="height:5px;background:rgba(255,255,255,.2);border-radius:2px;margin-bottom:4px"></div>
+                  <div style="height:3px;background:rgba(255,255,255,.1);border-radius:2px;margin-bottom:10px"></div>
+                  <div style="height:3px;background:rgba(255,255,255,.08);border-radius:2px;margin-bottom:3px"></div>
+                  <div style="height:3px;background:rgba(255,255,255,.08);border-radius:2px;margin-bottom:3px"></div>
+                  <div style="height:3px;background:rgba(255,255,255,.08);border-radius:2px"></div>
+                </div>
+                <div style="flex:1;background:#fff;padding:8px 6px">
+                  <div style="height:5px;background:#1a2332;border-radius:1px;margin-bottom:7px"></div>
+                  <div style="height:3px;background:#eee;border-radius:1px;margin-bottom:2px"></div>
+                  <div style="height:3px;background:#eee;border-radius:1px;margin-bottom:2px"></div>
+                  <div style="height:3px;background:#eee;border-radius:1px;margin-bottom:8px"></div>
+                  <div style="height:5px;background:#1a2332;border-radius:1px;margin-bottom:6px"></div>
+                  <div style="height:3px;background:#eee;border-radius:1px;margin-bottom:2px"></div>
+                  <div style="height:3px;background:#eee;border-radius:1px;margin-bottom:2px"></div>
+                </div>
+              </div>
+            </div>
+            <div class="tpl-name">Executive Slate</div>
+          </div>
+
+          <div class="tpl-card" id="tc2" onclick="setTemplate(2)">
+            <div class="tpl-thumb">
+              <!-- Mini preview T2 -->
+              <div style="width:100%;height:100%;background:#fff;padding:8px">
+                <div style="border-bottom:2.5px solid #111;padding-bottom:6px;margin-bottom:6px">
+                  <div style="height:7px;background:#111;border-radius:1px;margin-bottom:3px;width:60%"></div>
+                  <div style="height:3px;background:#d1d5db;border-radius:1px;width:40%"></div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 34%;gap:6px">
+                  <div>
+                    <div style="height:4px;background:#111;border-radius:1px;margin-bottom:4px"></div>
+                    <div style="height:2.5px;background:#e5e7eb;border-radius:1px;margin-bottom:2px"></div>
+                    <div style="height:2.5px;background:#e5e7eb;border-radius:1px;margin-bottom:2px"></div>
+                    <div style="height:2.5px;background:#e5e7eb;border-radius:1px;margin-bottom:6px"></div>
+                    <div style="height:4px;background:#111;border-radius:1px;margin-bottom:4px"></div>
+                    <div style="height:2.5px;background:#e5e7eb;border-radius:1px;margin-bottom:2px"></div>
+                    <div style="height:2.5px;background:#e5e7eb;border-radius:1px"></div>
+                  </div>
+                  <div style="border-left:1px solid #e5e7eb;padding-left:5px">
+                    <div style="height:3px;background:#111;border-radius:1px;margin-bottom:4px"></div>
+                    <div style="height:2px;background:#e5e7eb;border-radius:1px;margin-bottom:2px"></div>
+                    <div style="height:2px;background:#e5e7eb;border-radius:1px;margin-bottom:2px"></div>
+                    <div style="height:2px;background:#e5e7eb;border-radius:1px"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="tpl-name">Modern Minimal</div>
+          </div>
+        </div>
+
+        <div style="margin-top:20px">
+          <div class="sec-title"><i class="fa fa-star"></i>Skills Display Style</div>
+          <div class="fg">
+            <label>Skills in Template 1</label>
+            <select id="skillStyle" onchange="rd()">
+              <option value="bars">Progress Bars</option>
+              <option value="tags">Tags / Pills</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ═══ PREVIEW ═══ -->
+    <main class="preview-area" id="previewEl">
+      <div class="preview-header">
+        <div>
+          <h3>Live Preview</h3>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">Changes reflect instantly</div>
+        </div>
+        <div class="preview-actions">
+          <button class="btn btn-outline btn-sm" onclick="window.print()"><i class="fa fa-print"></i> Print</button>
+          <button class="btn btn-teal btn-sm" onclick="saveResume()"><i class="fa fa-save"></i> Save</button>
+          <button class="btn btn-gold btn-sm" onclick="downloadPDF()"><i class="fa fa-download"></i> Download
+            PDF</button>
+        </div>
+      </div>
+      <div class="resume-wrapper" id="resumeEl"></div>
+    </main>
+  </div>
+
+  <!-- SAVED MODAL -->
+  <div class="modal-ov" id="savedModal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeSaved()"><i class="fa fa-times"></i></button>
+      <div class="modal-title">📂 Saved Resumes</div>
+      <div id="savedList"></div>
+      <div style="margin-top:10px;font-size:11px;color:var(--muted)">💾 Auto-saved in your browser</div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"><span id="toastMsg"></span></div>
+
+  <script>
+    // ══════════════════════════════════════
+    // STATE
+    // ══════════════════════════════════════
+    let currentTpl = 1;
+    let photoData = null;
+
+    const state = {
+      // Ordered sections with toggle
+      sections: [
+        { id: 'experience', label: 'Work Experience', icon: '💼', on: true, entries: [] },
+        { id: 'education', label: 'Education', icon: '🎓', on: true, entries: [] },
+        { id: 'skills', label: 'Skills', icon: '⚡', on: true, items: [] },
+        { id: 'projects', label: 'Projects', icon: '🚀', on: true, entries: [] },
+        { id: 'certifications', label: 'Certifications', icon: '📜', on: false, entries: [] },
+        { id: 'languages', label: 'Languages', icon: '🌐', on: false, items: [] },
+        { id: 'achievements', label: 'Achievements', icon: '🏆', on: false, items: [] },
+        { id: 'interests', label: 'Interests', icon: '❤️', on: false, items: [] },
+      ],
+      formData: {}
+    };
+
+    // ══════════════════════════════════════
+    // HELPERS
+    // ══════════════════════════════════════
+    const el = id => document.getElementById(id);
+    function gv(id) { const e = el(id); return e ? e.value.trim() : ''; }
+
+    function toast(msg, type = 'ok') {
+      el('toastMsg').textContent = msg;
+      const t = el('toast');
+      t.className = 'toast ' + type;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+    function closeSaved() { el('savedModal').classList.remove('open'); }
+    function getSection(id) { return state.sections.find(s => s.id === id); }
+
+    function rd() { renderResume(); }
+
+    // ══════════════════════════════════════
+    // TABS
+    // ══════════════════════════════════════
+    function switchTab(tab) {
+      document.querySelectorAll('.stab').forEach(t => t.classList.remove('on'));
+      document.querySelectorAll('.sp').forEach(p => p.classList.remove('on'));
+      const tabs = ['info', 'sections', 'template'];
+      document.querySelectorAll('.stab')[tabs.indexOf(tab)].classList.add('on');
+      el('sp-' + tab).classList.add('on');
+      if (tab === 'sections') renderSectionForms();
+    }
+
+    // ══════════════════════════════════════
+    // MOBILE
+    // ══════════════════════════════════════
+    function mobSwitch(v) {
+      const s = el('sidebarEl'), p = el('previewEl');
+      if (v === 'form') { s.classList.remove('mob-hide'); p.classList.add('mob-hide'); el('mobFormBtn').classList.add('active'); el('mobPrevBtn').classList.remove('active'); }
+      else { s.classList.add('mob-hide'); p.classList.remove('mob-hide'); el('mobPrevBtn').classList.add('active'); el('mobFormBtn').classList.remove('active'); }
+    }
+
+    // ══════════════════════════════════════
+    // PHOTO
+    // ══════════════════════════════════════
+    function handlePhoto(input) {
+      const file = input.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        photoData = e.target.result;
+        el('photoPreview').src = photoData;
+        el('photoPreview').style.display = 'block';
+        el('photoPlaceholder').style.display = 'none';
+        el('removePhotoBtn').style.display = 'flex';
+        rd();
+      };
+      reader.readAsDataURL(file);
+    }
+    function removePhoto() {
+      photoData = null;
+      el('photoPreview').style.display = 'none';
+      el('photoPlaceholder').style.display = 'block';
+      el('removePhotoBtn').style.display = 'none';
+      el('photoIn').value = '';
+      rd();
+    }
+
+    // ══════════════════════════════════════
+    // SECTION TOGGLES
+    // ══════════════════════════════════════
+    function renderSectionToggles() {
+      el('sectionToggles').innerHTML = state.sections.map(sec => `
+    <div class="sec-toggle-item">
+      <span class="sec-toggle-icon">${sec.icon}</span>
+      <span class="sec-toggle-label">${sec.label}</span>
+      <label class="ts">
+        <input type="checkbox" ${sec.on ? 'checked' : ''} onchange="toggleSection('${sec.id}', this.checked)">
+        <span class="tsl"></span>
+      </label>
+    </div>
+  `).join('');
+    }
+
+    function toggleSection(id, on) {
+      getSection(id).on = on;
+      renderSectionForms();
+      rd();
+    }
+
+    // ══════════════════════════════════════
+    // SECTION FORMS
+    // ══════════════════════════════════════
+    function renderSectionForms() {
+      const activeSecs = state.sections.filter(s => s.on);
+      el('sectionForms').innerHTML = activeSecs.map(sec => buildSectionForm(sec)).join('');
+    }
+
+    function buildSectionForm(sec) {
+      const hdr = `<div class="sec-title" style="margin-top:18px"><i class="fa fa-${secIcon(sec.id)}"></i>${sec.label}</div>`;
+      if (['experience', 'education', 'projects', 'certifications'].includes(sec.id)) {
+        const entriesHTML = sec.entries.map((e, i) => buildEntryCard(sec.id, i, e)).join('');
+        return `${hdr}${entriesHTML}
+      <button class="btn btn-primary btn-xs" style="width:100%;justify-content:center" onclick="addEntry('${sec.id}')">
+        <i class="fa fa-plus"></i> Add ${sec.label.replace(/s$/, '') || 'Entry'}
+      </button>`;
+      }
+      if (sec.id === 'skills') return `${hdr}${buildSkillsForm()}`;
+      if (sec.id === 'languages') return `${hdr}${buildLangForm()}`;
+      if (['achievements', 'interests'].includes(sec.id)) return `${hdr}${buildListForm(sec.id, sec.label)}`;
+      return hdr;
+    }
+
+    function secIcon(id) {
+      const map = { experience: 'briefcase', education: 'graduation-cap', skills: 'bolt', projects: 'rocket', certifications: 'certificate', languages: 'globe', achievements: 'trophy', interests: 'heart' };
+      return map[id] || 'tag';
+    }
+
+    // ─── ENTRY CARDS (Experience, Education, Projects, Certifications)
+    function entryFields(secId) {
+      const fields = {
+        experience: [
+          { key: 'title', label: 'Job Title *', placeholder: 'Software Engineer', full: true },
+          { key: 'company', label: 'Company / Organization', placeholder: 'Infosys Ltd.' },
+          { key: 'location', label: 'Location', placeholder: 'Bangalore, India' },
+          { key: 'from', label: 'From', placeholder: '2022-01', type: 'text' },
+          { key: 'to', label: 'To', placeholder: '2024-06 or Present' },
+          { key: 'desc', label: 'Description (one point per line)', placeholder: 'Led a team of 5 engineers...\nBuilt REST APIs using Node.js...', textarea: true, full: true },
+        ],
+        education: [
+          { key: 'degree', label: 'Degree / Course *', placeholder: 'B.Tech Computer Science', full: true },
+          { key: 'school', label: 'School / University', placeholder: 'IIT Delhi' },
+          { key: 'location', label: 'Location', placeholder: 'New Delhi, India' },
+          { key: 'from', label: 'From', placeholder: '2018' },
+          { key: 'to', label: 'To', placeholder: '2022' },
+          { key: 'grade', label: 'Grade / CGPA', placeholder: '8.5 / 10' },
+          { key: 'desc', label: 'Additional Info', placeholder: 'Relevant coursework, achievements...', textarea: true, full: true },
+        ],
+        projects: [
+          { key: 'title', label: 'Project Name *', placeholder: 'E-Commerce Platform', full: true },
+          { key: 'tech', label: 'Tech Stack / Tools', placeholder: 'React, Node.js, MongoDB', full: true },
+          { key: 'link', label: 'Project Link', placeholder: 'github.com/...', full: true },
+          { key: 'desc', label: 'Description', placeholder: 'Built a full-stack e-commerce app...', textarea: true, full: true },
+        ],
+        certifications: [
+          { key: 'name', label: 'Certification Name *', placeholder: 'AWS Certified Solutions Architect', full: true },
+          { key: 'org', label: 'Issuing Organization', placeholder: 'Amazon Web Services' },
+          { key: 'date', label: 'Date', placeholder: '2023' },
+          { key: 'id', label: 'Credential ID', placeholder: 'ABC-12345' },
+        ],
+      };
+      return fields[secId] || [];
+    }
+
+    function buildEntryCard(secId, idx, entry) {
+      const fields = entryFields(secId);
+      const titleVal = entry.title || entry.degree || entry.name || `Entry ${idx + 1}`;
+      const fieldsHTML = fields.map(f => {
+        const val = (entry[f.key] || '').replace(/"/g, '&quot;');
+        if (f.textarea) {
+          return `<div class="fg${f.full ? ' ' : ''}"><label>${f.label}</label>
+        <textarea rows="3" placeholder="${f.placeholder}" oninput="updateEntry('${secId}',${idx},'${f.key}',this.value)">${entry[f.key] || ''}</textarea></div>`;
+        }
+        return `<div class="fg"><label>${f.label}</label>
+      <input type="text" value="${val}" placeholder="${f.placeholder}" oninput="updateEntry('${secId}',${idx},'${f.key}',this.value)"></div>`;
+      });
+
+      // Group non-full fields in pairs
+      let html = '';
+      let i = 0;
+      const regularFields = fields.filter(f => !f.full && !f.textarea);
+      const specialFields = fields.filter(f => f.full || f.textarea);
+
+      // First render non-pairs in a grid
+      let pairBuf = [];
+      for (const f of fields) {
+        if (f.full || f.textarea) {
+          if (pairBuf.length > 0) {
+            if (pairBuf.length === 1) html += fieldsHTML[fields.indexOf(pairBuf[0])];
+            else html += `<div class="fr2">${pairBuf.map(p => fieldsHTML[fields.indexOf(p)]).join('')}</div>`;
+            pairBuf = [];
+          }
+          html += fieldsHTML[fields.indexOf(f)];
+        } else {
+          pairBuf.push(f);
+          if (pairBuf.length === 2) {
+            html += `<div class="fr2">${pairBuf.map(p => fieldsHTML[fields.indexOf(p)]).join('')}</div>`;
+            pairBuf = [];
+          }
+        }
+      }
+      if (pairBuf.length > 0) {
+        if (pairBuf.length === 1) html += fieldsHTML[fields.indexOf(pairBuf[0])];
+        else html += `<div class="fr2">${pairBuf.map(p => fieldsHTML[fields.indexOf(p)]).join('')}</div>`;
+      }
+
+      return `<div class="entry-card" id="ec_${secId}_${idx}">
+    <div class="entry-card-head" onclick="toggleEntry('${secId}', ${idx})">
+      <div class="entry-card-title">
+        <i class="fa fa-grip-vertical" style="color:var(--muted);font-size:11px"></i>
+        ${titleVal.substring(0, 30) || 'New Entry'}
+      </div>
+      <div class="entry-card-actions">
+        <i class="fa fa-chevron-down chevron open" id="chev_${secId}_${idx}"></i>
+        <button class="btn btn-danger btn-xs" onclick="event.stopPropagation();removeEntry('${secId}',${idx})"><i class="fa fa-trash"></i></button>
+      </div>
+    </div>
+    <div class="entry-body" id="eb_${secId}_${idx}">${html}</div>
+  </div>`;
+    }
+
+    function toggleEntry(secId, idx) {
+      const body = el(`eb_${secId}_${idx}`);
+      const chev = el(`chev_${secId}_${idx}`);
+      if (body) { body.classList.toggle('collapsed'); chev.classList.toggle('open'); }
+    }
+
+    function addEntry(secId) {
+      getSection(secId).entries.push({});
+      renderSectionForms();
+      rd();
+    }
+
+    function updateEntry(secId, idx, key, val) {
+      const sec = getSection(secId);
+      sec.entries[idx][key] = val;
+      // Update card title without full re-render
+      const titleEl = el(`ec_${secId}_${idx}`)?.querySelector('.entry-card-title');
+      if (titleEl) {
+        const titleVal = sec.entries[idx].title || sec.entries[idx].degree || sec.entries[idx].name || `Entry ${idx + 1}`;
+        titleEl.innerHTML = `<i class="fa fa-grip-vertical" style="color:var(--muted);font-size:11px"></i>${titleVal.substring(0, 30)}`;
+      }
+      rd();
+    }
+
+    function removeEntry(secId, idx) {
+      getSection(secId).entries.splice(idx, 1);
+      renderSectionForms();
+      rd();
+    }
+
+    // ─── SKILLS
+    function buildSkillsForm() {
+      const sec = getSection('skills');
+      return `
+    <div class="skill-input-row">
+      <input type="text" id="skillInput" placeholder="Add skill e.g. JavaScript" onkeydown="if(event.key==='Enter'){addSkill();event.preventDefault()}">
+      <select id="skillLevel" style="width:110px">
+        <option value="90">Expert</option>
+        <option value="75">Advanced</option>
+        <option value="60" selected>Intermediate</option>
+        <option value="40">Beginner</option>
+      </select>
+      <button class="btn btn-primary btn-xs" onclick="addSkill()"><i class="fa fa-plus"></i></button>
+    </div>
+    <div class="skill-tags" id="skillTagsEl">
+      ${sec.items.map((s, i) => `<span class="skill-tag">${s.name} <span class="rm-skill" onclick="removeSkill(${i})">✕</span></span>`).join('')}
+    </div>`;
+    }
+    function addSkill() {
+      const name = el('skillInput')?.value.trim();
+      const level = parseInt(el('skillLevel')?.value || 60);
+      if (!name) return;
+      getSection('skills').items.push({ name, level });
+      el('skillInput').value = '';
+      renderSectionForms();
+      rd();
+    }
+    function removeSkill(i) { getSection('skills').items.splice(i, 1); renderSectionForms(); rd(); }
+
+    // ─── LANGUAGES
+    function buildLangForm() {
+      const sec = getSection('languages');
+      return `
+    <div class="fr2" style="margin-bottom:9px">
+      <input type="text" id="langName" placeholder="Language e.g. Hindi">
+      <select id="langLevel"><option>Native</option><option>Fluent</option><option>Professional</option><option>Intermediate</option><option>Basic</option></select>
+    </div>
+    <button class="btn btn-primary btn-xs" style="width:100%;justify-content:center;margin-bottom:10px" onclick="addLang()"><i class="fa fa-plus"></i> Add Language</button>
+    ${sec.items.map((l, i) => `<div class="fi" style="margin-bottom:7px">
+      <span style="flex:1;font-size:12px">${l.name}</span>
+      <span style="font-size:11px;color:var(--muted2)">${l.level}</span>
+      <button class="btn btn-danger btn-xs" onclick="removeLang(${i})"><i class="fa fa-trash"></i></button>
+    </div>`).join('')}`;
+    }
+    function addLang() {
+      const name = el('langName')?.value.trim();
+      const level = el('langLevel')?.value;
+      if (!name) return;
+      getSection('languages').items.push({ name, level });
+      el('langName').value = '';
+      renderSectionForms();
+      rd();
+    }
+    function removeLang(i) { getSection('languages').items.splice(i, 1); renderSectionForms(); rd(); }
+
+    // ─── LIST FORM (achievements / interests)
+    function buildListForm(secId, label) {
+      const sec = getSection(secId);
+      return `
+    <div class="fg" style="display:flex;gap:7px;margin-bottom:9px">
+      <input type="text" id="${secId}Input" placeholder="Add ${label.toLowerCase()}..." onkeydown="if(event.key==='Enter'){addListItem('${secId}');event.preventDefault()}">
+      <button class="btn btn-primary btn-xs" onclick="addListItem('${secId}')"><i class="fa fa-plus"></i></button>
+    </div>
+    ${(sec.items || []).map((item, i) => `
+      <div class="fi" style="margin-bottom:7px">
+        <span style="flex:1;font-size:12px">${item}</span>
+        <button class="btn btn-danger btn-xs" onclick="removeListItem('${secId}',${i})"><i class="fa fa-trash"></i></button>
+      </div>`).join('')}`;
+    }
+    function addListItem(secId) {
+      const inp = el(`${secId}Input`);
+      const val = inp?.value.trim();
+      if (!val) return;
+      const sec = getSection(secId);
+      if (!sec.items) sec.items = [];
+      sec.items.push(val);
+      inp.value = '';
+      renderSectionForms();
+      rd();
+    }
+    function removeListItem(secId, i) { getSection(secId).items.splice(i, 1); renderSectionForms(); rd(); }
+
+    // ══════════════════════════════════════
+    // TEMPLATE
+    // ══════════════════════════════════════
+    function setTemplate(n) {
+      currentTpl = n;
+      el('tc1').classList.toggle('active', n === 1);
+      el('tc2').classList.toggle('active', n === 2);
+      rd();
+    }
+
+    // ══════════════════════════════════════
+    // RENDER RESUME
+    // ══════════════════════════════════════
+    function renderResume() {
+      const name = gv('f_name') || 'Your Name';
+      const title = gv('f_title') || 'Professional Title';
+      const email = gv('f_email');
+      const phone = gv('f_phone');
+      const location = gv('f_location');
+      const linkedin = gv('f_linkedin');
+      const website = gv('f_website');
+      const github = gv('f_github');
+      const summary = gv('f_summary');
+      const skillStyle = el('skillStyle')?.value || 'bars';
+
+      const skillsSec = getSection('skills');
+      const langSec = getSection('languages');
+      const achSec = getSection('achievements');
+      const intSec = getSection('interests');
+
+      if (currentTpl === 1) {
+        renderTemplate1({ name, title, email, phone, location, linkedin, website, github, summary, skillStyle });
+      } else {
+        renderTemplate2({ name, title, email, phone, location, linkedin, website, github, summary });
+      }
+    }
+
+    // ═══════════════════
+    // TEMPLATE 1 RENDER
+    // ═══════════════════
+    function renderTemplate1({ name, title, email, phone, location, linkedin, website, github, summary, skillStyle }) {
+      const skillsSec = getSection('skills');
+      const langSec = getSection('languages');
+      const achSec = getSection('achievements');
+      const intSec = getSection('interests');
+
+      const contactItems = [
+        { icon: 'fa-envelope', val: email },
+        { icon: 'fa-phone', val: phone },
+        { icon: 'fa-map-marker-alt', val: location },
+        { icon: 'fa-linkedin', val: linkedin },
+        { icon: 'fa-globe', val: website },
+        { icon: 'fa-github', val: github },
+      ].filter(c => c.val);
+
+      const photoEl = photoData
+        ? `<img class="t1-photo-img" src="${photoData}" alt="Photo">`
+        : `<div class="t1-photo">👤</div>`;
+
+      const skillsHTML = skillsSec.on && skillsSec.items.length > 0
+        ? `<div class="t1-side-sec">
+        <div class="t1-side-head">Skills</div>
+        ${skillStyle === 'bars'
+          ? skillsSec.items.map(s => `<div class="t1-skill-item">
+              <div class="t1-skill-name"><span>${s.name}</span></div>
+              <div class="t1-skill-bar"><div class="t1-skill-fill" style="width:${s.level}%"></div></div>
+            </div>`).join('')
+          : `<div style="display:flex;flex-wrap:wrap;gap:4px">${skillsSec.items.map(s => `<span class="t1-side-tag">${s.name}</span>`).join('')}</div>`
+        }
+      </div>` : '';
+
+      const langsHTML = langSec.on && langSec.items.length > 0
+        ? `<div class="t1-side-sec">
+        <div class="t1-side-head">Languages</div>
+        ${langSec.items.map(l => `<div class="t1-lang-item"><span>${l.name}</span><span class="t1-lang-lvl">${l.level}</span></div>`).join('')}
+      </div>` : '';
+
+      const intHTML = intSec.on && intSec.items.length > 0
+        ? `<div class="t1-side-sec">
+        <div class="t1-side-head">Interests</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px">${intSec.items.map(i => `<span class="t1-side-tag">${i}</span>`).join('')}</div>
+      </div>` : '';
+
+      const sidebarHTML = `
+    <div class="t1-sidebar">
+      <div class="t1-sidebar-top">
+        <div class="t1-photo-wrap">${photoEl}</div>
+        <div class="t1-name">${name}</div>
+        <div class="t1-title">${title}</div>
+      </div>
+      ${contactItems.length ? `<div class="t1-side-sec">
+        <div class="t1-side-head">Contact</div>
+        ${contactItems.map(c => `<div class="t1-contact-item"><i class="fa ${c.icon}"></i><span class="t1-contact-text">${c.val}</span></div>`).join('')}
+      </div>` : ''}
+      ${skillsHTML}${langsHTML}${intHTML}
+    </div>`;
+
+      // Main content
+      const sections = state.sections.filter(s => s.on && !['skills', 'languages', 'achievements', 'interests'].includes(s.id));
+
+      let mainHTML = '';
+      if (summary) {
+        mainHTML += `<div class="t1-main-sec">
+      <div class="t1-main-head">Professional Summary</div>
+      <div class="t1-summary">${nl2p(summary)}</div>
+    </div>`;
+      }
+
+      sections.forEach(sec => {
+        if (!sec.entries || sec.entries.length === 0) return;
+        mainHTML += `<div class="t1-main-sec"><div class="t1-main-head">${sec.label}</div>`;
+
+        if (sec.id === 'certifications') {
+          mainHTML += sec.entries.filter(e => e.name).map(e =>
+            `<div class="t1-cert-item"><div><div>${e.name}</div><div class="t1-cert-org">${[e.org, e.date, e.id].filter(Boolean).join(' · ')}</div></div></div>`
+          ).join('');
+        } else if (sec.id === 'projects') {
+          mainHTML += sec.entries.filter(e => e.title).map(e =>
+            `<div class="t1-proj-item">
+          <div class="t1-proj-title">${e.title}${e.link ? ` <a href="${e.link}" style="font-size:11px;color:#6c8bef;text-decoration:none;margin-left:6px"><i class="fa fa-external-link-alt"></i></a>` : ''}</div>
+          ${e.tech ? `<div class="t1-proj-tech">${e.tech}</div>` : ''}
+          ${e.desc ? `<div class="t1-proj-desc">${nl2ul(e.desc)}</div>` : ''}
+        </div>`
+          ).join('');
+        } else {
+          mainHTML += sec.entries.filter(e => e.title || e.degree).map(e =>
+            `<div class="t1-entry">
+          <div class="t1-entry-top">
+            <div class="t1-entry-title">${e.title || e.degree || ''}</div>
+            ${e.from || e.to ? `<div class="t1-entry-date">${e.from || ''}${e.from && e.to ? ' – ' : ''}${e.to || ''}</div>` : ''}
+          </div>
+          ${e.company || e.school ? `<div class="t1-entry-company">${e.company || e.school || ''}</div>` : ''}
+          ${e.location ? `<div class="t1-entry-loc"><i class="fa fa-map-marker-alt" style="margin-right:4px;font-size:10px;color:#9ca3af"></i>${e.location}</div>` : ''}
+          ${e.grade ? `<div class="t1-entry-loc">Grade: ${e.grade}</div>` : ''}
+          ${e.desc ? `<div class="t1-entry-desc">${nl2ul(e.desc)}</div>` : ''}
+        </div>`
+          ).join('');
+        }
+        mainHTML += '</div>';
+      });
+
+      // Achievements
+      if (achSec.on && achSec.items.length > 0) {
+        mainHTML += `<div class="t1-main-sec">
+      <div class="t1-main-head">Achievements</div>
+      ${achSec.items.map(a => `<div class="t1-ach-item">${a}</div>`).join('')}
+    </div>`;
+      }
+
+      el('resumeEl').innerHTML = `<div class="t1">${sidebarHTML}<div class="t1-main">${mainHTML}</div></div>`;
+    }
+
+    // ═══════════════════
+    // TEMPLATE 2 RENDER
+    // ═══════════════════
+    function renderTemplate2({ name, title, email, phone, location, linkedin, website, github, summary }) {
+      const skillsSec = getSection('skills');
+      const langSec = getSection('languages');
+      const achSec = getSection('achievements');
+      const intSec = getSection('interests');
+
+      const contactItems = [
+        { icon: 'fa-envelope', val: email },
+        { icon: 'fa-phone', val: phone },
+        { icon: 'fa-map-marker-alt', val: location },
+        { icon: 'fa-linkedin', val: linkedin },
+        { icon: 'fa-globe', val: website },
+        { icon: 'fa-github', val: github },
+      ].filter(c => c.val);
+
+      const photoEl = photoData
+        ? `<div class="t2-photo-wrap"><img class="t2-photo-img" src="${photoData}" alt="Photo"></div>`
+        : '';
+
+      const header = `<div class="t2-header">
+    ${photoEl}
+    <div class="t2-header-info">
+      <div class="t2-name">${name}</div>
+      <div class="t2-title">${title}</div>
+      <div class="t2-contact-bar">
+        ${contactItems.map(c => `<div class="t2-contact-chip"><i class="fa ${c.icon}"></i>${c.val}</div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+
+      // Main sections
+      const mainSecs = state.sections.filter(s => s.on && !['skills', 'languages', 'interests'].includes(s.id));
+      let mainHTML = '';
+
+      if (summary) {
+        mainHTML += `<div class="t2-sec">
+      <div class="t2-sec-head">Profile</div>
+      <div class="t2-summary">${nl2p(summary)}</div>
+    </div>`;
+      }
+
+      mainSecs.forEach(sec => {
+        if (!sec.entries || sec.entries.length === 0) return;
+        if (sec.id === 'achievements') {
+          if (achSec.items.length === 0) return;
+          mainHTML += `<div class="t2-sec"><div class="t2-sec-head">${sec.label}</div>
+        ${achSec.items.map(a => `<div class="t2-ach-item">${a}</div>`).join('')}
+      </div>`;
+          return;
+        }
+        mainHTML += `<div class="t2-sec"><div class="t2-sec-head">${sec.label}</div>`;
+        if (sec.id === 'certifications') {
+          mainHTML += sec.entries.filter(e => e.name).map(e =>
+            `<div class="t2-entry" style="padding-bottom:10px;border-bottom:1px solid #f0f0f0;margin-bottom:10px">
+          <div class="t2-entry-top">
+            <div class="t2-entry-title" style="font-size:13px">${e.name}</div>
+            ${e.date ? `<div class="t2-entry-date">${e.date}</div>` : ''}
+          </div>
+          ${e.org ? `<div class="t2-entry-sub" style="font-size:11.5px">${e.org}</div>` : ''}
+          ${e.id ? `<div style="font-size:10.5px;color:#9ca3af">ID: ${e.id}</div>` : ''}
+        </div>`
+          ).join('');
+        } else if (sec.id === 'projects') {
+          mainHTML += sec.entries.filter(e => e.title).map(e =>
+            `<div class="t2-proj-item">
+          <div class="t2-proj-title">${e.title}${e.link ? ` <a href="${e.link}" style="font-size:11px;color:#2563eb;text-decoration:none;margin-left:6px"><i class="fa fa-external-link-alt"></i></a>` : ''}</div>
+          ${e.tech ? `<div class="t2-proj-tech">${e.tech}</div>` : ''}
+          ${e.desc ? `<div class="t2-proj-desc">${nl2ul(e.desc)}</div>` : ''}
+        </div>`
+          ).join('');
+        } else {
+          mainHTML += sec.entries.filter(e => e.title || e.degree).map(e =>
+            `<div class="t2-entry" style="padding-bottom:12px;border-bottom:1px solid #f3f4f6;margin-bottom:12px">
+          <div class="t2-entry-top">
+            <div class="t2-entry-title">${e.title || e.degree || ''}</div>
+            ${e.from || e.to ? `<div class="t2-entry-date">${e.from || ''}${e.from && e.to ? ' – ' : ''}${e.to || ''}</div>` : ''}
+          </div>
+          ${e.company || e.school ? `<div class="t2-entry-sub">${e.company || e.school || ''}</div>` : ''}
+          ${e.location ? `<div class="t2-entry-loc">${e.location}</div>` : ''}
+          ${e.grade ? `<div class="t2-entry-loc" style="font-size:11.5px">Grade: ${e.grade}</div>` : ''}
+          ${e.desc ? `<div class="t2-entry-desc">${nl2ul(e.desc)}</div>` : ''}
+        </div>`
+          ).join('');
+        }
+        mainHTML += '</div>';
+      });
+
+      // Sidebar
+      let sideHTML = '';
+
+      if (skillsSec.on && skillsSec.items.length > 0) {
+        sideHTML += `<div class="t2-side-sec">
+      <div class="t2-side-head">Skills</div>
+      <div class="t2-skill-wrap">
+        ${skillsSec.items.map(s => `<div class="t2-skill-row">
+          <div class="t2-skill-name"><span>${s.name}</span></div>
+          <div class="t2-skill-bar"><div class="t2-skill-fill" style="width:${s.level}%"></div></div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+      }
+
+      if (langSec.on && langSec.items.length > 0) {
+        sideHTML += `<div class="t2-side-sec">
+      <div class="t2-side-head">Languages</div>
+      ${langSec.items.map(l => `<div class="t2-lang-item"><span>${l.name}</span><span class="t2-lang-lvl">${l.level}</span></div>`).join('')}
+    </div>`;
+      }
+
+      if (intSec.on && intSec.items.length > 0) {
+        sideHTML += `<div class="t2-side-sec">
+      <div class="t2-side-head">Interests</div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px">${intSec.items.map(i => `<span class="t2-skill-tag">${i}</span>`).join('')}</div>
+    </div>`;
+      }
+
+      // Contact on side
+      if (contactItems.length) {
+        sideHTML += `<div class="t2-side-sec">
+      <div class="t2-side-head">Contact</div>
+      ${contactItems.map(c => `<div class="t2-side-contact"><i class="fa ${c.icon}"></i>${c.val}</div>`).join('')}
+    </div>`;
+      }
+
+      el('resumeEl').innerHTML = `<div class="t2">
+    ${header}
+    <div class="t2-body">
+      <div class="t2-main">${mainHTML}</div>
+      <div class="t2-side">${sideHTML}</div>
+    </div>
+  </div>`;
+    }
+
+    // ══════════════════════════════════════
+    // TEXT HELPERS
+    // ══════════════════════════════════════
+    function nl2ul(text) {
+      const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+      if (lines.length <= 1) return `<p style="margin:0">${lines[0] || ''}</p>`;
+      return `<ul>${lines.map(l => `<li>${l.replace(/^[-•▸]\s*/, '')}</li>`).join('')}</ul>`;
+    }
+    function nl2p(text) {
+      return text.split('\n').filter(Boolean).map(l => `<p style="margin:0 0 4px">${l}</p>`).join('');
+    }
+
+    // ══════════════════════════════════════
+    // PDF DOWNLOAD
+    // ══════════════════════════════════════
+    async function downloadPDF() {
+      toast('⏳ Generating PDF...', 'in');
+      try {
+        const { jsPDF } = window.jspdf;
+        const wrapper = el('resumeEl');
+
+        // Save original styles
+        const origH = wrapper.style.minHeight;
+        const origW = wrapper.style.width;
+        const origMaxW = wrapper.style.maxWidth;
+        const origTransform = wrapper.style.transform;
+        const origMargin = wrapper.style.margin;
+
+        // Force exact A4 dimensions at 96 DPI for consistent rendering
+        wrapper.style.minHeight = 'auto';
+        wrapper.style.width = '794px';
+        wrapper.style.maxWidth = '794px';
+        wrapper.style.margin = '0';
+        wrapper.style.transform = 'none';
+
+        const canvas = await html2canvas(wrapper, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          width: 794,
+          windowWidth: 794,
+          scrollX: 0,
+          scrollY: 0
+        });
+
+        // Restore original styles
+        wrapper.style.minHeight = origH;
+        wrapper.style.width = origW;
+        wrapper.style.maxWidth = origMaxW;
+        wrapper.style.margin = origMargin;
+        wrapper.style.transform = origTransform;
+
+        const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+        const pageW = pdf.internal.pageSize.getWidth();
+        const pageH = pdf.internal.pageSize.getHeight();
+        const imgW = pageW;
+        const imgH = (canvas.height * imgW) / canvas.width;
+        const imgData = canvas.toDataURL('image/jpeg', 0.98);
+
+        let yPos = 0, heightLeft = imgH;
+        pdf.addImage(imgData, 'JPEG', 0, yPos, imgW, imgH);
+        heightLeft -= pageH;
+        while (heightLeft > 0) {
+          yPos -= pageH;
+          pdf.addPage();
+          pdf.addImage(imgData, 'JPEG', 0, yPos, imgW, imgH);
+          heightLeft -= pageH;
+        }
+
+        const name = gv('f_name') || 'Resume';
+        pdf.save(`${name.replace(/\s+/g, '_')}_Resume.pdf`);
+        toast('✅ PDF Downloaded!');
+      } catch (err) {
+        console.error(err);
+        toast('Error! Try print instead.', 'er');
+        window.print();
+      }
+    }
+
+    // ══════════════════════════════════════
+    // SAVE / LOAD
+    // ══════════════════════════════════════
+    function collectFormData() {
+      const ids = ['f_name', 'f_title', 'f_email', 'f_phone', 'f_location', 'f_linkedin', 'f_website', 'f_github', 'f_summary'];
+      const d = {};
+      ids.forEach(id => { const e = el(id); if (e) d[id] = e.value; });
+      return d;
+    }
+
+    function saveResume() {
+      const name = gv('f_name');
+      if (!name) { toast('Please enter your name first!', 'er'); return; }
+      const saved = JSON.parse(localStorage.getItem('resumePro') || '[]');
+      const snap = {
+        id: Date.now(),
+        name,
+        template: currentTpl,
+        photo: photoData,
+        formData: collectFormData(),
+        sections: JSON.parse(JSON.stringify(state.sections)),
+        savedOn: new Date().toLocaleDateString('en-IN')
+      };
+      const idx = saved.findIndex(s => s.name === name);
+      if (idx >= 0) saved[idx] = snap; else saved.unshift(snap);
+      localStorage.setItem('resumePro', JSON.stringify(saved.slice(0, 15)));
+      toast('✅ Resume saved!');
+    }
+
+    function openSaved() {
+      const saved = JSON.parse(localStorage.getItem('resumePro') || '[]');
+      const tColors = { 1: 'linear-gradient(135deg,#1a2332,#0f1825)', 2: 'linear-gradient(135deg,#111,#374151)' };
+      el('savedList').innerHTML = saved.length
+        ? saved.map(s => `<div class="saved-item">
+        <div class="saved-icon" style="background:${tColors[s.template] || tColors[1]};color:#fff">📄</div>
+        <div class="saved-info">
+          <div class="saved-name">${s.name}</div>
+          <div class="saved-meta">Template ${s.template} · ${s.savedOn}</div>
+        </div>
+        <div class="saved-acts">
+          <button class="btn btn-primary btn-xs" onclick="loadResume(${s.id});closeSaved()"><i class="fa fa-upload"></i> Load</button>
+          <button class="btn btn-danger btn-xs" onclick="deleteResume(${s.id})"><i class="fa fa-trash"></i></button>
+        </div>
+      </div>`).join('')
+        : '<div style="text-align:center;padding:30px;color:var(--muted)"><i class="fa fa-file-alt" style="font-size:32px;display:block;margin-bottom:10px;opacity:.25"></i>No saved resumes.</div>';
+      el('savedModal').classList.add('open');
+    }
+
+    function loadResume(id) {
+      const saved = JSON.parse(localStorage.getItem('resumePro') || '[]');
+      const snap = saved.find(s => s.id === id);
+      if (!snap) return;
+
+      // Restore photo
+      photoData = snap.photo || null;
+      if (photoData) {
+        el('photoPreview').src = photoData;
+        el('photoPreview').style.display = 'block';
+        el('photoPlaceholder').style.display = 'none';
+        el('removePhotoBtn').style.display = 'flex';
+      } else { removePhoto(); }
+
+      // Restore form fields
+      Object.entries(snap.formData || {}).forEach(([id, val]) => { const e = el(id); if (e) e.value = val; });
+
+      // Restore sections
+      snap.sections.forEach(savedSec => {
+        const sec = getSection(savedSec.id);
+        if (sec) {
+          sec.on = savedSec.on;
+          sec.entries = savedSec.entries || [];
+          sec.items = savedSec.items || [];
+        }
+      });
+
+      // Template
+      setTemplate(snap.template || 1);
+
+      renderSectionToggles();
+      renderSectionForms();
+      rd();
+      toast('✅ Loaded: ' + snap.name);
+    }
+
+    function deleteResume(id) {
+      if (!confirm('Delete this resume?')) return;
+      let saved = JSON.parse(localStorage.getItem('resumePro') || '[]');
+      saved = saved.filter(s => s.id !== id);
+      localStorage.setItem('resumePro', JSON.stringify(saved));
+      openSaved();
+      toast('Deleted.', 'er');
+    }
+
+    // ══════════════════════════════════════
+    // INIT
+    // ══════════════════════════════════════
+    document.addEventListener('DOMContentLoaded', () => {
+      renderSectionToggles();
+      rd();
+
+      // New button
+      const nb = document.createElement('button');
+      nb.className = 'btn btn-outline btn-sm';
+      nb.innerHTML = '<i class="fa fa-plus"></i> <span class="btn-label">New</span>';
+      nb.onclick = () => {
+        if (!confirm('Start fresh? Unsaved data will be lost.')) return;
+        ['f_name', 'f_title', 'f_email', 'f_phone', 'f_location', 'f_linkedin', 'f_website', 'f_github', 'f_summary']
+          .forEach(id => { const e = el(id); if (e) e.value = ''; });
+        state.sections.forEach(s => { s.entries = []; s.items = []; s.on = ['experience', 'education', 'skills', 'projects'].includes(s.id); });
+        removePhoto();
+        setTemplate(1);
+        renderSectionToggles();
+        renderSectionForms();
+        rd();
+        toast('Fresh resume started!');
+      };
+      el('topbarRight').insertBefore(nb, el('topbarRight').firstChild);
+
+      el('savedModal').addEventListener('click', e => { if (e.target === el('savedModal')) closeSaved(); });
+
+      // Auto-save reminder
+      setInterval(() => {
+        const name = gv('f_name');
+        if (name) {
+          const data = { formData: collectFormData(), sections: state.sections, photo: photoData, template: currentTpl, name };
+          localStorage.setItem('resumePro_draft', JSON.stringify(data));
+        }
+      }, 30000);
+
+      // Restore draft
+      const draft = localStorage.getItem('resumePro_draft');
+      if (draft) {
+        try {
+          const d = JSON.parse(draft);
+          if (d.formData?.f_name) {
+            const restore = confirm(`Restore draft for "${d.formData.f_name}"?`);
+            if (restore) {
+              if (d.photo) { photoData = d.photo; el('photoPreview').src = d.photo; el('photoPreview').style.display = 'block'; el('photoPlaceholder').style.display = 'none'; el('removePhotoBtn').style.display = 'flex'; }
+              Object.entries(d.formData || {}).forEach(([id, val]) => { const e = el(id); if (e) e.value = val; });
+              d.sections?.forEach(ss => { const sec = getSection(ss.id); if (sec) { sec.on = ss.on; sec.entries = ss.entries || []; sec.items = ss.items || []; } });
+              setTemplate(d.template || 1);
+              renderSectionToggles();
+              renderSectionForms();
+              rd();
+              toast('Draft restored!');
+            }
+          }
+        } catch (e) { }
+      }
+    });
+  </script>
+</body>
+
+</html>
