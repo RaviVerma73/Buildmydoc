@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Dynamic Billing System</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        @media print {
+            body * { visibility: hidden; }
+            #invoice-preview, #invoice-preview * { visibility: visible; }
+            #invoice-preview { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 font-sans min-h-screen text-slate-800">
+
+    <!-- Navbar / Header Bar -->
+    <nav class="bg-indigo-700 text-white p-4 shadow-md no-print">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+            <h1 class="text-xl font-bold tracking-wide">✨ Dynamic Billing Pro</h1>
+            <p class="text-xs sm:text-sm opacity-90">Fully Responsive | Edit Saved Bills | LocalStorage | Download JSON & Print</p>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- LEFT COLUMN: Settings & Input Form (Takes 7 cols on large screens) -->
+        <div class="lg:col-span-7 space-y-6 no-print">
+            
+            <!-- 1. Permanent Header/Footer Setup -->
+            <div class="bg-white p-4 md:p-6 rounded-xl shadow-xs border border-slate-200">
+                <h2 class="text-lg font-bold mb-4 flex items-center text-indigo-700">
+                    <span class="bg-indigo-100 text-indigo-700 rounded-full w-6 h-6 inline-flex items-center justify-center text-xs mr-2">1</span>
+                    Shop Header & Footer (One-time Setup)
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Business / Shop Name</label>
+                        <input type="text" id="biz-name" oninput="saveSettings()" class="mt-1 block w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-hidden" placeholder="e.g., Sharma Jewelers">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Address & Contact Info</label>
+                        <input type="text" id="biz-contact" oninput="saveSettings()" class="mt-1 block w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-hidden" placeholder="e.g., Main Bazar, Delhi | +91 9876543210">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Terms & Conditions (Footer)</label>
+                        <textarea id="biz-footer" oninput="saveSettings()" rows="2" class="mt-1 block w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-hidden" placeholder="e.g., Goods once sold will not be taken back. Thank you!"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Main Billing Details Form -->
+            <div class="bg-white p-4 md:p-6 rounded-xl shadow-xs border border-slate-200">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+                    <h2 class="text-lg font-bold flex items-center text-indigo-700">
+                        <span class="bg-indigo-100 text-indigo-700 rounded-full w-6 h-6 inline-flex items-center justify-center text-xs mr-2">2</span>
+                        Bill Details & Items
+                    </h2>
+                    <div class="w-full sm:w-auto">
+                        <label class="text-xs font-semibold uppercase text-slate-500 mr-2">Template:</label>
+                        <select id="template-select" onchange="switchTemplate()" class="w-full sm:w-auto p-2 border border-slate-300 rounded-lg bg-indigo-50 font-bold text-indigo-900 focus:outline-hidden">
+                            <option value="kirana">🛒 Kirana / Grocery</option>
+                            <option value="jewelry">💎 Jewelry Shop</option>
+                            <option value="cloth">👕 Cloth / Apparel</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Hidden Input for Editing Mode Track -->
+                <input type="hidden" id="editing-bill-id" value="">
+
+                <!-- Customer Info -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <div>
+                        <label class="text-xs font-semibold uppercase tracking-wider text-slate-500">Customer Name</label>
+                        <input type="text" id="cust-name" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-hidden" placeholder="Cash Customer">
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold uppercase tracking-wider text-slate-500">Bill Date</label>
+                        <input type="date" id="bill-date" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-hidden">
+                    </div>
+                </div>
+
+                <!-- Dynamic Item Table Area -->
+                <p class="text-xs text-red-500 mb-2 font-medium block sm:hidden">👉 Swipe left-right on the table to see all fields!</p>
+                <div class="overflow-x-auto rounded-lg border border-slate-200">
+                    <table class="w-full text-left border-collapse min-w-[600px]">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 text-xs uppercase tracking-wider">
+                                <th class="p-3 border-b border-slate-200 w-1/3">Item Name</th>
+                                <th class="p-3 border-b border-slate-200" id="th-dynamic-1">Field 1</th>
+                                <th class="p-3 border-b border-slate-200" id="th-dynamic-2">Field 2</th>
+                                <th class="p-3 border-b border-slate-200">Price/Rate</th>
+                                <th class="p-3 border-b border-slate-200">Total</th>
+                                <th class="p-3 border-b border-slate-200 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="item-rows" class="divide-y divide-slate-100">
+                            <!-- Dynamic Rows Inject here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Action Controls -->
+                <div class="mt-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+                    <button onclick="addItemRow()" class="w-full sm:w-auto bg-slate-200 text-slate-800 font-semibold px-4 py-2 rounded-lg hover:bg-slate-300 transition duration-150">
+                        ➕ Add New Item
+                    </button>
+                    <div class="flex gap-2 w-full sm:w-auto">
+                        <button id="cancel-edit-btn" onclick="cancelEditing()" class="hidden w-full sm:w-auto bg-slate-400 text-white font-bold px-4 py-2.5 rounded-lg hover:bg-slate-500 transition shadow-xs">
+                            Cancel
+                        </button>
+                        <button id="submit-bill-btn" onclick="generateInvoice()" class="w-full sm:w-auto bg-emerald-600 text-white font-bold px-6 py-2.5 rounded-lg hover:bg-emerald-700 transition shadow-xs">
+                            Generate & Save Bill
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Preview & Data History (Takes 5 cols on large screens) -->
+        <div class="lg:col-span-5 space-y-6">
+            
+            <!-- 3. Live Bill Preview & Printable Template -->
+            <div id="invoice-preview" class="bg-white p-6 rounded-xl shadow-md border border-slate-300">
+                <div class="text-center border-b border-slate-200 pb-4 mb-4">
+                    <h1 id="preview-biz-name" class="text-xl md:text-2xl font-bold uppercase tracking-wide text-slate-800">Shop Name</h1>
+                    <p id="preview-biz-contact" class="text-xs text-slate-500">Shop Address & Contact Details</p>
+                </div>
+
+                <div class="grid grid-cols-2 text-xs md:text-sm mb-4 gap-2">
+                    <div>
+                        <p class="font-bold text-slate-400 uppercase tracking-wide text-[10px]">Bill To:</p>
+                        <p id="preview-cust-name" class="font-semibold text-slate-800">----------</p>
+                    </div>
+                    <div class="text-right">
+                        <p><span class="font-semibold text-slate-500">Date:</span> <span id="preview-bill-date">--/--/----</span></p>
+                        <p><span class="font-semibold text-slate-500">Type:</span> <span id="preview-template-type" class="uppercase font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">Kirana</span></p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs md:text-sm mb-4">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider text-[11px]">
+                                <th class="p-2">Item</th>
+                                <th class="p-2" id="prev-th-1">Field 1</th>
+                                <th class="p-2" id="prev-th-2">Field 2</th>
+                                <th class="p-2">Rate</th>
+                                <th class="p-2 text-right">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="preview-items" class="divide-y divide-slate-100">
+                            <tr>
+                                <td colspan="5" class="p-4 text-center text-slate-400 italic">No items generated.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="border-t-2 border-dashed border-slate-300 pt-3 text-right text-lg font-extrabold text-slate-900">
+                    Grand Total: ₹<span id="preview-grand-total">0.00</span>
+                </div>
+
+                <div class="border-t border-slate-100 mt-6 pt-4 text-xs text-slate-400 text-center italic" id="preview-biz-footer">
+                    Thank you!
+                </div>
+
+                <div class="mt-4 grid grid-cols-2 gap-2 no-print">
+                    <button onclick="window.print()" class="bg-indigo-600 text-white py-2 rounded-lg font-semibold hover:bg-indigo-700 transition flex items-center justify-center gap-1 text-sm">
+                        🖨️ Print / Save PDF
+                    </button>
+                    <button onclick="downloadCurrentBillJSON()" class="bg-slate-800 text-white py-2 rounded-lg font-semibold hover:bg-slate-900 transition flex items-center justify-center gap-1 text-sm">
+                        📥 Download Bill
+                    </button>
+                </div>
+            </div>
+
+            <!-- 4. LocalStorage Bills Database History -->
+            <div class="bg-white p-4 md:p-6 rounded-xl shadow-xs border border-slate-200 no-print">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-600">Saved History Database</h2>
+                    <button onclick="downloadAllHistoryJSON()" class="text-xs font-bold text-indigo-600 hover:underline">📥 Backup All (JSON)</button>
+                </div>
+                <div id="saved-bills-list" class="space-y-3 max-h-80 overflow-y-auto pr-1">
+                    <!-- History entries inject here -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Configurable Business Custom Templates
+        const templates = {
+            kirana: { label1: 'Qty (kg/pcs)', label2: 'Brand/Pack', default1: '1', default2: 'Loose' },
+            jewelry: { label1: 'Weight (gm)', label2: 'Making Charges (₹)', default1: '1', default2: '0' },
+            cloth: { label1: 'Quantity (Pcs)', label2: 'Size', default1: '1', default2: 'M' }
+        };
+
+        // Active state bill object cache
+        let activeInvoiceData = null;
+
+        window.onload = function() {
+            // Load persistent Header and Footer settings
+            document.getElementById('biz-name').value = localStorage.getItem('biz_name') || '';
+            document.getElementById('biz-contact').value = localStorage.getItem('biz_contact') || '';
+            document.getElementById('biz-footer').value = localStorage.getItem('biz_footer') || '';
+            
+            updateLiveHeaderFooter();
+            switchTemplate();
+            loadSavedBills();
+            
+            document.getElementById('bill-date').valueAsDate = new Date();
+        };
+
+        function saveSettings() {
+            localStorage.setItem('biz_name', document.getElementById('biz-name').value);
+            localStorage.setItem('biz_contact', document.getElementById('biz-contact').value);
+            localStorage.setItem('biz_footer', document.getElementById('biz-footer').value);
+            updateLiveHeaderFooter();
+        }
+
+        function updateLiveHeaderFooter() {
+            document.getElementById('preview-biz-name').innerText = localStorage.getItem('biz_name') || 'Your Business Name';
+            document.getElementById('preview-biz-contact').innerText = localStorage.getItem('biz_contact') || 'Address & Contact Details';
+            document.getElementById('preview-biz-footer').innerText = localStorage.getItem('biz_footer') || 'Thank you for shopping with us!';
+        }
+
+        function switchTemplate() {
+            const currentType = document.getElementById('template-select').value;
+            const config = templates[currentType];
+
+            document.getElementById('th-dynamic-1').innerText = config.label1;
+            document.getElementById('th-dynamic-2').innerText = config.label2;
+            document.getElementById('prev-th-1').innerText = config.label1;
+            document.getElementById('prev-th-2').innerText = config.label2;
+            document.getElementById('preview-template-type').innerText = currentType;
+
+            // Only clear and reset rows if we are NOT editing an existing bill
+            if (!document.getElementById('editing-bill-id').value) {
+                document.getElementById('item-rows').innerHTML = '';
+                addItemRow();
+            }
+        }
+
+        function addItemRow(name='', f1='', f2='', rate=0, total=0) {
+            const currentType = document.getElementById('template-select').value;
+            const config = templates[currentType];
+            const tbody = document.getElementById('item-rows');
+            const rowId = 'row_' + Date.now() + Math.random().toString(36).substr(2, 5);
+
+            // Defaults if values are empty
+            const val_name = name;
+            const val_f1 = f1 !== '' ? f1 : config.default1;
+            const val_f2 = f2 !== '' ? f2 : config.default2;
+            const val_rate = rate;
+            const val_total = total > 0 ? total.toFixed(2) : '0.00';
+
+            const tr = document.createElement('tr');
+            tr.id = rowId;
+            tr.className = "hover:bg-slate-50";
+            tr.innerHTML = `
+                <td class="p-2 border-b border-slate-100"><input type="text" class="w-full p-1.5 border border-slate-300 rounded item-name" placeholder="Item/Service" value="${val_name}"></td>
+                <td class="p-2 border-b border-slate-100"><input type="text" class="w-full p-1.5 border border-slate-300 rounded item-f1" value="${val_f1}" oninput="calculateRowTotal('${rowId}')"></td>
+                <td class="p-2 border-b border-slate-100"><input type="text" class="w-full p-1.5 border border-slate-300 rounded item-f2" value="${val_f2}" oninput="calculateRowTotal('${rowId}')"></td>
+                <td class="p-2 border-b border-slate-100"><input type="number" class="w-full p-1.5 border border-slate-300 rounded item-rate" value="${val_rate}" oninput="calculateRowTotal('${rowId}')"></td>
+                <td class="p-2 border-b border-slate-100 font-semibold text-slate-700 row-total">${val_total}</td>
+                <td class="p-2 border-b border-slate-100 text-center">
+                    <button onclick="removeRow('${rowId}')" class="text-rose-500 hover:text-rose-700 font-bold px-2 py-1">✕</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+            if (total > 0) {
+                calculateRowTotal(rowId);
+            }
+        }
+
+        function removeRow(rowId) {
+            const row = document.getElementById(rowId);
+            if(row) row.remove();
+        }
+
+        function calculateRowTotal(rowId) {
+            const row = document.getElementById(rowId);
+            const template = document.getElementById('template-select').value;
+            
+            const f1 = parseFloat(row.querySelector('.item-f1').value) || 0;
+            const f2 = parseFloat(row.querySelector('.item-f2').value) || 0;
+            const rate = parseFloat(row.querySelector('.item-rate').value) || 0;
+
+            let total = 0;
+            if (template === 'jewelry') {
+                total = (f1 * rate) + f2; // (Weight * Rate) + Making Charges
+            } else {
+                total = f1 * rate; // Qty * Rate
+            }
+            row.querySelector('.row-total').innerText = total.toFixed(2);
+        }
+
+        // Save new bill or update an existing one
+        function generateInvoice() {
+            const custName = document.getElementById('cust-name').value || 'Cash Customer';
+            const billDate = document.getElementById('bill-date').value || new Date().toISOString().split('T')[0];
+            const templateType = document.getElementById('template-select').value;
+            const editingId = document.getElementById('editing-bill-id').value;
+
+            document.getElementById('preview-cust-name').innerText = custName;
+            document.getElementById('preview-bill-date').innerText = billDate;
+
+            const rows = document.querySelectorAll('#item-rows tr');
+            let grandTotal = 0;
+            let itemsData = [];
+            let previewHTML = '';
+
+            rows.forEach(row => {
+                const name = row.querySelector('.item-name').value || 'Unnamed Item';
+                const f1 = row.querySelector('.item-f1').value;
+                const f2 = row.querySelector('.item-f2').value;
+                const rate = parseFloat(row.querySelector('.item-rate').value) || 0;
+                const total = parseFloat(row.querySelector('.row-total').innerText) || 0;
+
+                grandTotal += total;
+                itemsData.push({ name, f1, f2, rate, total });
+
+                previewHTML += `
+                    <tr class="border-b border-slate-100">
+                        <td class="p-2 font-medium text-slate-800">${name}</td>
+                        <td class="p-2 text-slate-600">${f1}</td>
+                        <td class="p-2 text-slate-600">${f2}</td>
+                        <td class="p-2 text-slate-600">₹${rate.toFixed(2)}</td>
+                        <td class="p-2 text-right font-semibold text-slate-900">₹${total.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+
+            if(itemsData.length === 0) {
+                alert("Kam se kam ek item add karein!");
+                return;
+            }
+
+            document.getElementById('preview-items').innerHTML = previewHTML;
+            document.getElementById('preview-grand-total').innerText = grandTotal.toFixed(2);
+
+            // Construct invoice object
+            const currentBillId = editingId ? parseInt(editingId) : Date.now();
+            
+            activeInvoiceData = {
+                id: currentBillId,
+                customer: custName,
+                date: billDate,
+                type: templateType,
+                total: grandTotal,
+                items: itemsData
+            };
+
+            let savedBills = JSON.parse(localStorage.getItem('all_bills')) || [];
+
+            if (editingId) {
+                // Update mode
+                savedBills = savedBills.map(b => b.id === currentBillId ? activeInvoiceData : b);
+                // Reset standard layout status
+                cancelEditing();
+            } else {
+                // Creation Mode
+                savedBills.unshift(activeInvoiceData);
+            }
+
+            localStorage.setItem('all_bills', JSON.stringify(savedBills));
+            loadSavedBills();
+        }
+
+        // Render History from Storage
+        function loadSavedBills() {
+            const savedBills = JSON.parse(localStorage.getItem('all_bills')) || [];
+            const listDiv = document.getElementById('saved-bills-list');
+            listDiv.innerHTML = '';
+
+            if(savedBills.length === 0) {
+                listDiv.innerHTML = `<p class="text-slate-400 text-xs italic p-2">Database is empty.</p>`;
+                return;
+            }
+
+            savedBills.forEach(bill => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = "p-3 bg-slate-50 rounded-lg border border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-xs shadow-xs";
+                itemDiv.innerHTML = `
+                    <div>
+                        <p class="font-bold text-slate-800">${bill.customer} <span class="text-[10px] font-semibold text-indigo-600 bg-indigo-50 px-1.5 py-0.2 rounded uppercase">${bill.type}</span></p>
+                        <p class="text-slate-500 mt-0.5">${bill.date} | <span class="font-bold text-slate-700">₹${bill.total.toFixed(2)}</span></p>
+                    </div>
+                    <div class="flex gap-1.5 w-full sm:w-auto justify-end">
+                        <button onclick="editBill(${bill.id})" class="bg-amber-500 text-white px-2.5 py-1 rounded font-medium hover:bg-amber-600">✏️ Edit</button>
+                        <button onclick="loadPreviewOnly(${bill.id})" class="bg-indigo-600 text-white px-2.5 py-1 rounded font-medium hover:bg-indigo-700">👁️ View</button>
+                        <button onclick="deleteBill(${bill.id})" class="text-rose-500 hover:bg-rose-100 p-1 rounded">✕</button>
+                    </div>
+                `;
+                listDiv.appendChild(itemDiv);
+            });
+        }
+
+        // Action Triggered when Edit is clicked
+        function editBill(id) {
+            const savedBills = JSON.parse(localStorage.getItem('all_bills')) || [];
+            const bill = savedBills.find(b => b.id === id);
+            if(!bill) return;
+
+            // Set Form inputs
+            document.getElementById('editing-bill-id').value = bill.id;
+            document.getElementById('cust-name').value = bill.customer;
+            document.getElementById('bill-date').value = bill.date;
+            document.getElementById('template-select').value = bill.type;
+
+            // Change Layout Status UI to alert user they are editing
+            document.getElementById('submit-bill-btn').innerText = "Update & Save Bill Changes";
+            document.getElementById('submit-bill-btn').className = "w-full sm:w-auto bg-amber-600 text-white font-bold px-6 py-2.5 rounded-lg hover:bg-amber-700 transition shadow-xs";
+            document.getElementById('cancel-edit-btn').classList.remove('hidden');
+
+            // Force match template columns headers
+            switchTemplate();
+
+            // Refill dynamic rows
+            const tbody = document.getElementById('item-rows');
+            tbody.innerHTML = '';
+            bill.items.forEach(item => {
+                addItemRow(item.name, item.f1, item.f2, item.rate, item.total);
+            });
+
+            // Put active view in right side preview pane
+            loadPreviewOnly(id);
+
+            // Scroll to form view smoothly
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function cancelEditing() {
+            document.getElementById('editing-bill-id').value = '';
+            document.getElementById('cust-name').value = '';
+            document.getElementById('bill-date').valueAsDate = new Date();
+            
+            document.getElementById('submit-bill-btn').innerText = "Generate & Save Bill";
+            document.getElementById('submit-bill-btn').className = "w-full sm:w-auto bg-emerald-600 text-white font-bold px-6 py-2.5 rounded-lg hover:bg-emerald-700 transition shadow-xs";
+            document.getElementById('cancel-edit-btn').classList.add('hidden');
+            
+            document.getElementById('item-rows').innerHTML = '';
+            addItemRow();
+        }
+
+        // View Single Invoice inside the live preview box
+        function loadPreviewOnly(id) {
+            const savedBills = JSON.parse(localStorage.getItem('all_bills')) || [];
+            const bill = savedBills.find(b => b.id === id);
+            if(!bill) return;
+
+            activeInvoiceData = bill; // cache it for download trigger
+
+            document.getElementById('preview-cust-name').innerText = bill.customer;
+            document.getElementById('preview-bill-date').innerText = bill.date;
+            document.getElementById('preview-template-type').innerText = bill.type;
+
+            const config = templates[bill.type];
+            document.getElementById('prev-th-1').innerText = config.label1;
+            document.getElementById('prev-th-2').innerText = config.label2;
+
+            let previewHTML = '';
+            bill.items.forEach(item => {
+                previewHTML += `
+                    <tr class="border-b border-slate-100">
+                        <td class="p-2 font-medium text-slate-800">${item.name}</td>
+                        <td class="p-2 text-slate-600">${item.f1}</td>
+                        <td class="p-2 text-slate-600">${item.f2}</td>
+                        <td class="p-2 text-slate-600">₹${parseFloat(item.rate).toFixed(2)}</td>
+                        <td class="p-2 text-right font-semibold text-slate-900">₹${parseFloat(item.total).toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+            document.getElementById('preview-items').innerHTML = previewHTML;
+            document.getElementById('preview-grand-total').innerText = bill.total.toFixed(2);
+        }
+
+        function deleteBill(id) {
+            if(confirm("Kya aap sach me is bill ko database se delete karna chahte hain?")) {
+                let savedBills = JSON.parse(localStorage.getItem('all_bills')) || [];
+                savedBills = savedBills.filter(bill => bill.id !== id);
+                localStorage.setItem('all_bills', JSON.stringify(savedBills));
+                loadSavedBills();
+            }
+        }
+
+        // --- DOWNLOAD UTILITIES ---
+        // 1. Download active preview single bill as text file (JSON format metadata structure)
+        function downloadCurrentBillJSON() {
+            if(!activeInvoiceData) {
+                alert("Kayi bill selected nahi hai! Pehle generate ya view karein.");
+                return;
+            }
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(activeInvoiceData, null, 4));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `Bill_${activeInvoiceData.customer}_${activeInvoiceData.date}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        // 2. Export Entire History Database backup dump
+        function downloadAllHistoryJSON() {
+            const savedBills = localStorage.getItem('all_bills');
+            if(!savedBills || savedBills === "[]") {
+                alert("Database me koi data nahi hai backup lene ke liye.");
+                return;
+            }
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(savedBills);
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `Billing_Database_Backup_${new Date().toISOString().split('T')[0]}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+    </script>
+</body>
+</html>
