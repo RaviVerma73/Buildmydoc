@@ -1046,6 +1046,62 @@
         max-height: 0 !important
       }
     }
+
+    /* ── TARGET SIZE UNIT BUTTONS ── */
+    .cv-unit-btn {
+      padding: 6px 13px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--bg3);
+      color: var(--muted);
+      font-family: inherit;
+      transition: all .15s;
+      white-space: nowrap
+    }
+
+    .cv-unit-btn.active {
+      background: rgba(99, 102, 241, .2);
+      border-color: var(--indigo);
+      color: var(--indigo2)
+    }
+
+    .cv-unit-btn:hover:not(.active) {
+      border-color: var(--border2);
+      color: var(--text)
+    }
+
+    /* ── TARGET RESULT BADGE (on cards) ── */
+    .target-badge {
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+      display: block;
+      margin-top: 5px;
+      font-family: monospace;
+      line-height: 1.5
+    }
+
+    .target-badge.ok {
+      background: rgba(52, 211, 153, .12);
+      color: var(--emerald);
+      border: 1px solid rgba(52, 211, 153, .25)
+    }
+
+    .target-badge.warn {
+      background: rgba(251, 191, 36, .12);
+      color: var(--amber);
+      border: 1px solid rgba(251, 191, 36, .25)
+    }
+
+    .target-badge.err {
+      background: rgba(239, 68, 68, .12);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, .25)
+    }
   </style>
 </head>
 
@@ -1113,6 +1169,25 @@
             <div class="ctrl-label">Compression Quality <span id="qualityVal">90%</span></div>
             <input type="range" class="range-input" id="qualitySlider" min="1" max="100" value="90"
               oninput="updateQuality(this.value)">
+          </div>
+        </div>
+
+        <!-- TARGET FILE SIZE -->
+        <div class="s-section">
+          <div class="s-title">🎯 Target File Size</div>
+          <div class="ctrl-group">
+            <div class="ctrl-label">Target Size</div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input type="number" class="ctrl-input" id="cvTargetVal" value="200" min="1" max="102400" style="flex:1">
+              <div style="display:flex;gap:3px;flex-shrink:0">
+                <button class="cv-unit-btn active" id="cvUnitKB" onclick="setCvUnit('KB')">KB</button>
+                <button class="cv-unit-btn" id="cvUnitMB" onclick="setCvUnit('MB')">MB</button>
+              </div>
+            </div>
+          </div>
+          <div
+            style="font-size:11px;color:var(--muted);line-height:1.6;background:var(--bg3);padding:8px 10px;border-radius:7px;border:1px solid var(--border)">
+            ⚙️ Quality will auto-adjust per image. Best with <b style="color:var(--indigo2)">JPG / WEBP / AVIF</b>.
           </div>
         </div>
 
@@ -1272,7 +1347,7 @@
     // STATE
     // ══════════════════════════════════════
     const STATE = {
-      images: [],        // [{id, file, name, origUrl, convertedUrl, origSize, newSize, status, width, height, rotation, flipH, flipV}]
+      images: [],
       format: 'jpg',
       quality: 90,
       resizeMode: 'none',
@@ -1285,7 +1360,8 @@
       grayscale: false,
       sharpen: false,
       bgColor: '#ffffff',
-      transforms: {}     // {imageId: {rotation, flipH, flipV}}
+      transforms: {},
+      targetUnit: 'KB'   // 'KB' or 'MB'
     };
 
     const FMT_NOTES = {
@@ -1341,6 +1417,20 @@
       const b = el('settingsBody');
       if (settingsOpen) { b.style.maxHeight = '9999px'; el('settingsToggleIcon').innerHTML = '&#9660;'; }
       else { b.style.maxHeight = '0px'; el('settingsToggleIcon').innerHTML = '&#9654;'; }
+    }
+
+    // ══════════════════════════════════════
+    // TARGET FILE SIZE
+    // ══════════════════════════════════════
+    function setCvUnit(u) {
+      STATE.targetUnit = u;
+      document.querySelectorAll('.cv-unit-btn').forEach(b => b.classList.remove('active'));
+      el('cvUnit' + u).classList.add('active');
+    }
+
+    function getTargetKB() {
+      const raw = parseFloat(el('cvTargetVal').value) || 200;
+      return STATE.targetUnit === 'MB' ? raw * 1024 : raw;
     }
 
     // ══════════════════════════════════════
@@ -1497,22 +1587,35 @@
           processing: '<span class="card-badge badge-proc">&#x23F3; Processing</span>',
           done: '<span class="card-badge badge-done">&#x2714; Converted</span>',
           error: '<span class="card-badge badge-err">&#x26A0; Error</span>'
-        }[img.status] || ''
+        }[img.status] || '';
+
         const sizeInfo = img.newSize
           ? `<span>${fmtBytes(img.origSize)} &rarr;</span><span class="${img.newSize <= img.origSize ? 'size-new' : 'size-bigger'}">${fmtBytes(img.newSize)}</span>`
           : `<span>${fmtBytes(img.origSize)}</span><span>${img.width}&times;${img.height}</span>`;
+
+        // Target size result badge
+        let targetBadge = '';
+        if (img.targetResult && img.status === 'done') {
+          const { targetKB, gotKB, qualityUsed } = img.targetResult;
+          const tStr = targetKB >= 1024 ? (targetKB / 1024).toFixed(2) + ' MB' : targetKB + ' KB';
+          const diff = gotKB - targetKB;
+          const diffStr = (diff >= 0 ? '+' : '') + diff;
+          const cls = Math.abs(diff) <= Math.max(targetKB * 0.15, 5) ? 'ok' : (diff > 0 ? 'warn' : 'ok');
+          targetBadge = `<span class="target-badge ${cls}">🎯 ${tStr} → ${gotKB} KB (${diffStr}) · Q${qualityUsed}%</span>`;
+        }
+
         const outName = img.name.replace(/\.[^.]+$/, '') + '.' + STATE.format;
         return `<div class="img-card" id="card-${img.id}">
       <div class="card-preview-wrap">
         <img class="card-preview" src="${previewUrl}" alt="${img.name}" loading="lazy" onclick="openLightbox('${previewUrl}')">
         ${statusBadge}
         <button class="card-remove" onclick="removeImage('${img.id}')" title="Remove">&#x2715;</button>
-        ${img.status = 'processing' ? '<div class="progress-bar"><div class="progress-fill" style="width:100%;animation:spin 1s linear infinite"></div></div>' : ''}
       </div>
       <div class="card-body">
         <div class="card-name" title="${img.name}">${img.name}</div>
         <div class="card-info">${sizeInfo}</div>
-        <div class="card-actions">
+        ${targetBadge}
+        <div class="card-actions" style="margin-top:${targetBadge ? '8px' : '0'}">
           <button class="btn btn-primary btn-sm" onclick="convertOne('${img.id}')" ${img.status === 'processing' ? 'disabled' : ''}>
             &#x1F504; Convert
           </button>
@@ -1535,6 +1638,7 @@
         const result = await processImage(img);
         img.convertedUrl = result.dataUrl;
         img.newSize = result.size;
+        img.targetResult = result.targetResult || null;
         img.status = 'done';
       } catch (e) {
         img.status = 'error';
@@ -1562,46 +1666,31 @@
         imgEl.crossOrigin = 'anonymous';
         imgEl.onload = () => {
           try {
-            // Determine output dimensions
-            let sw = imgEl.naturalWidth;
-            let sh = imgEl.naturalHeight;
-            let dw, dh;
-
+            // ── Dimensions ──
+            let sw = imgEl.naturalWidth, sh = imgEl.naturalHeight, dw, dh;
             if (STATE.resizeMode === 'none') { dw = sw; dh = sh; }
             else if (STATE.resizeMode === 'custom') {
               dw = parseInt(el('resizeW').value) || sw;
               dh = parseInt(el('resizeH').value) || sh;
-            }
-            else if (STATE.resizeMode === 'percent') {
+            } else if (STATE.resizeMode === 'percent') {
               const pct = parseInt(el('pctSlider').value) / 100;
-              dw = Math.round(sw * pct);
-              dh = Math.round(sh * pct);
-            }
-            else if (STATE.resizeMode === 'fit') {
+              dw = Math.round(sw * pct); dh = Math.round(sh * pct);
+            } else if (STATE.resizeMode === 'fit') {
               const mw = parseInt(el('fitW').value) || sw;
               const mh = parseInt(el('fitH').value) || sh;
               const ratio = Math.min(mw / sw, mh / sh, 1);
-              dw = Math.round(sw * ratio);
-              dh = Math.round(sh * ratio);
+              dw = Math.round(sw * ratio); dh = Math.round(sh * ratio);
             }
 
-            // Handle rotation for dimension swap
+            // ── Canvas setup ──
             const rot = (imgObj.rotation || 0) % 360;
             const swap = rot === 90 || rot === 270;
-            const canW = swap ? dh : dw;
-            const canH = swap ? dw : dh;
-
+            const canW = swap ? dh : dw, canH = swap ? dw : dh;
             const canvas = document.createElement('canvas');
-            canvas.width = canW;
-            canvas.height = canH;
+            canvas.width = canW; canvas.height = canH;
             const ctx = canvas.getContext('2d');
-
-            // Background for JPG (no transparency)
-            const bg = el('bgColor').value || '#ffffff';
-            ctx.fillStyle = bg;
+            ctx.fillStyle = el('bgColor').value || '#ffffff';
             ctx.fillRect(0, 0, canW, canH);
-
-            // Apply transforms
             ctx.save();
             ctx.translate(canW / 2, canH / 2);
             if (rot) ctx.rotate(rot * Math.PI / 180);
@@ -1610,7 +1699,7 @@
             ctx.drawImage(imgEl, -dw / 2, -dh / 2, dw, dh);
             ctx.restore();
 
-            // Grayscale
+            // ── Grayscale ──
             if (STATE.grayscale) {
               const d = ctx.getImageData(0, 0, canW, canH);
               for (let i = 0; i < d.data.length; i += 4) {
@@ -1620,7 +1709,7 @@
               ctx.putImageData(d, 0, 0);
             }
 
-            // Sharpen (simple kernel)
+            // ── Sharpen ──
             if (STATE.sharpen) {
               const d = ctx.getImageData(0, 0, canW, canH);
               const out = ctx.createImageData(canW, canH);
@@ -1629,14 +1718,10 @@
                 for (let x = 1; x < canW - 1; x++) {
                   for (let c = 0; c < 3; c++) {
                     let v = 0, ki = 0;
-                    for (let ky = -1; ky <= 1; ky++) {
-                      for (let kx = -1; kx <= 1; kx++, ki++) {
-                        const pi = ((y + ky) * canW + (x + kx)) * 4 + c;
-                        v += d.data[pi] * k[ki];
-                      }
-                    }
-                    const pi = (y * canW + x) * 4 + c;
-                    out.data[pi] = Math.min(255, Math.max(0, v));
+                    for (let ky = -1; ky <= 1; ky++)
+                      for (let kx = -1; kx <= 1; kx++, ki++)
+                        v += d.data[((y + ky) * canW + (x + kx)) * 4 + c] * k[ki];
+                    out.data[(y * canW + x) * 4 + c] = Math.min(255, Math.max(0, v));
                   }
                   out.data[(y * canW + x) * 4 + 3] = d.data[(y * canW + x) * 4 + 3];
                 }
@@ -1644,26 +1729,52 @@
               ctx.putImageData(out, 0, 0);
             }
 
-            // Get mime type
+            // ── Format / mime ──
             let mime = MIME[STATE.format] || 'image/jpeg';
-            const quality = ['jpg', 'webp', 'avif'].includes(STATE.format) ? STATE.quality / 100 : undefined;
+            const supportsQuality = ['jpg', 'webp', 'avif'].includes(STATE.format);
 
-            // Special handling
+            // ── SVG special case ──
             if (STATE.format === 'svg') {
-              const dataUrl = canvas.toDataURL('image/png');
-              const svgStr = `<svg xmlns="http://www.w3.org/2000/svg" width="${canW}" height="${canH}"><image href="${dataUrl}" width="${canW}" height="${canH}"/></svg>`;
+              const pngUrl = canvas.toDataURL('image/png');
+              const svgStr = `<svg xmlns="http://www.w3.org/2000/svg" width="${canW}" height="${canH}"><image href="${pngUrl}" width="${canW}" height="${canH}"/></svg>`;
               const b64 = 'data:image/svg+xml;base64,' + btoa(svgStr);
-              const approxSize = b64.length * 0.75;
-              resolve({ dataUrl: b64, size: approxSize });
+              resolve({ dataUrl: b64, size: Math.round(b64.length * 0.75), targetResult: null });
               return;
             }
 
-            let dataUrl;
-            try { dataUrl = canvas.toDataURL(mime, quality); }
-            catch (e) { dataUrl = canvas.toDataURL('image/png'); mime = 'image/png'; }
+            // ── Helper: encode at quality q, return {dataUrl, kb} ──
+            function encode(q) {
+              let url;
+              try { url = supportsQuality ? canvas.toDataURL(mime, q) : canvas.toDataURL(mime); }
+              catch (e) { url = canvas.toDataURL('image/png'); }
+              const kb = Math.round(atob(url.split(',')[1]).length / 1024);
+              return { url, kb };
+            }
 
-            const arr = atob(dataUrl.split(',')[1]);
-            resolve({ dataUrl, size: arr.length });
+            // ── Target size: binary search ──
+            const targetKB = getTargetKB();
+            if (supportsQuality) {
+              // Binary search quality (0.01 – 1.0) to land ≤ targetKB
+              let lo = 0.01, hi = 1.0, bestUrl = null, bestKB = 0, bestQ = 0.01;
+              for (let i = 0; i < 16 && (hi - lo) > 0.005; i++) {
+                const mid = (lo + hi) / 2;
+                const { url, kb } = encode(mid);
+                if (kb <= targetKB) { lo = mid; bestUrl = url; bestKB = kb; bestQ = mid; }
+                else { hi = mid; }
+              }
+              // If no quality produced a small enough file (target too small), use minimum
+              if (!bestUrl) { const r = encode(0.01); bestUrl = r.url; bestKB = r.kb; bestQ = 0.01; }
+              const qualityUsed = Math.round(bestQ * 100);
+              resolve({
+                dataUrl: bestUrl,
+                size: bestKB * 1024,
+                targetResult: { targetKB, gotKB: bestKB, qualityUsed }
+              });
+            } else {
+              // Lossless formats — no quality control; just encode and return
+              const { url, kb } = encode(1);
+              resolve({ dataUrl: url, size: kb * 1024, targetResult: null });
+            }
           } catch (e) { reject(e); }
         };
         imgEl.onerror = reject;
@@ -1683,6 +1794,7 @@
           const result = await processImage(img);
           img.convertedUrl = result.dataUrl;
           img.newSize = result.size;
+          img.targetResult = result.targetResult || null;
           img.status = 'done';
         } catch (e) {
           img.status = 'error';

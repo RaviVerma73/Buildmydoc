@@ -2076,6 +2076,219 @@
     #qsec {
       display: none
     }
+
+    /* Target size unit buttons */
+    .ts-unit-btn {
+      padding: 5px 13px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--bg3);
+      color: var(--muted);
+      font-family: inherit;
+      transition: all .15s;
+      white-space: nowrap
+    }
+
+    .ts-unit-btn.active {
+      background: rgba(99, 102, 241, .2);
+      border-color: var(--indigo);
+      color: var(--indigo2)
+    }
+
+    .ts-unit-btn:hover:not(.active) {
+      border-color: var(--border2);
+      color: var(--text)
+    }
+
+    .dg-tr-ok {
+      background: rgba(52, 211, 153, .1);
+      border: 1px solid rgba(52, 211, 153, .3);
+      color: var(--emerald)
+    }
+
+    .dg-tr-warn {
+      background: rgba(251, 191, 36, .1);
+      border: 1px solid rgba(251, 191, 36, .3);
+      color: var(--amber)
+    }
+
+    .dg-tr-err {
+      background: rgba(239, 68, 68, .1);
+      border: 1px solid rgba(239, 68, 68, .3);
+      color: #f87171
+    }
+
+    /* ── LOGO SECTION ── */
+    .pos-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      margin-bottom: 10px
+    }
+
+    .pos-btn {
+      aspect-ratio: 1;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      background: var(--bg3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      transition: all .15s;
+      color: var(--muted);
+      position: relative
+    }
+
+    .pos-btn:hover {
+      border-color: var(--border2);
+      background: var(--card)
+    }
+
+    .pos-btn.active {
+      border-color: var(--indigo);
+      background: rgba(99, 102, 241, .18);
+      color: var(--indigo2)
+    }
+
+    .pos-btn .pos-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      position: absolute
+    }
+
+    /* dot positions */
+    .pos-btn[data-pos="top-left"] .pos-dot {
+      top: 6px;
+      left: 6px
+    }
+
+    .pos-btn[data-pos="top-center"] .pos-dot {
+      top: 6px;
+      left: 50%;
+      transform: translateX(-50%)
+    }
+
+    .pos-btn[data-pos="top-right"] .pos-dot {
+      top: 6px;
+      right: 6px
+    }
+
+    .pos-btn[data-pos="mid-left"] .pos-dot {
+      top: 50%;
+      transform: translateY(-50%);
+      left: 6px
+    }
+
+    .pos-btn[data-pos="center"] .pos-dot {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%)
+    }
+
+    .pos-btn[data-pos="mid-right"] .pos-dot {
+      top: 50%;
+      transform: translateY(-50%);
+      right: 6px
+    }
+
+    .pos-btn[data-pos="bot-left"] .pos-dot {
+      bottom: 6px;
+      left: 6px
+    }
+
+    .pos-btn[data-pos="bot-center"] .pos-dot {
+      bottom: 6px;
+      left: 50%;
+      transform: translateX(-50%)
+    }
+
+    .pos-btn[data-pos="bot-right"] .pos-dot {
+      bottom: 6px;
+      right: 6px
+    }
+
+    .logo-upload-drop {
+      border: 2px dashed var(--border2);
+      border-radius: 9px;
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+      background: var(--bg3);
+      transition: border-color .15s, background .15s;
+      margin-bottom: 10px
+    }
+
+    .logo-upload-drop:hover {
+      border-color: var(--indigo);
+      background: rgba(99, 102, 241, .06)
+    }
+
+    .logo-upload-drop input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%
+    }
+
+    .logo-upload-drop .lu-icon {
+      font-size: 22px;
+      display: block;
+      margin-bottom: 4px
+    }
+
+    .logo-upload-drop p {
+      font-size: 11px;
+      color: var(--muted)
+    }
+
+    .logo-preview-wrap {
+      display: none;
+      position: relative;
+      margin-bottom: 10px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden
+    }
+
+    .logo-preview-wrap img {
+      width: 100%;
+      max-height: 80px;
+      object-fit: contain;
+      display: block
+    }
+
+    .logo-rm-btn {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(0, 0, 0, .65);
+      color: #f87171;
+      cursor: pointer;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .logo-rm-btn:hover {
+      background: rgba(239, 68, 68, .8);
+      color: #fff
+    }
   </style>
 </head>
 
@@ -2206,6 +2419,41 @@
             </div>
           </div>
 
+          <!-- Target File Size -->
+          <div class="s-section" id="targetSizeSection">
+            <div class="s-title">🎯 Target File Size</div>
+            <div class="fl">
+              <label class="lbl">Target Size</label>
+              <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+                <div class="inp-w" style="flex:1">
+                  <input type="number" class="dg-input" id="targetSizeVal" value="100" min="1" max="50000"
+                    style="padding-right:10px" />
+                </div>
+                <div style="display:flex;gap:4px;flex-shrink:0">
+                  <button class="ts-unit-btn active" id="tsUnitKB" onclick="setTargetUnit('KB')">KB</button>
+                  <button class="ts-unit-btn" id="tsUnitMB" onclick="setTargetUnit('MB')">MB</button>
+                </div>
+              </div>
+              <div
+                style="font-size:11px;color:var(--muted);line-height:1.6;background:var(--bg3);padding:8px 10px;border-radius:7px;border:1px solid var(--border)">
+                ⚙️ Quality will be adjusted automatically during generation. <b style="color:var(--indigo2)">JPEG /
+                  WEBP</b> formats provide the best results.
+              </div>
+              <div id="dgTargetProgress" style="display:none;margin-top:8px">
+                <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Optimizing... <span
+                    id="dgTargetIter">—</span></div>
+                <div style="height:4px;background:var(--bg3);border-radius:2px;overflow:hidden">
+                  <div id="dgTargetBar"
+                    style="height:100%;width:0%;background:linear-gradient(90deg,var(--indigo),var(--cyan));transition:width .25s;border-radius:2px">
+                  </div>
+                </div>
+              </div>
+              <div id="dgTargetResult"
+                style="display:none;margin-top:8px;font-size:11px;font-family:monospace;padding:7px 10px;border-radius:7px">
+              </div>
+            </div>
+          </div>
+
           <!-- Mode Switch -->
           <div class="s-section">
             <div class="s-title">&#x1F527; Mode</div>
@@ -2239,18 +2487,18 @@
                 <circle cx="8.5" cy="8.5" r="1.5" />
                 <path d="M21 15l-5-5L5 21" />
               </svg>
-              <p>Click karein ya image drag karein</p>
-              <span>PNG, JPG, WEBP, GIF — koi bhi format</span>
+              <p>Click or drag an image</p>
+              <span>PNG, JPG, WEBP, GIF — any format</span>
             </div>
             <div class="upload-preview" id="uploadPreview">
               <img id="uploadThumb" src="" alt="preview" />
               <div class="upload-info">
                 <span class="upload-info-t" id="uploadName">—</span>
-                <button class="upload-clear" id="uploadClear">✕ Hatao</button>
+                <button class="upload-clear" id="uploadClear">✕ Clear</button>
               </div>
             </div>
-            <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6">Size, format aur quality upar
-              set karein — generate par image resize hogi.</p>
+            <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6">Set the size, format, and
+              quality above — the image will be resized when generated.</p>
           </div>
 
           <!-- Color -->
@@ -2272,19 +2520,19 @@
             <div class="s-title">&#x1F4DD; Text Label</div>
             <div class="tgl-row">
               <div class="tgl on" id="ttgl"></div>
-              <span class="tgl-lbl">Center text dikhayein</span>
+              <span class="tgl-lbl">Show Center text</span>
             </div>
             <div id="topts">
               <label class="lbl">Main Text</label>
-              <input type="text" class="dg-input dg-input-plain" id="ttext" placeholder="Khali = size auto dikhega"
+              <input type="text" class="dg-input dg-input-plain" id="ttext" placeholder="Only = Show auto size"
                 style="margin-bottom:12px" />
               <div class="tgl-row" style="margin-bottom:8px">
                 <div class="tgl on" id="subtgl"></div>
-                <span class="tgl-lbl">Subtitle dikhayein</span>
+                <span class="tgl-lbl">Show Subtitle</span>
               </div>
               <div id="subopts">
-                <input type="text" class="dg-input dg-input-plain" id="subtext"
-                  placeholder="Khali = Format·Quality auto" style="margin-bottom:12px" />
+                <input type="text" class="dg-input dg-input-plain" id="subtext" placeholder="Only = Format·Quality auto"
+                  style="margin-bottom:12px" />
               </div>
               <label class="lbl">Text Color</label>
               <div class="tcs">
@@ -2297,6 +2545,84 @@
                 <div class="tc" data-tc="#fbbf24" style="background:#fbbf24" title="Amber"></div>
                 <div class="tc" data-tc="#22d3ee" style="background:#22d3ee" title="Cyan"></div>
               </div>
+            </div>
+          </div>
+
+          <!-- Logo / Watermark -->
+          <div class="s-section" id="logoSection">
+            <div class="s-title">🖼️ Logo / Watermark</div>
+            <div class="tgl-row">
+              <div class="tgl" id="logoTgl"></div>
+              <span class="tgl-lbl">Add Logo</span>
+            </div>
+            <div id="logoOpts" style="display:none">
+
+              <!-- Upload -->
+              <div class="logo-upload-drop" id="logoDropZone">
+                <input type="file" id="logoInput" accept="image/*" />
+                <span class="lu-icon">📂</span>
+                <p>Click or drag a logo or image<br><span style="font-size:10px;color:var(--muted)">PNG (transparent)
+                    works best</span></p>
+              </div>
+              <div class="logo-preview-wrap" id="logoPreviewWrap">
+                <img id="logoThumb" src="" alt="logo preview" />
+                <button class="logo-rm-btn" id="logoRemoveBtn">✕</button>
+              </div>
+
+              <!-- Size slider -->
+              <div class="fl">
+                <label class="lbl">Logo Size <span id="logoSizeLbl"
+                    style="color:var(--indigo2);font-size:10px;font-weight:700">20%</span></label>
+                <div class="sl-row">
+                  <input type="range" id="logoSize" min="3" max="80" value="20" />
+                  <span class="sl-v" id="logoSizeVal">20%</span>
+                </div>
+                <div class="sl-hints"><span>Small</span><span>Big</span></div>
+              </div>
+
+              <!-- Opacity slider -->
+              <div class="fl">
+                <label class="lbl">Opacity</label>
+                <div class="sl-row">
+                  <input type="range" id="logoOpacity" min="10" max="100" value="100" step="5" />
+                  <span class="sl-v" id="logoOpacityVal">100%</span>
+                </div>
+              </div>
+
+              <!-- Padding slider -->
+              <div class="fl">
+                <label class="lbl">Padding (edge to distance)</label>
+                <div class="sl-row">
+                  <input type="range" id="logoPadding" min="0" max="15" value="3" />
+                  <span class="sl-v" id="logoPaddingVal">3%</span>
+                </div>
+              </div>
+
+              <!-- Position grid -->
+              <div class="fl">
+                <label class="lbl">Position</label>
+                <div class="pos-grid">
+                  <button class="pos-btn" data-pos="top-left" title="Top Left"> <span class="pos-dot"></span> </button>
+                  <button class="pos-btn" data-pos="top-center" title="Top Center"> <span class="pos-dot"></span>
+                  </button>
+                  <button class="pos-btn" data-pos="top-right" title="Top Right"> <span class="pos-dot"></span>
+                  </button>
+                  <button class="pos-btn" data-pos="mid-left" title="Middle Left"> <span class="pos-dot"></span>
+                  </button>
+                  <button class="pos-btn active" data-pos="center" title="Center"> <span class="pos-dot"></span>
+                  </button>
+                  <button class="pos-btn" data-pos="mid-right" title="Middle Right"> <span class="pos-dot"></span>
+                  </button>
+                  <button class="pos-btn" data-pos="bot-left" title="Bottom Left"> <span class="pos-dot"></span>
+                  </button>
+                  <button class="pos-btn" data-pos="bot-center" title="Bottom Center"><span class="pos-dot"></span>
+                  </button>
+                  <button class="pos-btn" data-pos="bot-right" title="Bottom Right"> <span class="pos-dot"></span>
+                  </button>
+                </div>
+                <div style="font-size:10px;color:var(--muted);text-align:center" id="posLabel">Center</div>
+              </div>
+
             </div>
           </div>
 
@@ -2315,7 +2641,7 @@
                 <polyline points="17 21 17 13 7 13 7 21" />
                 <polyline points="7 3 7 8 15 8" />
               </svg>
-              Gallery mein Save karein
+              Save to Gallery
             </button>
           </div>
 
@@ -2344,7 +2670,7 @@
                   <circle cx="8.5" cy="8.5" r="1.5" />
                   <path d="M21 15l-5-5L5 21" />
                 </svg>
-                <p>Generate karein preview dekhne ke liye</p>
+                <p>Generate to see the preview</p>
               </div>
               <canvas id="pcanvas"></canvas>
             </div>
@@ -2412,6 +2738,82 @@
 
       let BG = PAL[2], TC = '#ffffff', FT = 'png', showTxt = true, showSub = true;
       let currentDataURL = null, currentMeta = null;
+      let dgTargetUnit = 'KB';
+
+      /* ── LOGO STATE ── */
+      let logoEnabled = false, logoImg = null, logoPos = 'center';
+      let logoSizePct = 20, logoOpacity = 1.0, logoPaddingPct = 3;
+
+      /* ── LOGO CONTROLS ── */
+      $('#logoTgl').on('click', function () {
+        $(this).toggleClass('on'); logoEnabled = $(this).hasClass('on');
+        $('#logoOpts').toggle(logoEnabled);
+      });
+
+      // Upload
+      $('#logoInput').on('change', function () { loadLogoFile(this.files[0]); });
+      $('#logoDropZone').on('dragover', function (e) { e.preventDefault(); $(this).css('border-color', 'var(--indigo)'); })
+        .on('dragleave', function () { $(this).css('border-color', ''); })
+        .on('drop', function (e) { e.preventDefault(); $(this).css('border-color', ''); loadLogoFile(e.originalEvent.dataTransfer.files[0]); });
+
+      function loadLogoFile(file) {
+        if (!file || !file.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const img = new Image();
+          img.onload = function () {
+            logoImg = img;
+            $('#logoThumb').attr('src', e.target.result);
+            $('#logoPreviewWrap').show();
+            $('#logoDropZone').hide();
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      $('#logoRemoveBtn').on('click', function (e) {
+        e.stopPropagation();
+        logoImg = null;
+        $('#logoThumb').attr('src', '');
+        $('#logoPreviewWrap').hide();
+        $('#logoDropZone').show();
+        $('#logoInput').val('');
+      });
+
+      // Sliders
+      $('#logoSize').on('input', function () {
+        logoSizePct = parseInt(this.value);
+        $('#logoSizeVal, #logoSizeLbl').text(logoSizePct + '%');
+      });
+      $('#logoOpacity').on('input', function () {
+        logoOpacity = parseInt(this.value) / 100;
+        $('#logoOpacityVal').text(this.value + '%');
+      });
+      $('#logoPadding').on('input', function () {
+        logoPaddingPct = parseInt(this.value);
+        $('#logoPaddingVal').text(logoPaddingPct + '%');
+      });
+
+      // Position buttons
+      const POS_LABELS = {
+        'top-left': 'Top Left', 'top-center': 'Top Center', 'top-right': 'Top Right',
+        'mid-left': 'Middle Left', 'center': 'Center', 'mid-right': 'Middle Right',
+        'bot-left': 'Bottom Left', 'bot-center': 'Bottom Center', 'bot-right': 'Bottom Right'
+      };
+      $(document).on('click', '.pos-btn', function () {
+        $('.pos-btn').removeClass('active');
+        $(this).addClass('active');
+        logoPos = $(this).data('pos');
+        $('#posLabel').text(POS_LABELS[logoPos] || logoPos);
+      });
+
+      /* ── TARGET SIZE UNIT ── */
+      window.setTargetUnit = function (u) {
+        dgTargetUnit = u;
+        $('#tsUnitKB, #tsUnitMB').removeClass('active');
+        $('#tsUnit' + u).addClass('active');
+      };
 
       $('#pg .sw').eq(2).addClass('on');
       $('#ccolor').val(BG); $('#hexlbl').text(BG);
@@ -2450,50 +2852,153 @@
       /* Text color */
       $(document).on('click', '.tc', function () { $('.tc').removeClass('on'); $(this).addClass('on'); TC = $(this).data('tc') });
 
-      /* ── GENERATE ── */
-      function draw() {
-        const W = Math.min(Math.max(parseInt($('#iw').val()) || 800, 10), 4000);
-        const H = Math.min(Math.max(parseInt($('#ih').val()) || 600, 10), 4000);
-        const q = parseInt($('#dg-quality').val()) / 100;
-        const lbl = $('#ttext').val().trim() || `${W} × ${H}`;
+      /* ── HELPERS ── */
+      function getTargetKB() {
+        const raw = parseFloat($('#targetSizeVal').val()) || 100;
+        return dgTargetUnit === 'MB' ? raw * 1024 : raw;
+      }
 
+      /* Paint canvas and return dataURL at given quality (no side-effects) */
+      function renderFrame(W, H, q, lbl, srcImg) {
         const cv = document.getElementById('pcanvas');
         cv.width = W; cv.height = H;
         const ctx = cv.getContext('2d');
 
-        ctx.fillStyle = BG;
-        ctx.fillRect(0, 0, W, H);
+        // Background / source image
+        if (srcImg) {
+          ctx.drawImage(srcImg, 0, 0, W, H);
+        } else {
+          ctx.fillStyle = BG;
+          ctx.fillRect(0, 0, W, H);
+        }
 
+        // Text label
         if (showTxt) {
           const fs = Math.max(16, Math.min(W, H) * .065);
           ctx.font = `600 ${fs}px Inter,Arial,sans-serif`;
           ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
           ctx.fillStyle = TC;
-          ctx.shadowColor = 'rgba(0,0,0,0.15)'; ctx.shadowBlur = fs * .35;
+          ctx.shadowColor = srcImg ? 'rgba(0,0,0,0.45)' : 'rgba(0,0,0,0.15)';
+          ctx.shadowBlur = fs * .35;
           ctx.fillText(lbl, W / 2, H / 2);
           ctx.shadowBlur = 0;
           const fsub = Math.max(10, fs * .36);
           ctx.font = `400 ${fsub}px monospace`;
-          ctx.globalAlpha = .5;
-          ctx.fillStyle = TC;
+          ctx.globalAlpha = .5; ctx.fillStyle = TC;
           if (showSub) {
             const subVal = $('#subtext').val().trim();
             const subLine = subVal || FT.toUpperCase() + (FT !== 'png' ? ` · Q${Math.round(q * 100)}%` : '');
             ctx.fillText(subLine, W / 2, H / 2 + fs * .9);
           }
+          ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+        }
+
+        // ── LOGO ──
+        if (logoEnabled && logoImg) {
+          const pad = Math.round(Math.min(W, H) * (logoPaddingPct / 100));
+          // Logo size: % of shorter side
+          const maxSide = Math.round(Math.min(W, H) * (logoSizePct / 100));
+          // Keep aspect ratio
+          const ar = logoImg.naturalWidth / logoImg.naturalHeight;
+          let lw, lh;
+          if (ar >= 1) { lw = maxSide; lh = Math.round(maxSide / ar); }
+          else { lh = maxSide; lw = Math.round(maxSide * ar); }
+          lw = Math.max(lw, 1); lh = Math.max(lh, 1);
+
+          // X position
+          let lx;
+          if (logoPos.includes('left')) lx = pad;
+          else if (logoPos.includes('right')) lx = W - lw - pad;
+          else lx = Math.round((W - lw) / 2); // center
+
+          // Y position
+          let ly;
+          if (logoPos.includes('top')) ly = pad;
+          else if (logoPos.includes('bot')) ly = H - lh - pad;
+          else ly = Math.round((H - lh) / 2); // middle / center
+
+          ctx.globalAlpha = logoOpacity;
+          ctx.drawImage(logoImg, lx, ly, lw, lh);
           ctx.globalAlpha = 1;
         }
 
-        $('#emptystate').hide(); $(cv).show();
-
         const mime = { png: 'image/png', jpeg: 'image/jpeg', webp: 'image/webp' }[FT];
-        currentDataURL = FT === 'png' ? cv.toDataURL(mime) : cv.toDataURL(mime, q);
-        const kb = Math.round(currentDataURL.split(',')[1].length * .75 / 1024);
-        currentMeta = { W, H, FT, q, kb, lbl, bg: BG, tc: TC };
+        return FT === 'png' ? cv.toDataURL(mime) : cv.toDataURL(mime, q);
+      }
 
+      /* Binary search quality to hit targetKB — returns {url, kb, q, iters} */
+      function findQuality(W, H, lbl, targetKB, srcImg) {
+        return new Promise(resolve => {
+          if (FT === 'png') {
+            const url = renderFrame(W, H, 1, lbl, srcImg);
+            const kb = Math.round(url.split(',')[1].length * .75 / 1024);
+            resolve({ url, kb, q: 1, iters: 0 }); return;
+          }
+          let lo = 0.01, hi = 1.0, bestUrl = null, bestKB = 0, bestQ = lo, iter = 0;
+          const MAX = 16;
+          function step() {
+            if (iter >= MAX || (hi - lo) < 0.005) {
+              // If no url found (all too big), use lo=0.01
+              if (!bestUrl) { bestUrl = renderFrame(W, H, 0.01, lbl, srcImg); bestKB = Math.round(bestUrl.split(',')[1].length * .75 / 1024); }
+              resolve({ url: bestUrl, kb: bestKB, q: bestQ, iters: iter }); return;
+            }
+            const mid = (lo + hi) / 2;
+            const url = renderFrame(W, H, mid, lbl, srcImg);
+            const kb = Math.round(url.split(',')[1].length * .75 / 1024);
+            iter++;
+            const pct = Math.round((iter / MAX) * 100);
+            $('#dgTargetBar').css('width', pct + '%');
+            $('#dgTargetIter').text(`Attempt ${iter} — ${kb} KB @ Q${Math.round(mid * 100)}%`);
+            if (kb <= targetKB) { lo = mid; bestUrl = url; bestKB = kb; bestQ = mid; }
+            else { hi = mid; }
+            setTimeout(step, 0);
+          }
+          step();
+        });
+      }
+
+      /* Finalize after getting url+kb */
+      function finalize(W, H, url, kb, q, lbl, bgLabel) {
+        currentDataURL = url;
+        currentMeta = { W, H, FT, q, kb, lbl, bg: bgLabel || BG, tc: TC };
+        $('#emptystate').hide(); $('#pcanvas').show();
         $('#mcps').html(`<span class="mcp"><b>${W}×${H}</b></span><span class="mcp"><b>${FT.toUpperCase()}</b></span><span class="mcp">~<b>${kb} KB</b></span>`);
         $('#sd').text(`${W}×${H}`); $('#st').text(FT.toUpperCase()); $('#sk').text(kb);
         $('#saveBtn').css('display', 'flex');
+      }
+
+      /* Show result badge */
+      function showResult(targetKB, gotKB, q, iters) {
+        const tStr = targetKB >= 1024 ? (targetKB / 1024).toFixed(2) + ' MB' : targetKB + ' KB';
+        const diff = gotKB - targetKB;
+        const within = Math.abs(diff) <= Math.max(targetKB * 0.15, 5);
+        const cls = FT === 'png' ? 'dg-tr-warn' : (within ? 'dg-tr-ok' : 'dg-tr-warn');
+        const diffStr = FT === 'png'
+          ? `PNG is lossless — got <b>${gotKB} KB</b>`
+          : `Target <b>${tStr}</b> → Got <b>${gotKB} KB</b> (${diff >= 0 ? '+' : ''}${diff} KB) · Q${Math.round(q * 100)}% · ${iters} iter${iters !== 1 ? 's' : ''}`;
+        $('#dgTargetResult').attr('class', cls).html(`🎯 ${diffStr}`).show();
+      }
+
+      /* ── GENERATE (dummy mode) ── */
+      async function draw() {
+        const W = Math.min(Math.max(parseInt($('#iw').val()) || 800, 10), 4000);
+        const H = Math.min(Math.max(parseInt($('#ih').val()) || 600, 10), 4000);
+        const q = parseInt($('#dg-quality').val()) / 100;
+        const lbl = $('#ttext').val().trim() || `${W} × ${H}`;
+        const targetKB = getTargetKB();
+
+        $('#dgTargetResult').hide();
+        $('#dgTargetProgress').show();
+        $('#dgTargetBar').css('width', '0%');
+        $('#dgTargetIter').text('Starting...');
+        $('#genBtn').prop('disabled', true).css('opacity', '.6');
+
+        const res = await findQuality(W, H, lbl, targetKB, null);
+
+        $('#dgTargetProgress').hide();
+        $('#genBtn').prop('disabled', false).css('opacity', '');
+        showResult(targetKB, res.kb, res.q, res.iters);
+        finalize(W, H, res.url, res.kb, res.q, lbl, BG);
       }
 
       /* ── MODE SWITCH ── */
@@ -2535,43 +3040,26 @@
         $('#uploadPreview').hide(); $('#uploadInput').val(''); $('#uploadName').text('—');
       });
 
-      function drawUpload() {
+      /* ── GENERATE (upload mode) ── */
+      async function drawUpload() {
         if (!uploadedImageEl) { alert('Pehle koi image upload karein!'); return; }
         const W = Math.min(Math.max(parseInt($('#iw').val()) || 800, 10), 4000);
         const H = Math.min(Math.max(parseInt($('#ih').val()) || 600, 10), 4000);
-        const q = parseInt($('#dg-quality').val()) / 100;
-        const cv = document.getElementById('pcanvas');
-        cv.width = W; cv.height = H;
-        const ctx = cv.getContext('2d');
-        ctx.drawImage(uploadedImageEl, 0, 0, W, H);
-        if (showTxt) {
-          const lbl = $('#ttext').val().trim() || (W + ' × ' + H);
-          const fs = Math.max(16, Math.min(W, H) * .065);
-          ctx.font = '600 ' + fs + 'px Inter,Arial,sans-serif';
-          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-          ctx.fillStyle = TC;
-          ctx.shadowColor = 'rgba(0,0,0,0.45)'; ctx.shadowBlur = fs * .5;
-          ctx.fillText(lbl, W / 2, H / 2);
-          if (showSub) {
-            ctx.shadowBlur = 0;
-            const fsubU = Math.max(10, fs * .36);
-            ctx.font = '400 ' + fsubU + 'px monospace';
-            ctx.globalAlpha = .5;
-            const subValU = $('#subtext').val().trim();
-            ctx.fillText(subValU || (FT.toUpperCase() + (FT !== 'png' ? ' · Q' + Math.round(q * 100) + '%' : '')), W / 2, H / 2 + fs * .9);
-            ctx.globalAlpha = 1;
-          }
-          ctx.shadowBlur = 0;
-        }
-        $('#emptystate').hide(); $(cv).show();
-        const mime = { png: 'image/png', jpeg: 'image/jpeg', webp: 'image/webp' }[FT];
-        currentDataURL = FT === 'png' ? cv.toDataURL(mime) : cv.toDataURL(mime, q);
-        const kb = Math.round(currentDataURL.split(',')[1].length * .75 / 1024);
-        const lbl2 = $('#ttext').val().trim() || (W + '×' + H);
-        currentMeta = { W, H, FT, q, kb, lbl: lbl2, bg: 'uploaded', tc: TC };
-        $('#mcps').html('<span class="mcp"><b>' + W + '×' + H + '</b></span><span class="mcp"><b>' + FT.toUpperCase() + '</b></span><span class="mcp">~<b>' + kb + ' KB</b></span>');
-        $('#sd').text(W + '×' + H); $('#st').text(FT.toUpperCase()); $('#sk').text(kb);
-        $('#saveBtn').css('display', 'flex');
+        const lbl = $('#ttext').val().trim() || (W + ' × ' + H);
+        const targetKB = getTargetKB();
+
+        $('#dgTargetResult').hide();
+        $('#dgTargetProgress').show();
+        $('#dgTargetBar').css('width', '0%');
+        $('#dgTargetIter').text('Starting...');
+        $('#genBtn').prop('disabled', true).css('opacity', '.6');
+
+        const res = await findQuality(W, H, lbl, targetKB, uploadedImageEl);
+
+        $('#dgTargetProgress').hide();
+        $('#genBtn').prop('disabled', false).css('opacity', '');
+        showResult(targetKB, res.kb, res.q, res.iters);
+        finalize(W, H, res.url, res.kb, res.q, lbl, 'uploaded');
       }
 
       $('#genBtn').on('click', function () { if (uploadMode) drawUpload(); else draw(); });

@@ -1,0 +1,1806 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Social Image Generator — ImagePro Suite</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        :root {
+            --bg: #0c0c14;
+            --bg2: #12121e;
+            --bg3: #1a1a2e;
+            --card: #1e1e30;
+            --card2: #24243c;
+            --border: rgba(120, 119, 255, .15);
+            --border2: rgba(120, 119, 255, .3);
+            --indigo: #6366f1;
+            --indigo2: #818cf8;
+            --violet: #7c3aed;
+            --cyan: #22d3ee;
+            --emerald: #34d399;
+            --amber: #fbbf24;
+            --rose: #fb7185;
+            --text: #e2e8f0;
+            --muted: #64748b;
+            --white: #fff;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg2)
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--indigo);
+            border-radius: 4px
+        }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            background: rgba(12, 12, 20, .95);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+            padding: 0 20px;
+            height: 58px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--indigo), var(--cyan));
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0
+        }
+
+        .logo-text {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--white);
+            letter-spacing: -.3px
+        }
+
+        .logo-text span {
+            color: var(--indigo2)
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            transition: all .18s;
+            white-space: nowrap
+        }
+
+        .nav-link:hover {
+            border-color: var(--border2);
+            color: var(--indigo2)
+        }
+
+        /* ── LAYOUT ── */
+        .main {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            min-height: calc(100vh - 58px)
+        }
+
+        @media(max-width:900px) {
+            .main {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr
+            }
+        }
+
+        /* ── LEFT PANEL ── */
+        .left-panel {
+            background: var(--bg2);
+            border-right: 1px solid var(--border);
+            padding: 18px;
+            overflow-y: auto;
+            max-height: calc(100vh - 58px);
+            position: sticky;
+            top: 58px
+        }
+
+        @media(max-width:900px) {
+            .left-panel {
+                position: static;
+                max-height: none;
+                border-right: none;
+                border-bottom: 1px solid var(--border)
+            }
+        }
+
+        .s-section {
+            margin-bottom: 20px
+        }
+
+        .s-title {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--indigo2);
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px
+        }
+
+        .s-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border)
+        }
+
+        /* ── UPLOAD ZONE ── */
+        .upload-zone {
+            border: 2px dashed rgba(99, 102, 241, .35);
+            border-radius: 12px;
+            padding: 22px 14px;
+            text-align: center;
+            cursor: pointer;
+            transition: all .3s;
+            position: relative;
+            background: radial-gradient(ellipse at 50% 50%, rgba(99, 102, 241, .05) 0%, transparent 70%)
+        }
+
+        .upload-zone:hover,
+        .upload-zone.drag-over {
+            border-color: var(--indigo);
+            background: rgba(99, 102, 241, .08)
+        }
+
+        .upload-zone input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%
+        }
+
+        .uz-icon {
+            font-size: 28px;
+            margin-bottom: 6px;
+            display: block
+        }
+
+        .uz-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 3px
+        }
+
+        .uz-sub {
+            font-size: 11px;
+            color: var(--muted);
+            line-height: 1.5
+        }
+
+        /* uploaded preview */
+        .img-prev-wrap {
+            display: none;
+            margin-top: 10px;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            padding: 10px;
+            gap: 10px;
+            align-items: center
+        }
+
+        .img-prev-thumb {
+            width: 48px;
+            height: 48px;
+            border-radius: 6px;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 1px solid var(--border)
+        }
+
+        .img-prev-info {
+            flex: 1;
+            min-width: 0
+        }
+
+        .img-prev-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--white);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis
+        }
+
+        .img-prev-dims {
+            font-size: 10px;
+            color: var(--muted);
+            margin-top: 2px
+        }
+
+        .btn-reupload {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--muted);
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 3px 8px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: .15s;
+            white-space: nowrap;
+            flex-shrink: 0;
+            position: relative
+        }
+
+        .btn-reupload:hover {
+            border-color: var(--border2);
+            color: var(--indigo2)
+        }
+
+        .btn-reupload input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%
+        }
+
+        /* ── PLATFORM CHECKBOXES ── */
+        .platform-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px
+        }
+
+        .plat-item {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg3);
+            cursor: pointer;
+            transition: .15s;
+            user-select: none
+        }
+
+        .plat-item:hover {
+            border-color: var(--border2)
+        }
+
+        .plat-item.checked {
+            border-color: var(--indigo);
+            background: rgba(99, 102, 241, .08)
+        }
+
+        .plat-cb {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            border: 1.5px solid var(--muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: .15s;
+            font-size: 9px;
+            color: transparent
+        }
+
+        .plat-item.checked .plat-cb {
+            background: var(--indigo);
+            border-color: var(--indigo);
+            color: #fff
+        }
+
+        .plat-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0
+        }
+
+        .plat-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+            flex: 1
+        }
+
+        .plat-count {
+            font-size: 10px;
+            color: var(--muted);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 1px 6px;
+            border-radius: 10px
+        }
+
+        /* SIZE SUB-CHECKBOXES */
+        .sizes-sub {
+            display: none;
+            flex-direction: column;
+            gap: 3px;
+            margin-top: 4px;
+            padding-left: 14px
+        }
+
+        .plat-item.checked+.sizes-sub {
+            display: flex
+        }
+
+        .size-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 5px 8px;
+            border-radius: 6px;
+            border: 1px solid transparent;
+            background: var(--bg);
+            cursor: pointer;
+            transition: .15s;
+            user-select: none
+        }
+
+        .size-item:hover {
+            background: var(--bg3)
+        }
+
+        .size-item.checked {
+            border-color: rgba(99, 102, 241, .2);
+            background: rgba(99, 102, 241, .06)
+        }
+
+        .size-cb {
+            width: 13px;
+            height: 13px;
+            border-radius: 3px;
+            border: 1.5px solid var(--muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: .15s;
+            font-size: 8px;
+            color: transparent
+        }
+
+        .size-item.checked .size-cb {
+            background: var(--indigo);
+            border-color: var(--indigo);
+            color: #fff
+        }
+
+        .size-label {
+            font-size: 11px;
+            color: var(--muted);
+            flex: 1;
+            line-height: 1.3
+        }
+
+        .size-dim {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--indigo2);
+            white-space: nowrap
+        }
+
+        /* ── FIT MODE ── */
+        .fit-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 3px;
+            background: var(--bg3);
+            border-radius: 8px;
+            padding: 3px;
+            border: 1px solid var(--border)
+        }
+
+        .fit-tab {
+            padding: 6px 4px;
+            text-align: center;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            color: var(--muted);
+            border: none;
+            background: none;
+            font-family: inherit;
+            transition: .15s
+        }
+
+        .fit-tab.active {
+            background: var(--indigo);
+            color: #fff
+        }
+
+        /* ── BG COLOR ── */
+        .bg-palettes {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 4px;
+            margin-bottom: 8px
+        }
+
+        .bg-swatch {
+            aspect-ratio: 1;
+            border-radius: 5px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: .12s
+        }
+
+        .bg-swatch:hover {
+            transform: scale(1.15)
+        }
+
+        .bg-swatch.on {
+            border-color: var(--white);
+            transform: scale(1.1)
+        }
+
+        .bg-none-btn {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--muted);
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: .15s;
+            margin-right: 4px
+        }
+
+        .bg-none-btn:hover,
+        .bg-none-btn.on {
+            border-color: var(--indigo);
+            color: var(--indigo2)
+        }
+
+        .bg-custom-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 9px;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            cursor: pointer;
+            transition: .15s;
+            margin-top: 6px
+        }
+
+        .bg-custom-row:hover {
+            border-color: var(--border2)
+        }
+
+        input[type=color] {
+            width: 22px;
+            height: 22px;
+            border: none;
+            border-radius: 4px;
+            padding: 0;
+            background: none;
+            cursor: pointer;
+            flex-shrink: 0
+        }
+
+        .bg-hex {
+            font-family: monospace;
+            font-size: 11px;
+            color: var(--muted);
+            flex: 1
+        }
+
+        .bg-custom-lbl {
+            font-size: 11px;
+            color: var(--text2)
+        }
+
+        /* ── GENERATE BUTTON ── */
+        .btn-generate {
+            width: 100%;
+            padding: 11px;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(135deg, var(--indigo), var(--violet));
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all .2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, .35);
+            margin-bottom: 8px
+        }
+
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, .5)
+        }
+
+        .btn-generate:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+            transform: none
+        }
+
+        .btn-dl-zip {
+            width: 100%;
+            padding: 9px;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(135deg, #059669, var(--emerald));
+            color: #000;
+            font-size: 12px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all .2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px
+        }
+
+        .btn-dl-zip:hover {
+            transform: translateY(-1px)
+        }
+
+        .btn-dl-zip:disabled {
+            opacity: .4;
+            cursor: not-allowed;
+            transform: none
+        }
+
+        /* ── MOBILE TOGGLE ── */
+        .panel-toggle {
+            display: none;
+            width: 100%;
+            padding: 11px 16px;
+            background: var(--bg2);
+            border: none;
+            color: var(--text);
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            align-items: center;
+            gap: 8px
+        }
+
+        @media(max-width:900px) {
+            .panel-toggle {
+                display: flex
+            }
+        }
+
+        .panel-body {
+            transition: max-height .35s ease;
+            overflow: hidden
+        }
+
+        @media(max-width:900px) {
+            .panel-body.collapsed {
+                max-height: 0 !important
+            }
+        }
+
+        /* ── RIGHT PANEL ── */
+        .right-panel {
+            padding: 24px;
+            overflow-y: auto
+        }
+
+        @media(max-width:600px) {
+            .right-panel {
+                padding: 14px
+            }
+        }
+
+        /* ── EMPTY STATE ── */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px
+        }
+
+        .empty-icon {
+            font-size: 56px;
+            opacity: .25
+        }
+
+        .empty-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--muted)
+        }
+
+        .empty-sub {
+            font-size: 13px;
+            color: var(--muted);
+            opacity: .7;
+            max-width: 340px;
+            line-height: 1.6
+        }
+
+        /* ── RESULT GRID ── */
+        .result-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 10px
+        }
+
+        .result-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--white)
+        }
+
+        .result-count {
+            font-size: 12px;
+            color: var(--muted);
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            padding: 3px 10px;
+            border-radius: 20px
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 14px
+        }
+
+        /* ── RESULT CARD ── */
+        .result-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            transition: .2s;
+            position: relative
+        }
+
+        .result-card::before {
+            content: '';
+            display: block;
+            height: 3px;
+            background: var(--ac, var(--indigo))
+        }
+
+        .result-card:hover {
+            border-color: var(--border2);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .4)
+        }
+
+        .rc-canvas-wrap {
+            width: 100%;
+            height: 150px;
+            background: var(--bg3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            cursor: zoom-in;
+            position: relative
+        }
+
+        .rc-canvas-wrap canvas {
+            max-width: 100%;
+            max-height: 100%;
+            display: block
+        }
+
+        .rc-platform-badge {
+            position: absolute;
+            top: 7px;
+            left: 7px;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            color: #fff;
+            background: rgba(0, 0, 0, .6);
+            backdrop-filter: blur(4px)
+        }
+
+        .rc-body {
+            padding: 12px
+        }
+
+        .rc-name {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 3px;
+            line-height: 1.3
+        }
+
+        .rc-dim {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--ac, var(--indigo2));
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -.3px;
+            margin-bottom: 6px
+        }
+
+        .rc-dim .sep {
+            color: var(--muted);
+            font-weight: 400;
+            margin: 0 2px
+        }
+
+        .rc-actions {
+            display: flex;
+            gap: 6px
+        }
+
+        .rc-btn {
+            flex: 1;
+            padding: 7px 4px;
+            border-radius: 7px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            border: none;
+            transition: .15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px
+        }
+
+        .rc-btn-dl {
+            background: linear-gradient(135deg, var(--indigo), var(--violet));
+            color: #fff
+        }
+
+        .rc-btn-dl:hover {
+            transform: translateY(-1px)
+        }
+
+        .rc-btn-save {
+            background: rgba(52, 211, 153, .12);
+            border: 1px solid rgba(52, 211, 153, .25);
+            color: var(--emerald)
+        }
+
+        .rc-btn-save:hover {
+            background: rgba(52, 211, 153, .2)
+        }
+
+        .rc-btn-done {
+            background: linear-gradient(135deg, #059669, var(--emerald));
+            color: #000
+        }
+
+        /* ── GALLERY SECTION ── */
+        .gallery-section {
+            margin-top: 32px;
+            border-top: 1px solid var(--border);
+            padding-top: 24px
+        }
+
+        .gal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 8px
+        }
+
+        .gal-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--white)
+        }
+
+        .gal-right {
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .gal-count {
+            font-size: 11px;
+            color: var(--muted);
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-family: monospace
+        }
+
+        .btn-clear-gal {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--rose);
+            background: rgba(251, 113, 133, .08);
+            border: 1px solid rgba(251, 113, 133, .2);
+            border-radius: 6px;
+            padding: 4px 10px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: .15s
+        }
+
+        .btn-clear-gal:hover {
+            background: rgba(251, 113, 133, .15)
+        }
+
+        .gal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 10px
+        }
+
+        .gal-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: .15s;
+        }
+
+        .gal-card:hover {
+            border-color: var(--border2);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, .4)
+        }
+
+        .gal-thumb {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            display: block;
+            background: var(--bg3)
+        }
+
+        .gal-info {
+            padding: 8px 10px
+        }
+
+        .gal-iname {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--white);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 2px
+        }
+
+        .gal-imeta {
+            font-size: 10px;
+            color: var(--muted);
+            margin-bottom: 6px
+        }
+
+        .gal-idate {
+            font-size: 9px;
+            color: var(--muted);
+            opacity: .6;
+            margin-bottom: 6px;
+            font-family: monospace
+        }
+
+        .gal-acts {
+            display: flex;
+            gap: 4px
+        }
+
+        .gal-btn {
+            flex: 1;
+            height: 24px;
+            border-radius: 5px;
+            border: 1px solid var(--border);
+            background: var(--bg3);
+            color: var(--muted);
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            transition: .12s;
+            font-family: inherit
+        }
+
+        .gal-btn:hover {
+            border-color: var(--border2);
+            color: var(--text)
+        }
+
+        .gal-btn.dl {
+            background: rgba(99, 102, 241, .1);
+            border-color: rgba(99, 102, 241, .25);
+            color: var(--indigo2)
+        }
+
+        .gal-btn.del:hover {
+            border-color: #fca5a5;
+            color: #dc2626;
+            background: rgba(220, 38, 38, .08)
+        }
+
+        .gal-empty {
+            text-align: center;
+            padding: 28px;
+            color: var(--muted);
+            font-size: 13px;
+            background: var(--bg3);
+            border: 1px dashed var(--border);
+            border-radius: 10px
+        }
+
+        /* ── LIGHTBOX ── */
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .92);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            cursor: zoom-out
+        }
+
+        .lightbox.open {
+            display: flex
+        }
+
+        .lightbox img {
+            max-width: 90vw;
+            max-height: 90vh;
+            border-radius: 10px;
+            object-fit: contain
+        }
+
+        .lb-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(255, 255, 255, .1);
+            border: none;
+            color: #fff;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+
+        .lb-close:hover {
+            background: rgba(255, 255, 255, .2)
+        }
+
+        /* ── LOADING ── */
+        .loading-ov {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .8);
+            z-index: 9998;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px
+        }
+
+        .loading-ov.show {
+            display: flex
+        }
+
+        .loading-spin {
+            width: 44px;
+            height: 44px;
+            border: 3px solid rgba(99, 102, 241, .2);
+            border-top-color: var(--indigo2);
+            border-radius: 50%;
+            animation: spin .8s linear infinite
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        .loading-ov p {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--indigo2)
+        }
+
+        /* ── TOAST ── */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 11px 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transform: translateY(80px);
+            opacity: 0;
+            transition: .35s cubic-bezier(.34, 1.56, .64, 1);
+            z-index: 9999;
+            max-width: 90vw;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .4)
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1
+        }
+
+        .toast-ok {
+            background: linear-gradient(135deg, #059669, #34d399);
+            color: #000
+        }
+
+        .toast-err {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #fff
+        }
+
+        .toast-info {
+            background: linear-gradient(135deg, var(--indigo), var(--violet));
+            color: #fff
+        }
+
+        @media(max-width:480px) {
+            .result-grid {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .gal-grid {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .topbar-right .nav-link:not(:last-child) {
+                display: none
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="loading-ov" id="loadingOv">
+        <div class="loading-spin"></div>
+        <p id="loadingMsg">Processing...</p>
+    </div>
+    <div class="toast" id="toast"></div>
+    <div class="lightbox" id="lightbox" onclick="closeLb()"><button class="lb-close" onclick="closeLb()">✕</button><img
+            id="lbImg" src="" alt=""></div>
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <div class="logo">
+            <div class="logo-icon">📲</div>
+            <div class="logo-text">Social Media <span>Image </span>Generator</div>
+        </div>
+        <div class="topbar-right">
+            <a href="image-converter.html" class="nav-link">🔄 Converter</a>
+            <a href="dummy-image-generator.html" class="nav-link">🎨 Dummy</a>
+            <a href="ssss.html" class="nav-link">📐 Size Guide</a>
+        </div>
+    </div>
+
+    <!-- MOBILE TOGGLE -->
+    <button class="panel-toggle" id="panelToggle" onclick="togglePanel()">
+        <span id="panelToggleIcon">▼</span> ⚙️ Settings — Tap to toggle
+    </button>
+
+    <div class="main">
+
+        <!-- ══ LEFT PANEL ══ -->
+        <aside class="left-panel">
+            <div class="panel-body" id="panelBody" style="max-height:9999px">
+
+                <!-- 1. IMAGE UPLOAD -->
+                <div class="s-section">
+                    <div class="s-title">🖼 Image Upload</div>
+                    <div class="upload-zone" id="uploadZone">
+                        <input type="file" id="fileInput" accept="image/*" onchange="handleFile(this.files[0])">
+                        <span class="uz-icon">📁</span>
+                        <div class="uz-title">Drop / Click to Upload</div>
+                        <div class="uz-sub">PNG, JPG, WEBP, GIF • Paste bhi karo</div>
+                    </div>
+                    <div class="img-prev-wrap" id="imgPrevWrap">
+                        <img class="img-prev-thumb" id="imgThumb" src="" alt="">
+                        <div class="img-prev-info">
+                            <div class="img-prev-name" id="imgName">—</div>
+                            <div class="img-prev-dims" id="imgDims">—</div>
+                        </div>
+                        <button class="btn-reupload">🔄<input type="file" accept="image/*"
+                                onchange="handleFile(this.files[0])"></button>
+                    </div>
+                </div>
+
+                <!-- 2. PLATFORMS & SIZES -->
+                <div class="s-section">
+                    <div class="s-title">📲 Platform & Size Select</div>
+                    <div class="platform-list" id="platformList"></div>
+                </div>
+
+                <!-- 3. FIT MODE -->
+                <div class="s-section">
+                    <div class="s-title">✂ Crop / Fit Mode</div>
+                    <div class="fit-tabs">
+                        <button class="fit-tab active" data-mode="cover" onclick="setFit('cover',this)">Fill</button>
+                        <button class="fit-tab" data-mode="contain" onclick="setFit('contain',this)">Fit</button>
+                        <button class="fit-tab" data-mode="stretch" onclick="setFit('stretch',this)">Stretch</button>
+                    </div>
+                    <p style="font-size:10px;color:var(--muted);margin-top:6px;line-height:1.5" id="fitNote">Fill:
+                        Center crop
+                        karke canvas bharta hai</p>
+                </div>
+
+                <!-- 4. BACKGROUND COLOR -->
+                <div class="s-section">
+                    <div class="s-title">🎨 Background Color</div>
+                    <div class="bg-palettes" id="bgPalette"></div>
+                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap">
+                        <button class="bg-none-btn on" id="bgNoneBtn" onclick="setBgNone()">✕ No BG</button>
+                        <span style="font-size:10px;color:var(--muted)">ya custom:</span>
+                    </div>
+                    <div class="bg-custom-row">
+                        <input type="color" id="bgColorPicker" value="#1a1a2e" oninput="setBgCustom(this.value)">
+                        <span class="bg-hex" id="bgHexLabel">#1a1a2e</span>
+                        <span class="bg-custom-lbl" style="font-size:11px;color:var(--muted)">Custom</span>
+                    </div>
+                </div>
+
+                <!-- 5. ACTIONS -->
+                <div class="s-section">
+                    <div class="s-title">⚡ Actions</div>
+                    <button class="btn-generate" id="btnGenerate" onclick="generateAll()">▶ Generate Images</button>
+                    <button class="btn-dl-zip" id="btnZip" onclick="downloadZip()" disabled>📦 Download ZIP</button>
+                </div>
+
+            </div>
+        </aside>
+
+        <!-- ══ RIGHT PANEL ══ -->
+        <main class="right-panel" id="rightPanel">
+
+            <!-- EMPTY STATE -->
+            <div class="empty-state" id="emptyState">
+                <div class="empty-icon">📲</div>
+                <div class="empty-title">Social Image Generator</div>
+                <div class="empty-sub">Left side se image upload karo, platforms choose karo, background color set karo
+                    — phir
+                    Generate dabao!</div>
+            </div>
+
+            <!-- RESULTS -->
+            <div id="resultsWrap" style="display:none">
+                <div class="result-header">
+                    <div class="result-title">Generated Images</div>
+                    <span class="result-count" id="resultCount">0 images</span>
+                </div>
+                <div class="result-grid" id="resultGrid"></div>
+            </div>
+
+            <!-- GALLERY -->
+            <div class="gallery-section" id="galSection">
+                <div class="gal-header">
+                    <div class="gal-title">💾 Saved Gallery</div>
+                    <div class="gal-right">
+                        <span class="gal-count" id="galCount">0 items</span>
+                        <button class="btn-clear-gal" onclick="clearGallery()">🗑 Clear All</button>
+                    </div>
+                </div>
+                <div class="col" id="galGrid" style="display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 14px;">
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // ════════════════════════════════════════
+        // DATA
+        // ════════════════════════════════════════
+        const PLATFORMS = [
+            {
+                id: 'instagram', name: 'Instagram', icon: '📸', color: '#e1306c',
+                gradient: 'linear-gradient(135deg,#833ab4,#e1306c,#f77737)',
+                sizes: [
+                    { id: 'ig-sq', name: 'Square Post', w: 1080, h: 1080 },
+                    { id: 'ig-port', name: 'Portrait Post', w: 1080, h: 1350 },
+                    { id: 'ig-st', name: 'Stories & Reels', w: 1080, h: 1920 },
+                    { id: 'ig-land', name: 'Landscape Post', w: 1080, h: 566 },
+                    { id: 'ig-pp', name: 'Profile Picture', w: 320, h: 320 },
+                ]
+            },
+            {
+                id: 'facebook', name: 'Facebook', icon: '🔵', color: '#1877f2',
+                gradient: '#1877f2',
+                sizes: [
+                    { id: 'fb-sq', name: 'Square Post', w: 1200, h: 1200 },
+                    { id: 'fb-land', name: 'Landscape / Link', w: 1200, h: 630 },
+                    { id: 'fb-ban', name: 'Page Banner', w: 820, h: 312 },
+                    { id: 'fb-grp', name: 'Group Banner', w: 1640, h: 856 },
+                    { id: 'fb-pp', name: 'Profile Picture', w: 500, h: 500 },
+                ]
+            },
+            {
+                id: 'linkedin', name: 'LinkedIn', icon: '💼', color: '#0a66c2',
+                gradient: '#0a66c2',
+                sizes: [
+                    { id: 'li-sq', name: 'Square Post', w: 1200, h: 1200 },
+                    { id: 'li-land', name: 'Landscape Post', w: 1200, h: 627 },
+                    { id: 'li-cban', name: 'Company Banner', w: 1128, h: 191 },
+                    { id: 'li-pban', name: 'Profile Banner', w: 1584, h: 396 },
+                    { id: 'li-pp', name: 'Profile Picture', w: 400, h: 400 },
+                ]
+            },
+            {
+                id: 'twitter', name: 'X / Twitter', icon: '🐦', color: '#1d9bf0',
+                gradient: '#1d9bf0',
+                sizes: [
+                    { id: 'tw-land', name: 'Single Image Post', w: 1600, h: 900 },
+                    { id: 'tw-sq', name: 'Square Post', w: 1080, h: 1080 },
+                    { id: 'tw-hdr', name: 'Header / Banner', w: 1500, h: 500 },
+                    { id: 'tw-pp', name: 'Profile Picture', w: 400, h: 400 },
+                ]
+            },
+            {
+                id: 'youtube', name: 'YouTube', icon: '▶️', color: '#ff0000',
+                gradient: '#ff0000',
+                sizes: [
+                    { id: 'yt-thumb', name: 'Thumbnail', w: 1280, h: 720 },
+                    { id: 'yt-art', name: 'Channel Art / Banner', w: 2560, h: 1440 },
+                    { id: 'yt-comm', name: 'Community Post', w: 1080, h: 1080 },
+                ]
+            },
+            {
+                id: 'pinterest', name: 'Pinterest', icon: '📌', color: '#e60023',
+                gradient: '#e60023',
+                sizes: [
+                    { id: 'pt-std', name: 'Standard Pin', w: 1000, h: 1500 },
+                    { id: 'pt-sq', name: 'Square Pin', w: 1000, h: 1000 },
+                    { id: 'pt-long', name: 'Long Pin / Infographic', w: 1000, h: 2100 },
+                    { id: 'pt-brd', name: 'Board Cover', w: 600, h: 600 },
+                ]
+            },
+        ];
+
+        const BG_PALETTE = [
+            '#ffffff', '#f0f0f0', '#e2e8f0', '#cbd5e1',
+            '#0c0c14', '#1a1a2e', '#16213e', '#0f3460',
+            '#1e1b4b', '#312e81', '#4c1d95', '#5b21b6',
+            '#0c4a6e', '#0369a1', '#0284c7', '#38bdf8',
+            '#064e3b', '#065f46', '#059669', '#34d399',
+            '#451a03', '#92400e', '#d97706', '#fbbf24',
+            '#4c0519', '#881337', '#be123c', '#fb7185',
+            '#1a0533', '#6b21a8', '#9333ea', '#c084fc',
+        ];
+
+        // ════════════════════════════════════════
+        // STATE
+        // ════════════════════════════════════════
+        let sourceImg = null;
+        let fitMode = 'cover';
+        let bgColor = null; // null = transparent/none
+        let selectedSizes = new Set(); // size id's
+        let generatedImages = {}; // sizeId -> dataURL
+        const STORE_KEY = 'sig-gallery-v1';
+
+        // ════════════════════════════════════════
+        // UTILS
+        // ════════════════════════════════════════
+        const el = id => document.getElementById(id);
+        function toast(msg, type = 'info') {
+            const t = el('toast'); t.className = 'toast toast-' + type;
+            t.innerHTML = (type === 'ok' ? '✔ ' : type === 'err' ? '⚠ ' : 'ℹ ') + msg;
+            t.classList.add('show'); clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 3000);
+        }
+        function showL(m = 'Processing...') { el('loadingMsg').textContent = m; el('loadingOv').classList.add('show') }
+        function hideL() { el('loadingOv').classList.remove('show') }
+        function gcd(a, b) { return b ? gcd(b, a % b) : a }
+        function ratioStr(w, h) { const g = gcd(w, h); return (w / g) + ':' + (h / g) }
+        function fmtDate(ts) { const d = new Date(ts); return d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear() + ' ' + d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0') }
+
+        // ════════════════════════════════════════
+        // BUILD LEFT PANEL
+        // ════════════════════════════════════════
+        function buildPlatformList() {
+            const wrap = el('platformList');
+            wrap.innerHTML = '';
+            PLATFORMS.forEach(p => {
+                const item = document.createElement('div');
+                item.className = 'plat-item';
+                item.innerHTML = `
+      <div class="plat-cb">✓</div>
+      <div class="plat-dot" style="background:${p.color}"></div>
+      <span class="plat-name">${p.icon} ${p.name}</span>
+      <span class="plat-count">${p.sizes.length}</span>`;
+                item.onclick = () => togglePlatform(p, item, sub);
+                wrap.appendChild(item);
+
+                // sub sizes
+                const sub = document.createElement('div');
+                sub.className = 'sizes-sub';
+                p.sizes.forEach(sz => {
+                    const si = document.createElement('div');
+                    si.className = 'size-item';
+                    si.dataset.sid = sz.id;
+                    si.innerHTML = `<div class="size-cb">✓</div><span class="size-label">${sz.name}</span><span class="size-dim">${sz.w}×${sz.h}</span>`;
+                    si.onclick = (e) => { e.stopPropagation(); toggleSize(sz.id, si) };
+                    sub.appendChild(si);
+                });
+                wrap.appendChild(sub);
+            });
+        }
+
+        function togglePlatform(p, item, sub) {
+            const allChecked = p.sizes.every(sz => selectedSizes.has(sz.id));
+            if (allChecked) {
+                p.sizes.forEach(sz => selectedSizes.delete(sz.id));
+                item.classList.remove('checked');
+            } else {
+                p.sizes.forEach(sz => selectedSizes.add(sz.id));
+                item.classList.add('checked');
+            }
+            // sync sub items
+            sub.querySelectorAll('.size-item').forEach(si => {
+                if (selectedSizes.has(si.dataset.sid)) si.classList.add('checked');
+                else si.classList.remove('checked');
+            });
+            // show/hide sub
+            sub.style.display = item.classList.contains('checked') ? 'flex' : 'none';
+        }
+
+        function toggleSize(sid, si) {
+            if (selectedSizes.has(sid)) { selectedSizes.delete(sid); si.classList.remove('checked'); }
+            else { selectedSizes.add(sid); si.classList.add('checked'); }
+            // update parent platform checkbox
+            syncPlatformChecks();
+        }
+
+        function syncPlatformChecks() {
+            const items = el('platformList').querySelectorAll('.plat-item');
+            let platIdx = 0;
+            PLATFORMS.forEach((p, i) => {
+                const item = items[i * 2]; // every 2nd (item + sub)
+                const sub = items[i * 2 + 1];
+                const anyChecked = p.sizes.some(sz => selectedSizes.has(sz.id));
+                if (anyChecked) item.classList.add('checked'); else item.classList.remove('checked');
+                if (sub) sub.style.display = anyChecked ? 'flex' : 'none';
+            });
+        }
+
+        // ════════════════════════════════════════
+        // BG PALETTE
+        // ════════════════════════════════════════
+        function buildBgPalette() {
+            const wrap = el('bgPalette');
+            wrap.innerHTML = '';
+            BG_PALETTE.forEach(c => {
+                const sw = document.createElement('div');
+                sw.className = 'bg-swatch';
+                sw.style.background = c;
+                sw.style.border = '2px solid transparent';
+                if (c === '#0c0c14' || c === '#ffffff') sw.style.border = '2px solid var(--border)';
+                sw.onclick = () => setBgColor(c, sw);
+                wrap.appendChild(sw);
+            });
+        }
+
+        function setBgColor(c, sw) {
+            bgColor = c;
+            el('bgNoneBtn').classList.remove('on');
+            document.querySelectorAll('.bg-swatch').forEach(s => s.classList.remove('on'));
+            if (sw) sw.classList.add('on');
+            el('bgColorPicker').value = c;
+            el('bgHexLabel').textContent = c;
+        }
+
+        function setBgNone() {
+            bgColor = null;
+            el('bgNoneBtn').classList.add('on');
+            document.querySelectorAll('.bg-swatch').forEach(s => s.classList.remove('on'));
+        }
+
+        function setBgCustom(c) {
+            bgColor = c;
+            el('bgNoneBtn').classList.remove('on');
+            document.querySelectorAll('.bg-swatch').forEach(s => s.classList.remove('on'));
+            el('bgHexLabel').textContent = c;
+        }
+
+        // ════════════════════════════════════════
+        // FIT MODE
+        // ════════════════════════════════════════
+        const FIT_NOTES = {
+            cover: 'Fill: Image ko center-crop karke canvas pura bharta hai',
+            contain: 'Fit: Poori image dikhati hai, sides mein background color',
+            stretch: 'Stretch: Image ko kheenchke bilkul fit karta hai'
+        };
+        function setFit(mode, btn) {
+            fitMode = mode;
+            document.querySelectorAll('.fit-tab').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            el('fitNote').textContent = FIT_NOTES[mode];
+        }
+
+        // ════════════════════════════════════════
+        // FILE HANDLING
+        // ════════════════════════════════════════
+        const uz = el('uploadZone');
+        uz.addEventListener('dragover', e => { e.preventDefault(); uz.classList.add('drag-over') });
+        uz.addEventListener('dragleave', () => uz.classList.remove('drag-over'));
+        uz.addEventListener('drop', e => { e.preventDefault(); uz.classList.remove('drag-over'); if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]) });
+        document.addEventListener('paste', e => { const items = e.clipboardData?.items; if (!items) return; for (const it of items) { if (it.kind === 'file' && it.type.startsWith('image/')) { handleFile(it.getAsFile()); break; } } });
+
+        function handleFile(file) {
+            if (!file || !file.type.startsWith('image/')) { toast('Valid image chahiye!', 'err'); return; }
+            const reader = new FileReader();
+            reader.onload = ev => {
+                const img = new Image();
+                img.onload = () => {
+                    sourceImg = img;
+                    el('imgThumb').src = ev.target.result;
+                    el('imgName').textContent = file.name;
+                    el('imgDims').textContent = img.naturalWidth + '×' + img.naturalHeight + ' • ' + (file.size > 1048576 ? (file.size / 1048576).toFixed(1) + ' MB' : (file.size / 1024).toFixed(0) + ' KB');
+                    el('imgPrevWrap').style.display = 'flex';
+                    generatedImages = {};
+                    toast('Image upload ho gayi! Platforms select karo aur Generate dabao.', 'ok');
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // ════════════════════════════════════════
+        // DRAW TO CANVAS
+        // ════════════════════════════════════════
+        function drawToCanvas(canvas, W, H) {
+            canvas.width = W; canvas.height = H;
+            const ctx = canvas.getContext('2d');
+            const sw = sourceImg.naturalWidth, sh = sourceImg.naturalHeight;
+            ctx.clearRect(0, 0, W, H);
+
+            // background
+            if (bgColor) { ctx.fillStyle = bgColor; ctx.fillRect(0, 0, W, H); }
+
+            if (fitMode === 'stretch') {
+                ctx.drawImage(sourceImg, 0, 0, W, H);
+            } else if (fitMode === 'contain') {
+                if (!bgColor) { ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H); }
+                const scale = Math.min(W / sw, H / sh);
+                const dw = sw * scale, dh = sh * scale;
+                ctx.drawImage(sourceImg, (W - dw) / 2, (H - dh) / 2, dw, dh);
+            } else {
+                // cover
+                const scale = Math.max(W / sw, H / sh);
+                const dw = sw * scale, dh = sh * scale;
+                ctx.drawImage(sourceImg, (W - dw) / 2, (H - dh) / 2, dw, dh);
+            }
+            return canvas;
+        }
+
+        // ════════════════════════════════════════
+        // GENERATE ALL
+        // ════════════════════════════════════════
+        async function generateAll() {
+            if (!sourceImg) { toast('Pehle image upload karo!', 'err'); return; }
+            if (selectedSizes.size === 0) { toast('Kam se kam ek size select karo!', 'err'); return; }
+
+            showL('Generating 0/' + selectedSizes.size);
+            generatedImages = {};
+            const allSizes = [];
+            PLATFORMS.forEach(p => p.sizes.forEach(sz => { if (selectedSizes.has(sz.id)) allSizes.push({ ...sz, platform: p }) }));
+
+            let done = 0;
+            for (const sz of allSizes) {
+                const canvas = document.createElement('canvas');
+                drawToCanvas(canvas, sz.w, sz.h);
+                await new Promise(resolve => {
+                    canvas.toBlob(blob => {
+                        const url = URL.createObjectURL(blob);
+                        generatedImages[sz.id] = { url, blob, sz };
+                        done++;
+                        el('loadingMsg').textContent = 'Generating ' + done + '/' + allSizes.length;
+                        resolve();
+                    }, 'image/jpeg', 0.92);
+                });
+            }
+
+            hideL();
+            renderResults(allSizes);
+            el('btnZip').disabled = false;
+            toast(done + ' images generate ho gayi!', 'ok');
+        }
+
+        // ════════════════════════════════════════
+        // RENDER RESULTS
+        // ════════════════════════════════════════
+        function getPlatformData(pid) { return PLATFORMS.find(p => p.id === pid) }
+
+        function renderResults(allSizes) {
+            el('emptyState').style.display = 'none';
+            el('resultsWrap').style.display = 'block';
+            el('resultCount').textContent = allSizes.length + ' image' + (allSizes.length > 1 ? 's' : '');
+
+            const grid = el('resultGrid');
+            grid.innerHTML = '';
+            allSizes.forEach(sz => {
+                const p = sz.platform;
+                const gen = generatedImages[sz.id];
+                if (!gen) return;
+
+                const card = document.createElement('div');
+                card.className = 'result-card';
+                card.style.setProperty('--ac', p.color);
+
+                // preview thumbnail
+                const img = new Image();
+                img.src = gen.url;
+                img.style.cssText = 'max-width:100%;max-height:100%;display:block;cursor:zoom-in';
+                img.onclick = () => openLb(gen.url);
+
+                card.innerHTML = `
+      <div class="rc-canvas-wrap" id="rcw-${sz.id}">
+        <span class="rc-platform-badge" style="background:${p.color}">${p.icon} ${p.name}</span>
+      </div>
+      <div class="rc-body">
+        <div class="rc-name">${sz.name}</div>
+        <div class="rc-dim">${sz.w}<span class="sep">×</span>${sz.h} <span style="font-size:11px;color:var(--muted);font-weight:400">${ratioStr(sz.w, sz.h)}</span></div>
+        <div class="rc-actions">
+          <button class="rc-btn rc-btn-dl" onclick="dlOne('${sz.id}','${sz.name}')">⬇ Download</button>
+          <button class="rc-btn rc-btn-save" id="savebtn-${sz.id}" onclick="saveToGallery('${sz.id}','${sz.name}','${p.name}')">💾 Save</button>
+        </div>
+      </div>`;
+                grid.appendChild(card);
+
+                // insert preview image
+                const wrap = card.querySelector('#rcw-' + sz.id);
+                wrap.insertBefore(img, wrap.firstChild);
+            });
+        }
+
+        // ════════════════════════════════════════
+        // DOWNLOAD ONE
+        // ════════════════════════════════════════
+        function dlOne(sid, name) {
+            const gen = generatedImages[sid];
+            if (!gen) { toast('Pehle generate karo!', 'err'); return; }
+            const a = document.createElement('a');
+            a.href = gen.url;
+            a.download = name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + gen.sz.w + 'x' + gen.sz.h + '.jpg';
+            a.click();
+            toast(name + ' download ho rahi hai...', 'ok');
+        }
+
+        // ════════════════════════════════════════
+        // ZIP DOWNLOAD
+        // ════════════════════════════════════════
+        async function downloadZip() {
+            const keys = Object.keys(generatedImages);
+            if (!keys.length) { toast('Pehle generate karo!', 'err'); return; }
+            if (typeof JSZip === 'undefined') { toast('ZIP library load nahi hui', 'err'); return; }
+            showL('ZIP bana raha hoon...');
+            const zip = new JSZip();
+            let done = 0;
+            for (const sid of keys) {
+                const gen = generatedImages[sid];
+                const p = PLATFORMS.find(pl => pl.sizes.some(s => s.id === sid));
+                const folder = p ? zip.folder(p.name) : zip;
+                const fname = gen.sz.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + gen.sz.w + 'x' + gen.sz.h + '.jpg';
+                folder.file(fname, gen.blob);
+                done++;
+                el('loadingMsg').textContent = 'Packing ' + done + '/' + keys.length;
+            }
+            const blob = await zip.generateAsync({ type: 'blob' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'social-images-' + Date.now() + '.zip'; a.click();
+            URL.revokeObjectURL(url);
+            hideL();
+            toast(done + ' images ZIP mein download!', 'ok');
+        }
+
+        // ════════════════════════════════════════
+        // GALLERY — localStorage
+        // ════════════════════════════════════════
+        function loadGallery() { try { return JSON.parse(localStorage.getItem(STORE_KEY) || '[]') } catch { return [] } }
+        function saveGalleryData(g) { try { localStorage.setItem(STORE_KEY, JSON.stringify(g)) } catch { toast('Storage full ya unavailable', 'err') } }
+
+        function saveToGallery(sid, name, platform) {
+            const gen = generatedImages[sid];
+            if (!gen) { toast('Pehle generate karo!', 'err'); return; }
+            const g = loadGallery();
+            const id = Date.now();
+            // store as dataURL (blob URLs don't persist)
+            const canvas = document.createElement('canvas');
+            drawToCanvas(canvas, gen.sz.w, gen.sz.h);
+            const dataURL = canvas.toDataURL('image/jpeg', 0.85);
+            g.push({ id, sid, name, platform, w: gen.sz.w, h: gen.sz.h, dataURL, date: fmtDate(id) });
+            saveGalleryData(g);
+            renderGallery();
+            const btn = el('savebtn-' + sid);
+            if (btn) { btn.className = 'rc-btn rc-btn-done'; btn.textContent = '✅ Saved'; setTimeout(() => { btn.className = 'rc-btn rc-btn-save'; btn.textContent = '💾 Save'; }, 2500); }
+            toast(name + ' gallery mein save!', 'ok');
+        }
+
+        function renderGallery() {
+            const g = loadGallery();
+            el('galCount').textContent = g.length + ' item' + (g.length !== 1 ? 's' : '');
+            const grid = el('galGrid');
+            if (!g.length) { grid.innerHTML = '<div class="gal-empty">💾 Abhi koi saved image nahi — Generate karo aur Save dabao</div>'; return; }
+            grid.innerHTML = g.slice().reverse().map(item => `
+    <div class="gal-card" data-gid="${item.id}">
+      <img class="gal-thumb" src="${item.dataURL}" alt="${item.name}" onclick="openLb('${item.dataURL}')">
+      <div class="gal-info">
+        <div class="gal-iname">${item.name}</div>
+        <div class="gal-imeta">${item.platform} • ${item.w}×${item.h}</div>
+        <div class="gal-idate">${item.date}</div>
+        <div class="gal-acts">
+          <button class="gal-btn dl" onclick="dlGalItem(${item.id})">⬇ DL</button>
+          <button class="gal-btn del" onclick="delGalItem(${item.id})">🗑</button>
+        </div>
+      </div>
+    </div>`).join('');
+        }
+
+        function dlGalItem(id) {
+            const g = loadGallery();
+            const item = g.find(x => x.id === id);
+            if (!item) return;
+            const a = document.createElement('a'); a.href = item.dataURL;
+            a.download = item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + item.w + 'x' + item.h + '.jpg';
+            a.click();
+        }
+
+        function delGalItem(id) {
+            const g = loadGallery().filter(x => x.id !== id);
+            saveGalleryData(g); renderGallery();
+            toast('Gallery se remove kiya', 'info');
+        }
+
+        function clearGallery() {
+            if (!loadGallery().length) return;
+            if (confirm('Saari saved images delete karein?')) {
+                localStorage.removeItem(STORE_KEY); renderGallery(); toast('Gallery clear!', 'info');
+            }
+        }
+
+        // ════════════════════════════════════════
+        // LIGHTBOX
+        // ════════════════════════════════════════
+        function openLb(src) { el('lbImg').src = src; el('lightbox').classList.add('open') }
+        function closeLb() { el('lightbox').classList.remove('open') }
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb() });
+
+        // ════════════════════════════════════════
+        // MOBILE PANEL TOGGLE
+        // ════════════════════════════════════════
+        let panelOpen = true;
+        function togglePanel() {
+            panelOpen = !panelOpen;
+            const b = el('panelBody');
+            if (panelOpen) { b.style.maxHeight = '9999px'; el('panelToggleIcon').textContent = '▼'; }
+            else { b.style.maxHeight = '0'; el('panelToggleIcon').textContent = '▶'; }
+        }
+
+        // ════════════════════════════════════════
+        // INIT
+        // ════════════════════════════════════════
+        document.addEventListener('DOMContentLoaded', () => {
+            buildPlatformList();
+            buildBgPalette();
+            renderGallery();
+        });
+    </script>
+    <script>
+        document.addEventListener('contextmenu', e => e.preventDefault());
+
+        document.addEventListener('keydown', e => {
+            if (
+                e.key === 'F12' ||
+                (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) ||
+                (e.ctrlKey && e.key.toUpperCase() === 'U')
+            ) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+
+</html>
