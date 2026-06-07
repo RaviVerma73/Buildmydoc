@@ -347,7 +347,17 @@
       gap: 9px
     }
 
-    /* ── FIELD MANAGER ── */
+    /* ── DRAG-DROP FIELD ORDERING ── */
+    .drop-zone {
+      min-height: 32px;
+      border-radius: 9px;
+    }
+
+    .drop-zone.drag-over {
+      background: rgba(110, 231, 247, .07);
+      outline: 2px dashed var(--accent);
+    }
+
     .field-item {
       display: flex;
       align-items: center;
@@ -357,23 +367,28 @@
       border: 1px solid var(--border);
       border-radius: 9px;
       margin-bottom: 7px;
-      transition: .2s
+      transition: .2s;
+      cursor: grab;
+      user-select: none;
+    }
+
+    .field-item:active {
+      cursor: grabbing;
+    }
+
+    .field-item.dragging {
+      opacity: .4;
+      border-style: dashed;
+    }
+
+    .field-item.drag-placeholder {
+      background: rgba(110, 231, 247, .05);
+      border: 2px dashed var(--accent);
+      height: 44px;
     }
 
     .field-item:hover {
-      border-color: var(--border2)
-    }
-
-    .field-item .fi-label {
-      flex: 1;
-      font-size: 13px;
-      color: var(--text);
-      font-weight: 500
-    }
-
-    .field-item .fi-sub {
-      font-size: 11px;
-      color: var(--muted)
+      border-color: var(--border2);
     }
 
     .drag-handle {
@@ -873,7 +888,7 @@
     }
 
     .t1f-name {
-      font-family: 'Syne', sans-serif;
+      font-family: sans-serif;
       font-size: 15px;
       font-weight: 800;
       color: #fff;
@@ -1255,7 +1270,7 @@
     }
 
     .t3f-row {
-      display: grid;
+      display: flex;
       grid-template-columns: 12px 1fr;
       gap: 5px;
       font-size: 10.5px;
@@ -1431,7 +1446,7 @@
     }
 
     .t4f-name {
-      font-family: 'Syne', sans-serif;
+      font-family: sans-serif;
       font-size: 14px;
       font-weight: 800;
       color: #fff;
@@ -1585,7 +1600,7 @@
     }
 
     .t5f-name {
-      font-family: 'Playfair Display', serif;
+      font-family: sans-serif;
       font-size: 14px;
       font-weight: 700;
       color: #f4c430;
@@ -1766,7 +1781,7 @@
     }
 
     .t6f-name {
-      font-family: 'Playfair Display', serif;
+      font-family: sans-serif;
       font-size: 14px;
       font-weight: 700;
       color: #101010;
@@ -2055,7 +2070,7 @@
       display: flex;
       align-items: center;
       gap: 7px;
-      padding: 6px 9px;
+      padding: 11px 9px;
       background: linear-gradient(135deg, #b87008, #e8a020)
     }
 
@@ -2128,6 +2143,186 @@
       color: #444;
       margin-bottom: 2.5px;
       line-height: 1.4
+    }
+
+    /* ════════════════════════════
+   TEMPLATE 8 — NAVY STUDENT ID (VERTICAL)
+════════════════════════════ */
+    .t8-front,
+    .t8-back {
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      font-family: 'DM Sans', sans-serif;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .t8-header,
+    .t8-back-header {
+      background: linear-gradient(135deg, #1a3c6e, #2563eb);
+      padding: 8px 10px 6px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .t8-logo-wrap {
+      width: 34px;
+      height: 34px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, .15);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .t8-logo-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .t8-hdr-text {
+      flex: 1;
+    }
+
+    .t8-hdr-org {
+      font-size: 9px;
+      font-weight: 800;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      line-height: 1.2;
+    }
+
+    .t8-hdr-addr {
+      font-size: 7px;
+      color: rgba(255, 255, 255, .75);
+      margin-top: 1px;
+    }
+
+    .t8-id-label {
+      background: #e8f0fe;
+      border-bottom: 2px solid #2563eb;
+      text-align: center;
+      font-size: 8.5px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: #1a3c6e;
+      padding: 3px 0;
+      text-transform: uppercase;
+    }
+
+    .t8-photo-row {
+      display: flex;
+      justify-content: center;
+      padding: 10px 0 6px;
+    }
+
+    .t8-photo {
+      width: 72px;
+      height: 82px;
+      object-fit: cover;
+      border: 3px solid #2563eb;
+      border-radius: 6px;
+      background: #dce8ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: #aab;
+    }
+
+    .t8-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+
+    .t8-name {
+      text-align: center;
+      font-size: 11.5px;
+      font-weight: 800;
+      color: #1a3c6e;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 0 8px;
+      margin-bottom: 4px;
+    }
+
+    .t8-role-badge {
+      text-align: center;
+      margin: 0 10px 6px;
+    }
+
+    .t8-role-badge span {
+      background: #2563eb;
+      color: #fff;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      padding: 2px 12px;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+
+    .t8-details {
+      background: #f0f5ff;
+      border: 1px solid #c7d8f8;
+      border-radius: 5px;
+      margin: 0 7px 5px;
+      padding: 4px 8px;
+    }
+
+    .t8-details .row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 8px;
+      color: #222;
+      padding: 2px 0;
+      border-bottom: 1px solid rgba(37, 99, 235, .1);
+    }
+
+    .t8-details .row:last-child {
+      border-bottom: none;
+    }
+
+    .t8-details .row span:first-child {
+      font-weight: 700;
+      color: #1a3c6e;
+      flex-shrink: 0;
+      margin-right: 5px;
+    }
+
+    .t8-details .row span:last-child {
+      color: #111;
+      text-align: right;
+    }
+
+    .t8-footer {
+      margin-top: auto;
+      background: linear-gradient(135deg, #1a3c6e, #2563eb);
+      color: #fff;
+      text-align: center;
+      font-size: 7.5px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      padding: 5px 0;
+      text-transform: uppercase;
+    }
+
+    .t8-back-body {
+      flex: 1;
+      padding: 7px 10px;
+      font-size: 8.5px;
+      color: #222;
+      overflow: hidden;
     }
 
     /* ── RESPONSIVE ── */
@@ -2299,16 +2494,30 @@
       <!-- FIELDS CONFIG TAB -->
       <div class="stab-pane" id="tab-fields">
         <div class="sec-head"><i class="fa fa-sliders"></i> Manage Fields</div>
-        <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Toggle fields on/off and add custom fields.</p>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Drag ↕ to reorder • Toggle on/off • Move
+          Front↔Back</p>
 
-        <div id="fieldToggles"></div>
+        <!-- FRONT FIELDS -->
+        <div
+          style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px;display:flex;align-items:center;gap:6px">
+          <i class="fa fa-id-card" style="font-size:10px"></i> Front Side Fields
+        </div>
+        <div id="frontFieldList" class="drop-zone" data-side="front"></div>
 
+        <!-- BACK FIELDS -->
+        <div
+          style="font-size:11px;font-weight:700;color:var(--rose);text-transform:uppercase;letter-spacing:.7px;margin:12px 0 6px;display:flex;align-items:center;gap:6px">
+          <i class="fa fa-rotate-left" style="font-size:10px"></i> Back Side Fields
+        </div>
+        <div id="backFieldList" class="drop-zone" data-side="back"></div>
+
+        <!-- ADD CUSTOM FIELD -->
         <div style="margin-top:16px">
           <div class="sec-head"><i class="fa fa-plus-circle"></i> Add Custom Field</div>
-          <div class="form-group"><label>Label</label><input type="text" id="cf_label" placeholder="e.g. Blood Group">
+          <div class="form-group"><label>Label</label><input type="text" id="cf_label" placeholder="e.g. Hostel No.">
           </div>
-          <div class="form-group"><label>Icon (Font Awesome class)</label><input type="text" id="cf_icon"
-              placeholder="e.g. fa-tint"></div>
+          <div class="form-group"><label>Icon (Font Awesome)</label><input type="text" id="cf_icon"
+              placeholder="e.g. fa-home"></div>
           <div class="form-group"><label>Side</label>
             <select id="cf_side">
               <option value="front">Front</option>
@@ -2318,17 +2527,12 @@
           <button class="btn btn-primary btn-sm" style="width:100%;justify-content:center" onclick="addCustomField()"><i
               class="fa fa-plus"></i> Add Field</button>
         </div>
-
-        <div style="margin-top:14px">
-          <div class="sec-head"><i class="fa fa-list"></i> Custom Fields</div>
-          <div id="customFieldList"></div>
-        </div>
       </div>
 
       <!-- TEMPLATES TAB -->
       <div class="stab-pane" id="tab-templates">
         <div class="sec-head"><i class="fa fa-palette"></i> Choose Template</div>
-        <p style="font-size:12px;color:var(--muted);margin-bottom:14px">5 professional ID card designs</p>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:14px">8 professional ID card designs</p>
         <div class="tpl-grid" id="tplGrid">
 
           <div class="tpl-card active" onclick="setTemplate(1)">
@@ -2379,7 +2583,7 @@
             <div class="tpl-name">Student Id Card</div>
           </div>
 
-          <div class="tpl-card" onclick="setTemplate(7)" style="grid-column:span 2">
+          <div class="tpl-card" onclick="setTemplate(7)">
             <div class="tpl-thumb"
               style="background:linear-gradient(180deg,#b87008 0%,#e8a020 30%,#f5f0e8 30%);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden">
               <span class="tpl-badge">Vertical</span>
@@ -2402,9 +2606,6 @@
                   <div
                     style="height:1.5px;background:rgba(200,134,10,.4);width:90%;border-radius:1px;margin-bottom:1px">
                   </div>
-                  <div
-                    style="height:1.5px;background:rgba(200,134,10,.4);width:90%;border-radius:1px;margin-bottom:1px">
-                  </div>
                   <div style="height:1.5px;background:rgba(200,134,10,.4);width:90%;border-radius:1px"></div>
                 </div>
                 <div
@@ -2413,7 +2614,39 @@
                 </div>
               </div>
             </div>
-            <div class="tpl-name">🎓 Student ID Card</div>
+            <div class="tpl-name">🎓 Golden Student</div>
+          </div>
+
+          <div class="tpl-card" onclick="setTemplate(8)">
+            <div class="tpl-thumb"
+              style="background:linear-gradient(180deg,#1a3c6e 0%,#2563eb 30%,#fff 30%);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden">
+              <span class="tpl-badge">Vertical</span>
+              <div
+                style="width:55px;height:88px;background:#fff;border:2px solid #1a3c6e;border-radius:4px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,.3)">
+                <div
+                  style="background:linear-gradient(135deg,#1a3c6e,#2563eb);height:22px;display:flex;align-items:center;justify-content:center;gap:3px">
+                  <div style="width:12px;height:12px;border-radius:2px;background:rgba(255,255,255,.3)"></div>
+                  <div style="flex:1;padding-right:3px">
+                    <div style="height:3px;background:rgba(255,255,255,.8);border-radius:1px;margin-bottom:2px"></div>
+                    <div style="height:2px;background:rgba(255,255,255,.5);border-radius:1px;width:70%"></div>
+                  </div>
+                </div>
+                <div style="background:#e8f0fe;height:6px;border-bottom:1px solid #2563eb"></div>
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;padding:3px 3px 2px">
+                  <div
+                    style="width:22px;height:26px;background:#dce8ff;border:1.5px solid #2563eb;border-radius:3px;margin-bottom:3px">
+                  </div>
+                  <div style="height:2.5px;background:#1a3c6e;width:80%;border-radius:1px;margin-bottom:2px"></div>
+                  <div style="height:1.5px;background:#c7d8f8;width:90%;border-radius:1px;margin-bottom:1px"></div>
+                  <div style="height:1.5px;background:#c7d8f8;width:90%;border-radius:1px"></div>
+                </div>
+                <div
+                  style="background:linear-gradient(135deg,#1a3c6e,#2563eb);height:8px;display:flex;align-items:center;justify-content:center">
+                  <div style="font-size:4px;color:#fff;letter-spacing:.5px;font-weight:800">STUDENT ID</div>
+                </div>
+              </div>
+            </div>
+            <div class="tpl-name">🎓 Navy Student</div>
           </div>
         </div>
       </div>
@@ -2442,7 +2675,7 @@
         Front Side</div>
       <div class="card-container" id="cardFront" onclick="this.classList.toggle('flipped')">
         <div class="card-inner">
-          <div class="card-face" id="frontFace"></div>
+          <div class="card-face" id="frontFace" style="border: 1px solid black;"></div>
           <div class="card-face card-back-face" id="frontBackFace"></div>
         </div>
       </div>
@@ -2453,9 +2686,10 @@
       <div
         style="text-align:center;margin-bottom:6px;font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px">
         Back Side</div>
-      <div
+      <div id="backFaceWrap"
         style="width:340px;height:215px;margin:0 auto 20px;border-radius:14px;overflow:hidden;box-shadow:var(--shadow)">
-        <div id="backFace" style="width:100%;height:100%"></div>
+        <div id="backFace" style="width:100%;height:100%;border-radius:14px;overflow:hidden;border: 1px solid black;">
+        </div>
       </div>
 
       <div class="preview-btns">
@@ -2499,25 +2733,29 @@
         name: { label: 'Full Name', icon: 'fa-user', val: '', enabled: true, side: 'front', core: true },
         designation: { label: 'Designation', icon: 'fa-briefcase', val: '', enabled: true, side: 'front', core: true },
         department: { label: 'Department', icon: 'fa-building', val: '', enabled: true, side: 'front', core: true },
-        employee_id: { label: 'Employee ID/ Roll No.', icon: 'fa-id-card', val: '', enabled: true, side: 'front', core: true },
+        employee_id: { label: 'Employee ID / Roll No.', icon: 'fa-id-card', val: '', enabled: true, side: 'front', core: true },
         phone: { label: 'Phone', icon: 'fa-phone', val: '', enabled: true, side: 'front', core: true },
         email: { label: 'Email', icon: 'fa-envelope', val: '', enabled: true, side: 'front', core: true },
-        dob: { label: 'Date of Birth', icon: 'fa-calendar', val: '', enabled: false, side: 'front', core: true },
+        father_name: { label: 'Father\'s Name', icon: 'fa-user-tie', val: '', enabled: true, side: 'front', core: true },
+        dob: { label: 'Date of Birth', icon: 'fa-calendar', val: '', enabled: true, side: 'front', core: true },
         blood: { label: 'Blood Group', icon: 'fa-tint', val: '', enabled: true, side: 'front', core: true },
         address: { label: 'Address', icon: 'fa-map-marker', val: '', enabled: true, side: 'back', core: true },
-        org_name: { label: 'Organization', icon: 'fa-landmark', val: '', enabled: true, side: 'front', core: true },
+        org_name: { label: 'Organization / College', icon: 'fa-landmark', val: '', enabled: true, side: 'front', core: true },
         valid_from: { label: 'Valid From', icon: 'fa-calendar-alt', val: '', enabled: true, side: 'back', core: true },
         valid_until: { label: 'Valid Until', icon: 'fa-calendar-check', val: '', enabled: true, side: 'back', core: true },
         website: { label: 'Website', icon: 'fa-globe', val: '', enabled: false, side: 'back', core: true },
         emergency: { label: 'Emergency No.', icon: 'fa-phone-alt', val: '', enabled: false, side: 'back', core: true },
-        // T7 Student ID fields
-        org_address: { label: 'College Address', icon: 'fa-map-marker', val: '', enabled: true, side: 'front', core: true },
+        org_address: { label: 'College Address', icon: 'fa-map-marker-alt', val: '', enabled: true, side: 'front', core: true },
         session: { label: 'Session (Year)', icon: 'fa-calendar', val: '', enabled: true, side: 'front', core: true },
         course: { label: 'Programme / Course', icon: 'fa-book', val: '', enabled: true, side: 'front', core: true },
         roll_no: { label: 'Roll No.', icon: 'fa-hashtag', val: '', enabled: true, side: 'front', core: true },
         registration_no: { label: 'Registration No.', icon: 'fa-id-badge', val: '', enabled: true, side: 'front', core: true },
-        blood_group: { label: 'Blood Group', icon: 'fa-tint', val: '', enabled: true, side: 'back', core: true },
+        class_section: { label: 'Class / Section', icon: 'fa-chalkboard-teacher', val: '', enabled: true, side: 'front', core: true },
       },
+      // Ordered list of field keys — user can reorder via drag-drop
+      fieldOrder: ['name', 'father_name', 'designation', 'department', 'employee_id', 'phone', 'email', 'dob', 'blood',
+        'address', 'org_name', 'valid_from', 'valid_until', 'website', 'emergency',
+        'org_address', 'session', 'course', 'roll_no', 'registration_no', 'class_section'],
       customFields: [],
       data: {}
     };
@@ -2595,17 +2833,25 @@
 
     // ── FIELD FORM RENDER ──
     function renderFormFields() {
-      const allFields = [
-        ...Object.entries(state.fields).map(([k, v]) => ({ key: k, ...v })),
-        ...state.customFields.map(cf => ({ key: cf.id, ...cf, enabled: true }))
-      ].filter(f => f.enabled);
+      const allFields = getAllOrderedFields().filter(f => f.enabled);
 
       el('formFields').innerHTML = allFields.map(f => {
         const val = state.data[f.key] || '';
+        // Blood Group: dropdown
+        if (f.key === 'blood') {
+          const opts = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+          return `<div class="form-group">
+            <label><i class="fa fa-tint" style="margin-right:4px;color:var(--accent)"></i>Blood Group</label>
+            <select id="ff_blood" onchange="saveField('blood',this.value)">
+              <option value="">-- Select --</option>
+              ${opts.map(o => `<option value="${o}" ${val === o ? 'selected' : ''}>${o}</option>`).join('')}
+            </select>
+          </div>`;
+        }
         return `<div class="form-group">
-      <label><i class="fa ${f.icon}" style="margin-right:4px;color:var(--accent)"></i>${f.label}</label>
-      <input type="text" id="ff_${f.key}" value="${val}" placeholder="Enter ${f.label.toLowerCase()}..." oninput="saveField('${f.key}',this.value)">
-    </div>`;
+          <label><i class="fa ${f.icon}" style="margin-right:4px;color:var(--accent)"></i>${f.label}</label>
+          <input type="text" id="ff_${f.key}" value="${val}" placeholder="Enter ${f.label.toLowerCase()}..." oninput="saveField('${f.key}',this.value)">
+        </div>`;
       }).join('');
     }
 
@@ -2614,34 +2860,148 @@
       renderAll();
     }
 
-    // ── FIELD TOGGLES ──
-    function renderFieldToggles() {
-      el('fieldToggles').innerHTML = Object.entries(state.fields).map(([key, f]) => `
-    <div class="field-item">
-      <i class="fa fa-grip-vertical drag-handle"></i>
-      <div style="flex:1">
-        <div class="fi-label"><i class="fa ${f.icon}" style="color:var(--accent);margin-right:5px;font-size:11px"></i>${f.label}</div>
-        <div class="fi-sub">${f.side === 'front' ? '📌 Front' : '🔄 Back'}</div>
-      </div>
-      <label class="toggle-switch">
-        <input type="checkbox" ${f.enabled ? 'checked' : ''} onchange="toggleField('${key}',this.checked)">
-        <span class="toggle-slider"></span>
-      </label>
-    </div>
-  `).join('');
+    // ── FIELD DRAG-DROP MANAGER ──
+    let dragKey = null;
+    let dragPlaceholder = null;
 
-      el('customFieldList').innerHTML = state.customFields.length
-        ? state.customFields.map(cf => `
-      <div class="field-item">
-        <i class="fa fa-grip-vertical drag-handle"></i>
-        <div style="flex:1">
-          <div class="fi-label"><i class="fa ${cf.icon}" style="color:var(--rose);margin-right:5px;font-size:11px"></i>${cf.label}</div>
-          <div class="fi-sub">Custom · ${cf.side === 'front' ? '📌 Front' : '🔄 Back'}</div>
-        </div>
-        <button class="btn btn-danger btn-xs" onclick="removeCustomField('${cf.id}')"><i class="fa fa-trash"></i></button>
-      </div>
-    `).join('')
-        : '<p style="font-size:12px;color:var(--muted)">No custom fields added yet.</p>';
+    function getAllOrderedFields() {
+      // Returns all fields (core + custom) in order, with their keys
+      const coreKeys = state.fieldOrder.filter(k => state.fields[k]);
+      const customKeys = state.customFields.map(cf => cf.id);
+      return [
+        ...coreKeys.map(k => ({ key: k, ...state.fields[k], isCustom: false })),
+        ...customKeys.map(id => {
+          const cf = state.customFields.find(c => c.id === id);
+          return { key: id, ...cf, isCustom: true };
+        })
+      ];
+    }
+
+    function renderFieldToggles() {
+      const allFields = getAllOrderedFields();
+      const frontFields = allFields.filter(f => f.side === 'front');
+      const backFields = allFields.filter(f => f.side === 'back');
+
+      function makeItem(f) {
+        const isCustom = f.isCustom;
+        return `<div class="field-item" draggable="true"
+          data-key="${f.key}"
+          ondragstart="onDragStart(event,'${f.key}')"
+          ondragend="onDragEnd(event)"
+          ondragover="onDragOver(event)"
+          ondrop="onDrop(event,'${f.key}')">
+          <i class="fa fa-grip-vertical drag-handle" style="color:var(--muted);font-size:13px;flex-shrink:0"></i>
+          <div style="flex:1;min-width:0">
+            <div class="fi-label" style="font-size:12.5px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:5px">
+              <i class="fa ${f.icon}" style="color:${isCustom ? 'var(--rose)' : 'var(--accent)'};font-size:11px"></i>
+              ${f.label}
+            </div>
+          </div>
+          <!-- Move side button -->
+          <button title="Move to ${f.side === 'front' ? 'Back' : 'Front'}"
+            style="background:${f.side === 'front' ? 'rgba(110,231,247,.1)' : 'rgba(244,114,182,.1)'};border:1px solid ${f.side === 'front' ? 'rgba(110,231,247,.25)' : 'rgba(244,114,182,.25)'};color:${f.side === 'front' ? 'var(--accent)' : 'var(--rose)'};border-radius:6px;padding:3px 7px;font-size:10px;cursor:pointer;flex-shrink:0"
+            onclick="moveSide('${f.key}')">
+            ${f.side === 'front' ? '→ Back' : '← Front'}
+          </button>
+          <!-- Toggle -->
+          <label class="toggle-switch" style="flex-shrink:0">
+            <input type="checkbox" ${f.enabled ? 'checked' : ''} onchange="toggleField('${f.key}',this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+          ${isCustom ? `<button class="btn btn-danger btn-xs" style="flex-shrink:0" onclick="removeCustomField('${f.key}')"><i class="fa fa-trash"></i></button>` : ''}
+        </div>`;
+      }
+
+      const frontEl = document.getElementById('frontFieldList');
+      const backEl = document.getElementById('backFieldList');
+      if (!frontEl || !backEl) return;
+
+      frontEl.innerHTML = frontFields.length ? frontFields.map(makeItem).join('') :
+        '<div style="font-size:11px;color:var(--muted);padding:8px;text-align:center">No front fields</div>';
+      backEl.innerHTML = backFields.length ? backFields.map(makeItem).join('') :
+        '<div style="font-size:11px;color:var(--muted);padding:8px;text-align:center">No back fields</div>';
+
+      // Zone-level drop events for empty zones
+      [frontEl, backEl].forEach(zone => {
+        zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+        zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+        zone.addEventListener('drop', e => {
+          e.preventDefault();
+          zone.classList.remove('drag-over');
+          if (!dragKey) return;
+          const targetSide = zone.dataset.side;
+          moveFieldToZone(dragKey, targetSide, null);
+        });
+      });
+    }
+
+    function onDragStart(e, key) {
+      dragKey = key;
+      setTimeout(() => e.target.closest('.field-item').classList.add('dragging'), 0);
+      e.dataTransfer.effectAllowed = 'move';
+    }
+    function onDragEnd(e) {
+      e.target.closest('.field-item')?.classList.remove('dragging');
+      dragKey = null;
+    }
+    function onDragOver(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.dataTransfer.dropEffect = 'move';
+    }
+    function onDrop(e, targetKey) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!dragKey || dragKey === targetKey) return;
+      const targetField = state.fields[targetKey] || state.customFields.find(c => c.id === targetKey);
+      const targetSide = targetField?.side || 'front';
+      moveFieldToZone(dragKey, targetSide, targetKey);
+    }
+
+    function moveFieldToZone(key, side, beforeKey) {
+      // Update side
+      if (state.fields[key]) state.fields[key].side = side;
+      else {
+        const cf = state.customFields.find(c => c.id === key);
+        if (cf) cf.side = side;
+      }
+
+      // Reorder: remove key from order, insert before beforeKey
+      const isCore = !!state.fields[key];
+      if (isCore) {
+        const order = state.fieldOrder;
+        const fromIdx = order.indexOf(key);
+        if (fromIdx > -1) order.splice(fromIdx, 1);
+        if (beforeKey && state.fields[beforeKey]) {
+          const toIdx = order.indexOf(beforeKey);
+          if (toIdx > -1) order.splice(toIdx, 0, key);
+          else order.push(key);
+        } else {
+          order.push(key);
+        }
+      } else {
+        // Custom field: reorder customFields array
+        const cfArr = state.customFields;
+        const fromIdx = cfArr.findIndex(c => c.id === key);
+        const toIdx = beforeKey ? cfArr.findIndex(c => c.id === beforeKey) : cfArr.length;
+        if (fromIdx > -1) {
+          const [item] = cfArr.splice(fromIdx, 1);
+          cfArr.splice(toIdx < 0 ? cfArr.length : toIdx, 0, item);
+        }
+      }
+
+      renderFieldToggles();
+      renderFormFields();
+      renderAll();
+    }
+
+    function moveSide(key) {
+      const f = state.fields[key] || state.customFields.find(c => c.id === key);
+      if (!f) return;
+      f.side = f.side === 'front' ? 'back' : 'front';
+      renderFieldToggles();
+      renderFormFields();
+      renderAll();
     }
 
     function toggleField(key, on) {
@@ -2656,7 +3016,7 @@
       const icon = 'fa-' + (el('cf_icon').value.replace(/^fa-/, '').trim() || 'tag');
       const side = el('cf_side').value;
       if (!label) { toast('Please enter a field label!', 'error'); return; }
-      const cf = { id: 'cf_' + Date.now(), label, icon, side, val: '' };
+      const cf = { id: 'cf_' + Date.now(), label, icon, side, val: '', enabled: true };
       state.customFields.push(cf);
       el('cf_label').value = '';
       el('cf_icon').value = '';
@@ -2677,10 +3037,10 @@
     function setTemplate(n) {
       currentTpl = n;
       document.querySelectorAll('.tpl-card').forEach((c, i) => c.classList.toggle('active', i + 1 === n));
-      // Toggle vertical layout for template 7
-      const isVertical = n === 7;
+      // Toggle vertical layout for template 7 & 8
+      const isVertical = n === 7 || n === 8;
       el('cardFront').classList.toggle('vertical', isVertical);
-      const backWrap = el('backFace').parentElement;
+      const backWrap = el('backFaceWrap');
       if (isVertical) {
         backWrap.style.width = '215px';
         backWrap.style.height = '340px';
@@ -2700,12 +3060,14 @@
 
     function getFieldsByFront() {
       const front = [], back = [];
-      Object.entries(state.fields).forEach(([k, f]) => {
-        if (!f.enabled || !gv(k)) return;
-        if (!['name', 'designation', 'department', 'employee_id', 'org_name'].includes(k)) {
-          (f.side === 'front' ? front : back).push({ key: k, ...f, val: gv(k) });
-        }
+      // Core fields in user-defined order
+      state.fieldOrder.forEach(k => {
+        const f = state.fields[k];
+        if (!f || !f.enabled || !gv(k)) return;
+        if (['name', 'designation', 'department', 'employee_id', 'org_name'].includes(k)) return;
+        (f.side === 'front' ? front : back).push({ key: k, ...f, val: gv(k) });
       });
+      // Custom fields in their order
       state.customFields.forEach(cf => {
         const val = gv(cf.id);
         if (!val) return;
@@ -2756,7 +3118,7 @@
         <div class="t1f-name">${name}</div>
         ${role ? `<div class="t1f-role">${role}</div>` : ''}
         ${dept ? `<div class="t1f-detail"><i class="fa fa-building"></i>${dept}</div>` : ''}
-        ${front.map(f => `<div class="t1f-detail"><i class="fa ${f.icon}"></i>${f.val}</div>`).join('')}
+        ${front.map(f => `<div class="t1f-detail"><strong>${f.label}:</strong>${f.val}</div>`).join('')}
       </div>
     </div>
     <div class="t1f-footer">
@@ -2804,7 +3166,7 @@
         <div class="t2f-name">${name}</div>
         ${role ? `<div class="t2f-role">${role}</div>` : ''}
         ${dept ? `<div class="t2f-row"><i class="fa fa-building"></i>${dept}</div>` : ''}
-        ${front.map(f => `<div class="t2f-row"><i class="fa ${f.icon}"></i>${f.val}</div>`).join('')}
+        ${front.map(f => `<div class="t2f-row"><strong>${f.label}:</strong>${f.val}</div>`).join('')}
       </div>
     </div>
     <div class="t2f-footer">
@@ -2848,7 +3210,7 @@
         <div class="t3f-name">${name}</div>
         ${role ? `<div class="t3f-role">${role}</div>` : ''}
         ${dept ? `<div class="t3f-row"><i class="fa fa-building"></i>${dept}</div>` : ''}
-        ${front.map(f => `<div class="t3f-row"><i class="fa ${f.icon}"></i>${f.val}</div>`).join('')}
+        ${front.map(f => `<div class="t3f-row"><strong>${f.label}:</strong>${f.val}</div>`).join('')}
       </div>
     </div>
     <div class="t3f-footer">
@@ -2896,7 +3258,7 @@
         <div class="t4f-name">${name}</div>
         ${role ? `<div class="t4f-role">${role}</div>` : ''}
         ${dept ? `<div class="t4f-row"><i class="fa fa-building"></i>${dept}</div>` : ''}
-        ${front.map(f => `<div class="t4f-row"><i class="fa ${f.icon}"></i>${f.val}</div>`).join('')}
+        ${front.map(f => `<div class="t4f-row"><strong>${f.label}:</strong>${f.val}</div>`).join('')}
       </div>
     </div>
     <div class="t4f-footer">
@@ -2940,7 +3302,7 @@
         ${role ? `<div class="t5f-role">${role}</div>` : ''}
         
         ${dept ? `<div class="t5f-row"><i class="fa fa-building"></i>${dept}</div>` : ''}
-        ${front.map(f => `<div class="t5f-row"><i class="fa ${f.icon}"></i>${f.val}</div>`).join('')}
+        ${front.map(f => `<div class="t5f-row"><strong>${f.label}:</strong>${f.val}</div>`).join('')}
       </div>
     </div>
     <div class="t5f-footer">
@@ -2970,17 +3332,24 @@
     function renderT6Front() {
       const { front } = getFieldsByFront();
       console.log(front);
+
       const studentName = gvEnabled('name') || 'Student Name';
       const rollNo = gvEnabled('employee_id') || 'STU-2026-001';
-
       const org = gvEnabled('org_name') || 'School / College Name';
+      const orgAddr = gvEnabled('org_address') || '';
+      const classSec = gvEnabled('class_section') || '';
 
       return `
           <div class="t6-front">
-            <div class="t6f-header">
-              ${logoData ? `<img src="${logoData}" style="height:40px;object-fit:contain">` : ''}
-              <div class="t6f-org" style="margin-left:3px;">${org}</div>
-              <div class="t6f-role">STUDENT ID CARD</div>
+            <div class="t6f-header" style="flex-direction:column;align-items:flex-start;gap:2px;padding:7px 13px;">
+              <div style="display:flex;align-items:center;gap:8px;width:100%">
+                ${logoData ? `<img src="${logoData}" style="height:36px;object-fit:contain;flex-shrink:0">` : ''}
+                <div>
+                  <div class="t6f-org" style="font-size:11px;letter-spacing:.8px;">${org}</div>
+                  ${orgAddr ? `<div style="font-size:8px;color:#333;margin-top:1px;">${orgAddr}</div>` : ''}
+                </div>
+              </div>
+              
             </div>
 
             <div class="t6f-body">
@@ -2988,7 +3357,15 @@
 
               <div class="t6f-info">
                 <div class="t6f-name">${studentName}</div>
-                ${front.map(f => `<div class="t6f-row"><i class="fa ${f.icon}"></i> <strong>${f.label}:</strong> ${f.val}</div>`).join('')}
+                ${classSec ? `<div class="t6f-row"> <strong>Class:</strong> ${classSec}</div>` : ''}
+                  ${front
+          .filter(f => !['org_address', 'class_section'].includes(f.key))
+          .map(f => `
+                            <div class="t6f-row">
+                              <strong>${f.label}:</strong> ${f.val}
+                            </div>
+                          `)
+          .join('')}
               </div>
             </div>
 
@@ -3034,7 +3411,7 @@
         kindly return it to the institution.
       </div>
 
-      ${barcodeHTML("t1b-barcode", 35, 22, 15)}
+      
     </div>
 
     <div class="t6b-footer">
@@ -3084,6 +3461,11 @@
               <span>${gvEnabled('course')}</span>
             </div>
 
+            ${gvEnabled('class_section') ? `<div class="row">
+              <span>Class / Section</span>
+              <span>${gvEnabled('class_section')}</span>
+            </div>` : ''}
+
             <div class="row">
               <span>Roll No</span>
               <span>${gvEnabled('roll_no')}</span>
@@ -3094,14 +3476,22 @@
               <span>${gvEnabled('registration_no')}</span>
             </div>
 
+            ${gvEnabled('father_name') ? `<div class="row">
+              <span>Father's Name</span>
+              <span>${gvEnabled('father_name')}</span>
+            </div>` : ''}
+
+            ${gvEnabled('dob') ? `<div class="row">
+              <span>Date of Birth</span>
+              <span>${gvEnabled('dob')}</span>
+            </div>` : ''}
+
             <div class="row">
               <span>Valid Till</span>
               <span>${gvEnabled('valid_until')}</span>
             </div>
 
           </div>
-
-          ${barcodeHTML("t1b-barcode", 35, 22, 15)}
 
           <div class="sid-footer">
             STUDENT IDENTITY CARD
@@ -3135,8 +3525,18 @@
 
     <div class="info-line">
       <strong>Blood Group :</strong>
-      ${gvEnabled('blood_group')}
+      ${gvEnabled('blood')}
     </div>
+
+    ${gvEnabled('father_name') ? `<div class="info-line">
+      <strong>Father's Name :</strong>
+      ${gvEnabled('father_name')}
+    </div>` : ''}
+
+    ${gvEnabled('dob') ? `<div class="info-line">
+      <strong>Date of Birth :</strong>
+      ${gvEnabled('dob')}
+    </div>` : ''}
 
     <div class="info-line">
       <strong>Address :</strong>
@@ -3177,6 +3577,88 @@
             `;
     }
 
+    function renderT8Front() {
+      const org = gvEnabled('org_name') || 'School / College Name';
+      const orgAddr = gvEnabled('org_address') || '';
+      const studentName = gvEnabled('name') || 'Student Name';
+      const course = gvEnabled('course') || '';
+      const classSec = gvEnabled('class_section') || '';
+      const rollNo = gvEnabled('roll_no') || '';
+      const regNo = gvEnabled('registration_no') || '';
+      const fatherName = gvEnabled('father_name') || '';
+      const dob = gvEnabled('dob') || '';
+      const session = gvEnabled('session') || '';
+      const validUntil = gvEnabled('valid_until') || '';
+      return `<div class="t8-front">
+        <div class="t8-header">
+          <div class="t8-logo-wrap">
+            ${logoData ? `<img src="${logoData}">` : '<span style="font-size:16px">🏫</span>'}
+          </div>
+          <div class="t8-hdr-text">
+            <div class="t8-hdr-org">${org}</div>
+            ${orgAddr ? `<div class="t8-hdr-addr">${orgAddr}</div>` : ''}
+          </div>
+        </div>
+        <div class="t8-id-label">STUDENT IDENTITY CARD</div>
+        <div class="t8-photo-row">
+          ${photoData ? `<div class="t8-photo"><img src="${photoData}"></div>` : '<div class="t8-photo">👤</div>'}
+        </div>
+        <div class="t8-name">${studentName}</div>
+        ${course ? `<div class="t8-role-badge"><span>${course}</span></div>` : ''}
+        <div class="t8-details">
+          ${classSec ? `<div class="row"><span>Class / Section</span><span>${classSec}</span></div>` : ''}
+          ${rollNo ? `<div class="row"><span>Roll No.</span><span>${rollNo}</span></div>` : ''}
+          ${regNo ? `<div class="row"><span>Reg. No.</span><span>${regNo}</span></div>` : ''}
+          ${fatherName ? `<div class="row"><span>Father's Name</span><span>${fatherName}</span></div>` : ''}
+          ${dob ? `<div class="row"><span>Date of Birth</span><span>${dob}</span></div>` : ''}
+          ${session ? `<div class="row"><span>Session</span><span>${session}</span></div>` : ''}
+          ${validUntil ? `<div class="row"><span>Valid Till</span><span>${validUntil}</span></div>` : ''}
+        </div>
+        <div class="t8-footer">Student Identity Card</div>
+      </div>`;
+    }
+
+    function renderT8Back() {
+      const org = gvEnabled('org_name') || 'School / College Name';
+      const blood = gvEnabled('blood') || '';
+      const fatherName = gvEnabled('father_name') || '';
+      const dob = gvEnabled('dob') || '';
+      const address = gvEnabled('address') || '';
+      const phone = gvEnabled('phone') || '';
+      const email = gvEnabled('email') || '';
+      const vf = gvEnabled('valid_from') || '';
+      const vu = gvEnabled('valid_until') || '';
+      return `<div class="t8-back">
+        <div class="t8-back-header">
+          <div class="t8-logo-wrap">
+            ${logoData ? `<img src="${logoData}">` : '<span style="font-size:14px">🏫</span>'}
+          </div>
+          <div class="t8-hdr-text">
+            <div class="t8-hdr-org">${org}</div>
+          </div>
+        </div>
+        <div class="t8-back-body">
+          ${blood ? `<div class="info-line"><strong>Blood Group :</strong> ${blood}</div>` : ''}
+          ${fatherName ? `<div class="info-line"><strong>Father's Name :</strong> ${fatherName}</div>` : ''}
+          ${dob ? `<div class="info-line"><strong>Date of Birth :</strong> ${dob}</div>` : ''}
+          ${address ? `<div class="info-line"><strong>Address :</strong> ${address}</div>` : ''}
+          ${phone ? `<div class="info-line"><strong>Contact :</strong> ${phone}</div>` : ''}
+          ${email ? `<div class="info-line"><strong>Email :</strong> ${email}</div>` : ''}
+          ${vf || vu ? `<div class="info-line"><strong>Validity :</strong> ${vf} ${vu ? 'to ' + vu : ''}</div>` : ''}
+          <hr style="border:none;border-top:1px solid #c7d8f8;margin:6px 0">
+          <div class="instruction-title" style="color:#2563eb;">INSTRUCTIONS</div>
+          <ol class="instruction-list">
+            <li>This card is the property of the institute.</li>
+            <li>Student must carry this card at all times.</li>
+            <li>Loss of card must be reported immediately.</li>
+            <li>This card is non-transferable.</li>
+            <li>Produce this card whenever required.</li>
+          </ol>
+        </div>
+        <div class="t8-footer">Return if found • ${org}</div>
+      </div>`;
+    }
+
     // ── RENDER ALL ──
     function renderAll() {
       const renderers = {
@@ -3187,15 +3669,16 @@
         5: [renderT5Front, renderT5Back],
         6: [renderT6Front, renderT6Back],
         7: [renderT7Front, renderT7Back],
+        8: [renderT8Front, renderT8Back],
       };
       const [fFn, bFn] = renderers[currentTpl];
       el('frontFace').innerHTML = fFn();
       el('frontBackFace').innerHTML = bFn();
       el('backFace').innerHTML = bFn();
-      // Apply vertical layout for template 7
-      const isVertical = currentTpl === 7;
+      // Apply vertical layout for template 7 and 8
+      const isVertical = currentTpl === 7 || currentTpl === 8;
       el('cardFront').classList.toggle('vertical', isVertical);
-      const backWrap = el('backFace').parentElement;
+      const backWrap = el('backFaceWrap');
       if (isVertical) {
         backWrap.style.width = '215px';
         backWrap.style.height = '340px';
@@ -3211,29 +3694,63 @@
       toast('⏳ Generating PDF...', 'info');
       try {
         const { jsPDF } = window.jspdf;
-        const isVertical = currentTpl === 7;
+        const isVertical = currentTpl === 7 || currentTpl === 8;
 
         // Card pixel dimensions for capture
         const capW = isVertical ? 215 : 340;
         const capH = isVertical ? 340 : 215;
 
         const frontEl = el('frontFace');
-        const backEl = el('backFace');
+        const backEl = el('backFaceWrap');
 
         // Capture front & back
-        const frontCanvas = await html2canvas(frontEl, {
-          scale: 3, useCORS: true, allowTaint: true,
-          backgroundColor: null, logging: false,
-          width: capW, height: capH
-        });
-        const backCanvas = await html2canvas(backEl, {
-          scale: 3, useCORS: true, allowTaint: true,
-          backgroundColor: null, logging: false,
-          width: capW, height: capH
+
+        let frontCanvas, backCanvas;
+
+        // if (currentTpl === 8) {
+        //   frontCanvas = await html2canvas(frontEl, {
+        //     scale: 3,
+        //     useCORS: true,
+        //     allowTaint: true,
+        //     backgroundColor: null,
+        //     logging: false,
+        //     width: capW,
+        //     height: capH
+        //   });
+
+        //   backCanvas = await html2canvas(backEl, {
+        //     scale: 3,
+        //     useCORS: true,
+        //     allowTaint: true,
+        //     backgroundColor: null,
+        //     logging: false,
+        //     width: capW,
+        //     height: capH
+        //   });
+        // } else {
+        frontCanvas = await html2canvas(frontEl, {
+          scale: 3,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          width: capW,
+          height: capH
         });
 
+        backCanvas = await html2canvas(backEl, {
+          scale: 3,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          width: capW,
+          height: capH
+        });
+        // }
         const frontImg = frontCanvas.toDataURL('image/jpeg', 1.0);
-        const backImg = backCanvas.toDataURL('image/jpeg', 1.0);
+        // const backImg = backCanvas.toDataURL('image/jpeg', 1.0);
+        const backImg = backCanvas.toDataURL('image/png');
 
         // ── Single landscape A4 page, both cards side by side ──
         // For T7 vertical cards: portrait A4, cards stacked top/bottom
@@ -3252,9 +3769,10 @@
           const totalH = labelH + cardH + gap + labelH + cardH;
           const startY = (pageH - totalH) / 2;
           const cardX = (pageW - cardW) / 2;
-
-          pdf.setFillColor(22, 25, 37);
-          pdf.rect(0, 0, pageW, pageH, 'F');
+          // if (currentTpl === 8) {
+          // pdf.setFillColor(22, 25, 37);
+          // pdf.rect(0, 0, pageW, pageH, 'F');
+          // }
           pdf.setFontSize(8);
           pdf.setTextColor(100, 116, 139);
 
@@ -3264,8 +3782,8 @@
 
           // Back
           const backY = startY + labelH + cardH + gap;
-          pdf.text('BACK SIDE', cardX, backY + 4);
-          pdf.addImage(backImg, 'JPEG', cardX, backY + labelH, cardW, cardH);
+          pdf.text('BACK SIDE', cardX, backY);
+          pdf.addImage(backImg, 'PNG', cardX, backY + labelH, cardW, cardH);
 
           const name = gv('name') || 'IDCard';
           pdf.save(`${name.replace(/\s+/g, '_')}_ID_Card.pdf`);
@@ -3284,8 +3802,8 @@
           const startX = (pageW - totalW) / 2;
           const cardY = (pageH - labelH - cardH) / 2 + 2;
 
-          pdf.setFillColor(22, 25, 37);
-          pdf.rect(0, 0, pageW, pageH, 'F');
+          // pdf.setFillColor(22, 25, 37);
+          // pdf.rect(0, 0, pageW, pageH, 'F');
           pdf.setFontSize(8);
           pdf.setTextColor(100, 116, 139);
 
@@ -3332,7 +3850,7 @@
 
     function openSaved() {
       const saved = JSON.parse(localStorage.getItem('idcards') || '[]');
-      const tIcons = { 1: '🏢', 2: '💚', 3: '👑', 4: '💜', 5: '✨' };
+      const tIcons = { 1: '🏢', 2: '💚', 3: '👑', 4: '💜', 5: '✨', 6: '👑', 7: '💜', 8: '✨' };
       const tColors = {
         1: 'linear-gradient(135deg,#0f172a,#1e3a5f)',
         2: 'linear-gradient(135deg,#064e3b,#065f46)',
@@ -3406,7 +3924,7 @@
     function renderRecent() {
       const saved = JSON.parse(localStorage.getItem('idcards') || '[]').slice(0, 4);
       const tColors = { 1: 'linear-gradient(135deg,#0f172a,#1e3a5f)', 2: 'linear-gradient(135deg,#064e3b,#065f46)', 3: 'linear-gradient(135deg,#7b0018,#c0392b)', 4: 'linear-gradient(135deg,#1a0533,#2d1b69)', 5: 'linear-gradient(135deg,#1a1200,#2d2000)' };
-      const tIcons = { 1: '🏢', 2: '💚', 3: '👑', 4: '💜', 5: '✨' };
+      const tIcons = { 1: '🏢', 2: '💚', 3: '👑', 4: '💜', 5: '✨', 6: '✨', 7: '✨', 8: '✨' };
       el('recentCards').innerHTML = saved.length
         ? saved.map(s => `
       <div onclick="loadCard(${s.id})" style="background:${tColors[s.template]};border-radius:10px;padding:12px;cursor:pointer;border:1px solid rgba(255,255,255,.07);transition:.2s" onmouseover="this.style.borderColor='rgba(255,255,255,.2)'" onmouseout="this.style.borderColor='rgba(255,255,255,.07)'">
@@ -3433,7 +3951,7 @@
         if (!confirm('Start a new ID card? Unsaved data will be lost.')) return;
         state.data = {};
         state.customFields = [];
-        Object.values(state.fields).forEach(f => f.enabled = ['name', 'designation', 'department', 'employee_id', 'phone', 'email', 'blood', 'org_name', 'valid_from', 'valid_until'].includes(Object.keys(state.fields).find(k => state.fields[k] === f)));
+        Object.values(state.fields).forEach(f => f.enabled = ['name', 'father_name', 'dob', 'designation', 'department', 'employee_id', 'phone', 'email', 'blood', 'org_name', 'valid_from', 'valid_until'].includes(Object.keys(state.fields).find(k => state.fields[k] === f)));
         photoData = null; logoData = null;
         removePhoto('photo'); removePhoto('logo');
         currentTpl = 1;

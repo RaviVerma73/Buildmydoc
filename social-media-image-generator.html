@@ -1195,7 +1195,7 @@
                         <input type="file" id="fileInput" accept="image/*" onchange="handleFile(this.files[0])">
                         <span class="uz-icon">📁</span>
                         <div class="uz-title">Drop / Click to Upload</div>
-                        <div class="uz-sub">PNG, JPG, WEBP, GIF • Paste bhi karo</div>
+                        <div class="uz-sub">PNG, JPG, WEBP, GIF • Paste also</div>
                     </div>
                     <div class="img-prev-wrap" id="imgPrevWrap">
                         <img class="img-prev-thumb" id="imgThumb" src="" alt="">
@@ -1223,8 +1223,7 @@
                         <button class="fit-tab" data-mode="stretch" onclick="setFit('stretch',this)">Stretch</button>
                     </div>
                     <p style="font-size:10px;color:var(--muted);margin-top:6px;line-height:1.5" id="fitNote">Fill:
-                        Center crop
-                        karke canvas bharta hai</p>
+                        fill the canvas by cropping the center</p>
                 </div>
 
                 <!-- 4. BACKGROUND COLOR -->
@@ -1233,7 +1232,7 @@
                     <div class="bg-palettes" id="bgPalette"></div>
                     <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap">
                         <button class="bg-none-btn on" id="bgNoneBtn" onclick="setBgNone()">✕ No BG</button>
-                        <span style="font-size:10px;color:var(--muted)">ya custom:</span>
+                        <span style="font-size:10px;color:var(--muted)">Or custom:</span>
                     </div>
                     <div class="bg-custom-row">
                         <input type="color" id="bgColorPicker" value="#1a1a2e" oninput="setBgCustom(this.value)">
@@ -1259,9 +1258,8 @@
             <div class="empty-state" id="emptyState">
                 <div class="empty-icon">📲</div>
                 <div class="empty-title">Social Image Generator</div>
-                <div class="empty-sub">Left side se image upload karo, platforms choose karo, background color set karo
-                    — phir
-                    Generate dabao!</div>
+                <div class="empty-sub">Upload an image from the left side, choose the platforms, set the background
+                    color, then click Generate!</div>
             </div>
 
             <!-- RESULTS -->
